@@ -1,9 +1,11 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import AnggotaKelasClient from './_components/anggota-kelas-client';
 
 async function getData() {
+  const sekolah = await getSekolahWithFilter();
   const [rows]: any = await pool.query(`
     SELECT sk.*, k.nama_kelas, s.nama_siswa, s.nis, s.nisn, t.tingkat,
       CASE WHEN sk.status = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS status_label
@@ -11,8 +13,9 @@ async function getData() {
     JOIN kelas k ON sk.id_kelas = k.id_kelas
     JOIN siswa s ON sk.id_siswa = s.id_siswa
     JOIN tingkat t ON sk.id_tingkat = t.id_tingkat
+    WHERE sk.tahun = ? AND sk.semester = ?
     ORDER BY sk.id_siswa_kelas DESC
-  `);
+  `, [sekolah.tahun, sekolah.semester]);
   return rows;
 }
 

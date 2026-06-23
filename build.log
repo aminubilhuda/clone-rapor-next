@@ -1,0 +1,67 @@
+﻿
+> clone-rapor-next@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.2.9 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 3.6s
+  Running TypeScript ...
+  Finished TypeScript in 3.9s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/40) ...
+  Generating static pages using 11 workers (10/40) 
+  Generating static pages using 11 workers (20/40) 
+  Generating static pages using 11 workers (30/40) 
+Γ£ô Generating static pages using 11 workers (40/40) in 350ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî ╞Æ /
+Γö£ ╞Æ /_not-found
+Γö£ ╞Æ /api/auth/[...nextauth]
+Γö£ ╞Æ /api/guru/penilaian/[id_mapel_kelas]
+Γö£ ╞Æ /api/tu/pengaturan
+Γö£ ╞Æ /api/tu/profil
+Γö£ ╞Æ /api/tu/view-filter
+Γö£ ╞Æ /guru
+Γö£ ╞Æ /guru/anggota-kelas
+Γö£ ╞Æ /guru/buku-induk
+Γö£ ╞Æ /guru/catatan-rapor
+Γö£ ╞Æ /guru/ekstra
+Γö£ ╞Æ /guru/kelas-ku
+Γö£ ╞Æ /guru/kokurikuler
+Γö£ ╞Æ /guru/lager-nilai-kelas
+Γö£ ╞Æ /guru/organisasi
+Γö£ ╞Æ /guru/p5bk
+Γö£ ╞Æ /guru/penilaian/[id_mapel_kelas]
+Γö£ ╞Æ /guru/piket-harian
+Γö£ ╞Æ /guru/prakerin
+Γö£ ╞Æ /guru/rekap-presensi
+Γö£ ╞Æ /guru/tujuan-pembelajaran
+Γö£ ╞Æ /login
+Γö£ ╞Æ /tu
+Γö£ ╞Æ /tu/anggota-kelas
+Γö£ ╞Æ /tu/deskripsi-rapor
+Γö£ ╞Æ /tu/ekstra
+Γö£ ╞Æ /tu/kesiswaan
+Γö£ ╞Æ /tu/kompetensi
+Γö£ ╞Æ /tu/laporan-pendidikan
+Γö£ ╞Æ /tu/mapel
+Γö£ ╞Æ /tu/mapel-kelas
+Γö£ ╞Æ /tu/mapel-siswa
+Γö£ ╞Æ /tu/naik-kelas
+Γö£ ╞Æ /tu/p5bk
+Γö£ ╞Æ /tu/pegawai
+Γö£ ╞Æ /tu/pengaturan
+Γö£ ╞Æ /tu/piket-harian
+Γö£ ╞Æ /tu/prakerin
+Γö£ ╞Æ /tu/profil
+Γöö ╞Æ /tu/rombel
+
+
+╞Æ Proxy (Middleware)
+
+╞Æ  (Dynamic)  server-rendered on demand
+

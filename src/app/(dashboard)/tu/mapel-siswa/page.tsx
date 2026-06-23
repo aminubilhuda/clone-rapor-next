@@ -1,9 +1,11 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import MapelSiswaClient from './_components/mapel-siswa-client';
 
 async function getData() {
+  const sekolah = await getSekolahWithFilter();
   const [rows]: any = await pool.query(`
     SELECT ms.*, k.nama_kelas, m.nama_mapel, s.nama_siswa,
       CASE WHEN ms.aktif = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS aktif_label
@@ -11,8 +13,9 @@ async function getData() {
     JOIN kelas k ON ms.id_kelas = k.id_kelas
     JOIN mapel m ON ms.id_mapel = m.id_mapel
     JOIN siswa s ON ms.id_siswa = s.id_siswa
+    WHERE ms.tahun = ? AND ms.semester = ?
     ORDER BY ms.id_mapel_siswa DESC
-  `);
+  `, [sekolah.tahun, sekolah.semester]);
   return rows;
 }
 

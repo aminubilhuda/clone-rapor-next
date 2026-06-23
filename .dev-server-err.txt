@@ -1,0 +1,168 @@
+⚠ Slow filesystem detected. The benchmark took 250ms. If D:\PROJECT\nextjs\clone-rapor-next\.next/dev is a network drive, consider moving it to a local folder.
+See more: https://nextjs.org/docs/app/guides/local-development
+⨯ Error: Unknown column 's.nama' in 'field list'
+    at getData (src\app\(dashboard)\tu\anggota-kelas\page.tsx:7:34)
+    at AnggotaKelasPage (src\app\(dashboard)\tu\anggota-kelas\page.tsx:32:57)
+   5 |
+   6 | async function getData() {
+>  7 |   const [rows]: any = await pool.query(`
+     |                                  ^
+   8 |     SELECT sk.*, k.nama_kelas, s.nama AS nama_siswa, s.nis, s.nisn, t.tingkat,
+   9 |       CASE WHEN sk.status = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS status_label
+  10 |     FROM siswa_kelas sk {
+  code: 'ER_BAD_FIELD_ERROR',
+  errno: 1054,
+  sqlState: '42S22',
+  sqlMessage: "Unknown column 's.nama' in 'field list'",
+  sql: '\n' +
+    '    SELECT sk.*, k.nama_kelas, s.nama AS nama_siswa, s.nis, s.nisn, t.tingkat,\n' +
+    "      CASE WHEN sk.status = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS status_label\n" +
+    '    FROM siswa_kelas sk\n' +
+    '    JOIN kelas k ON sk.id_kelas = k.id_kelas\n' +
+    '    JOIN siswa s ON sk.id_siswa = s.id_siswa\n' +
+    '    JOIN tingkat t ON sk.id_tingkat = t.id_tingkat\n' +
+    '    ORDER BY sk.id_siswa_kelas DESC\n' +
+    '  ',
+  digest: '1089007296'
+}
+[browser] Uncaught Error: Unknown column 's.nama' in 'field list'
+    at getData (src\app\(dashboard)\tu\anggota-kelas\page.tsx:7:34)
+    at AnggotaKelasPage (src\app\(dashboard)\tu\anggota-kelas\page.tsx:32:57)
+   5 |
+   6 | async function getData() {
+>  7 |   const [rows]: any = await pool.query(`
+     |                                  ^
+   8 |     SELECT sk.*, k.nama_kelas, s.nama AS nama_siswa, s.nis, s.nisn, t.tingkat,
+   9 |       CASE WHEN sk.status = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS status_label
+  10 |     FROM siswa_kelas sk
+⨯ Error: Unknown column 'nama' in 'field list'
+    at getSiswa (src\app\(dashboard)\tu\mapel-siswa\page.tsx:30:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:102)
+  28 |
+  29 | async function getSiswa() {
+> 30 |   const [rows]: any = await pool.query('SELECT id_siswa, nama, nisn FROM siswa ORDER BY na...
+     |                                  ^
+  31 |   return rows;
+  32 | }
+  33 | {
+  code: 'ER_BAD_FIELD_ERROR',
+  errno: 1054,
+  sqlState: '42S22',
+  sqlMessage: "Unknown column 'nama' in 'field list'",
+  sql: 'SELECT id_siswa, nama, nisn FROM siswa ORDER BY nama ASC',
+  digest: '1857612765'
+}
+[browser] Uncaught Error: Unknown column 'nama' in 'field list'
+    at getSiswa (src\app\(dashboard)\tu\mapel-siswa\page.tsx:30:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:102)
+  28 |
+  29 | async function getSiswa() {
+> 30 |   const [rows]: any = await pool.query('SELECT id_siswa, nama, nisn FROM siswa ORDER BY na...
+     |                                  ^
+  31 |   return rows;
+  32 | }
+  33 |
+[browser] Each child in a list should have a unique "key" prop.
+
+Check the top-level render call using <tbody>. See https://react.dev/link/warning-keys for more information. 
+⨯ Error: Unknown column 'nama' in 'field list'
+    at getSiswa (src\app\(dashboard)\tu\mapel-siswa\page.tsx:30:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:102)
+  28 |
+  29 | async function getSiswa() {
+> 30 |   const [rows]: any = await pool.query('SELECT id_siswa, nama, nisn FROM siswa ORDER BY na...
+     |                                  ^
+  31 |   return rows;
+  32 | }
+  33 | {
+  code: 'ER_BAD_FIELD_ERROR',
+  errno: 1054,
+  sqlState: '42S22',
+  sqlMessage: "Unknown column 'nama' in 'field list'",
+  sql: 'SELECT id_siswa, nama, nisn FROM siswa ORDER BY nama ASC',
+  digest: '1857612765'
+}
+[browser] Uncaught Error: Unknown column 'nama' in 'field list'
+    at getSiswa (src\app\(dashboard)\tu\mapel-siswa\page.tsx:30:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:102)
+  28 |
+  29 | async function getSiswa() {
+> 30 |   const [rows]: any = await pool.query('SELECT id_siswa, nama, nisn FROM siswa ORDER BY na...
+     |                                  ^
+  31 |   return rows;
+  32 | }
+  33 |
+⨯ Error: Unknown column 's.nama' in 'field list'
+    at getData (src\app\(dashboard)\tu\mapel-siswa\page.tsx:7:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:67)
+   5 |
+   6 | async function getData() {
+>  7 |   const [rows]: any = await pool.query(`
+     |                                  ^
+   8 |     SELECT ms.*, k.nama_kelas, m.nama_mapel, s.nama AS nama_siswa,
+   9 |       CASE WHEN ms.aktif = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS aktif_label
+  10 |     FROM mapel_siswa ms {
+  code: 'ER_BAD_FIELD_ERROR',
+  errno: 1054,
+  sqlState: '42S22',
+  sqlMessage: "Unknown column 's.nama' in 'field list'",
+  sql: '\n' +
+    '    SELECT ms.*, k.nama_kelas, m.nama_mapel, s.nama AS nama_siswa,\n' +
+    "      CASE WHEN ms.aktif = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS aktif_label\n" +
+    '    FROM mapel_siswa ms\n' +
+    '    JOIN kelas k ON ms.id_kelas = k.id_kelas\n' +
+    '    JOIN mapel m ON ms.id_mapel = m.id_mapel\n' +
+    '    JOIN siswa s ON ms.id_siswa = s.id_siswa\n' +
+    '    ORDER BY ms.id_mapel_siswa DESC\n' +
+    '  ',
+  digest: '3895089763'
+}
+[browser] Uncaught Error: Unknown column 's.nama' in 'field list'
+    at getData (src\app\(dashboard)\tu\mapel-siswa\page.tsx:7:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:67)
+   5 |
+   6 | async function getData() {
+>  7 |   const [rows]: any = await pool.query(`
+     |                                  ^
+   8 |     SELECT ms.*, k.nama_kelas, m.nama_mapel, s.nama AS nama_siswa,
+   9 |       CASE WHEN ms.aktif = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS aktif_label
+  10 |     FROM mapel_siswa ms
+⨯ Error: Unknown column 'nama' in 'field list'
+    at getSiswa (src\app\(dashboard)\tu\mapel-siswa\page.tsx:30:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:102)
+  28 |
+  29 | async function getSiswa() {
+> 30 |   const [rows]: any = await pool.query('SELECT id_siswa, nama, nisn FROM siswa ORDER BY na...
+     |                                  ^
+  31 |   return rows;
+  32 | }
+  33 | {
+  code: 'ER_BAD_FIELD_ERROR',
+  errno: 1054,
+  sqlState: '42S22',
+  sqlMessage: "Unknown column 'nama' in 'field list'",
+  sql: 'SELECT id_siswa, nama, nisn FROM siswa ORDER BY nama ASC',
+  digest: '1857612765'
+}
+[browser] Uncaught Error: Unknown column 'nama' in 'field list'
+    at getSiswa (src\app\(dashboard)\tu\mapel-siswa\page.tsx:30:34)
+    at MapelSiswaPage (src\app\(dashboard)\tu\mapel-siswa\page.tsx:37:102)
+  28 |
+  29 | async function getSiswa() {
+> 30 |   const [rows]: any = await pool.query('SELECT id_siswa, nama, nisn FROM siswa ORDER BY na...
+     |                                  ^
+  31 |   return rows;
+  32 | }
+  33 |
+⨯ Error: useToast must be used within a ToastProvider
+    at useToast (src\components\ui\toast-provider.tsx:52:19)
+    at MapelSiswaClient (src\app\(dashboard)\tu\mapel-siswa\_components\mapel-siswa-client.tsx:26:33)
+  50 | export function useToast(): ToastContextType {
+  51 |   const ctx = useContext(ToastContext);
+> 52 |   if (!ctx) throw new Error('useToast must be used within a ToastProvider');
+     |                   ^
+  53 |   return ctx;
+  54 | }
+  55 | {
+  digest: '2783548899'
+}

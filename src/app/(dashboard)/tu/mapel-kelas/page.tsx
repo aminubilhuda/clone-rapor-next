@@ -1,17 +1,20 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import MapelKelasClient from './_components/mapel-kelas-client';
 
 async function getData() {
+  const sekolah = await getSekolahWithFilter();
   const [rows]: any = await pool.query(`
     SELECT mk.*, k.nama_kelas, m.nama_mapel, u.nama AS nama_guru
     FROM mapel_kelas mk
     JOIN kelas k ON mk.id_kelas = k.id_kelas
     JOIN mapel m ON mk.id_mapel = m.id_mapel
     LEFT JOIN users u ON mk.id_user = u.id_user
+    WHERE mk.tahun = ? AND mk.semester = ?
     ORDER BY mk.id_mapel_kelas DESC
-  `);
+  `, [sekolah.tahun, sekolah.semester]);
   return rows;
 }
 

@@ -1,15 +1,18 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import PrakerinClient from './_components/prakerin-client';
 
 async function getPrakerin() {
+  const sekolah = await getSekolahWithFilter();
   const [rows]: any = await pool.query(`
     SELECT p.*, u.nama AS nama_user
     FROM prakerin p
     LEFT JOIN users u ON p.id_user = u.id_user
+    WHERE p.tahun = ? AND p.semester = ?
     ORDER BY p.id_prakerin ASC
-  `);
+  `, [sekolah.tahun, sekolah.semester]);
   return rows;
 }
 
