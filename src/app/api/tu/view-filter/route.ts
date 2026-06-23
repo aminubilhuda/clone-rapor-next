@@ -11,9 +11,11 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const action = formData.get('action') as string;
 
+  const redirectTo = (formData.get('redirect') as string) || '/tu';
+
   if (action === 'clear') {
     await clearViewFilter();
-    return NextResponse.redirect(new URL('/tu', req.url));
+    return NextResponse.redirect(new URL(redirectTo, req.url));
   }
 
   const tahun = formData.get('tahun') as string;
@@ -24,5 +26,5 @@ export async function POST(req: NextRequest) {
   }
 
   await setViewFilter(tahun, semester);
-  return NextResponse.redirect(new URL('/tu', req.url));
+  return NextResponse.redirect(new URL(redirectTo, req.url));
 }

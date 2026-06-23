@@ -71,26 +71,23 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
 
   const handleChange = (val: string) => {
     const opt = options.find(o => o.value === val);
-    if (!opt) {
-      // Reset
-      const f = document.createElement('form');
-      f.method = 'POST';
-      f.action = '/api/tu/view-filter';
-      const i = document.createElement('input');
-      i.name = 'action'; i.value = 'clear'; i.type = 'hidden';
-      f.appendChild(i);
-      document.body.appendChild(f);
-      f.submit();
-      return;
-    }
     const f = document.createElement('form');
     f.method = 'POST';
     f.action = '/api/tu/view-filter';
-    const i1 = document.createElement('input');
-    i1.name = 'tahun'; i1.value = opt.tahun; i1.type = 'hidden';
-    const i2 = document.createElement('input');
-    i2.name = 'semester'; i2.value = opt.semester; i2.type = 'hidden';
-    f.appendChild(i1); f.appendChild(i2);
+    if (!opt) {
+      const i = document.createElement('input');
+      i.name = 'action'; i.value = 'clear'; i.type = 'hidden';
+      f.appendChild(i);
+    } else {
+      const i1 = document.createElement('input');
+      i1.name = 'tahun'; i1.value = opt.tahun; i1.type = 'hidden';
+      const i2 = document.createElement('input');
+      i2.name = 'semester'; i2.value = opt.semester; i2.type = 'hidden';
+      f.appendChild(i1); f.appendChild(i2);
+    }
+    const r = document.createElement('input');
+    r.name = 'redirect'; r.value = window.location.pathname; r.type = 'hidden';
+    f.appendChild(r);
     document.body.appendChild(f);
     f.submit();
   };

@@ -1,18 +1,20 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 
 export default async function LaporanPendidikanPage() {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) redirect('/login');
 
+  const sekolah = await getSekolahWithFilter();
   const [countSiswa, countKelas, countUser, countMapel, countLulusan, pembagianRows, laporanWa]: any = await Promise.all([
     pool.query('SELECT COUNT(*) AS total_siswa FROM siswa WHERE aktif = 1'),
     pool.query('SELECT COUNT(*) AS total_kelas FROM kelas'),
     pool.query('SELECT COUNT(*) AS total_user FROM users'),
     pool.query('SELECT COUNT(*) AS total_mapel FROM mapel'),
-    pool.query('SELECT COUNT(*) AS total_lulusan FROM lulusan'),
-    pool.query('SELECT * FROM pembagian_raport ORDER BY id_pembagian DESC LIMIT 5'),
+    pool.query('SELECT COUNT(*) AS total_lulusan FROM lulusan WHERE tahun = ? AND semester = ?', [sekolah.tahun, sekolah.semester]),
+    pool.query('SELECT * FROM pembagian_raport WHERE tahun = ? AND semester = ? ORDER BY id_pembagian DESC LIMIT 5', [sekolah.tahun, sekolah.semester]),
     pool.query('SELECT lw.*, u.nama AS nama_user FROM laporan_wa lw LEFT JOIN users u ON lw.kontak = u.username ORDER BY lw.id_laporan DESC LIMIT 5'),
   ]);
   const total_siswa = countSiswa[0]?.[0]?.total_siswa ?? 0;

@@ -1,17 +1,20 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import P5BKClient from './_components/p5bk-client';
 
 async function getData() {
+  const sekolah = await getSekolahWithFilter();
   const [rows]: any = await pool.query(`
     SELECT pk.*, k.nama_kelas, pt.tema, u.nama AS nama_user
     FROM proyek_kelas pk
     JOIN kelas k ON pk.id_kelas = k.id_kelas
     JOIN proyek_tema pt ON pk.id_tema = pt.id_tema
     LEFT JOIN users u ON pk.id_user = u.id_user
+    WHERE pk.tahun = ? AND pk.semester = ?
     ORDER BY pk.id_proyek_kelas DESC
-  `);
+  `, [sekolah.tahun, sekolah.semester]);
   return rows;
 }
 
