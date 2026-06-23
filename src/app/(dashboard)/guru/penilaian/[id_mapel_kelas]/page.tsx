@@ -54,11 +54,19 @@ async function getPenilaianData(id_mapel_kelas: string, detail: string | undefin
   const tableName = tableMap[activeDetail] || 'nilai_formatif';
 
   if (tableName) {
-    const [rows]: any = await pool.query(
-      `SELECT n.*, tp.urut as tp_urut FROM \`${tableName}\` n
-       LEFT JOIN tujuan_pembelajaran tp ON n.id_tujuan = tp.id_tujuan AND tp.tahun = n.tahun AND tp.semester = n.semester
-       WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
-       ORDER BY n.id_siswa, tp_urut ASC`,
+    const hasIdTujuan = activeDetail !== 'sumatif-ts' && activeDetail !== 'sumatif-as';
+    let query: string;
+    if (hasIdTujuan) {
+      query = `SELECT n.*, tp.urut as tp_urut FROM \`${tableName}\` n
+               LEFT JOIN tujuan_pembelajaran tp ON n.id_tujuan = tp.id_tujuan AND tp.tahun = n.tahun AND tp.semester = n.semester
+               WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
+               ORDER BY n.id_siswa, tp_urut ASC`;
+    } else {
+      query = `SELECT n.* FROM \`${tableName}\` n
+               WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
+               ORDER BY n.id_siswa`;
+    }
+    const [rows]: any = await pool.query(query,
       [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]
     );
     nilaiRows = rows;

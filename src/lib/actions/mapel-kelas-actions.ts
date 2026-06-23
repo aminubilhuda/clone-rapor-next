@@ -4,18 +4,15 @@ import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-export async function updatePrakerin(formData: FormData) {
+export async function updateMapelKelas(formData: FormData) {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
-  const id = formData.get('id_prakerin') as string;
-  const mitra = formData.get('mitra') as string;
-  const lokasi = formData.get('lokasi') as string;
-  const tanggalMulai = formData.get('tanggal_mulai') as string;
-  const tanggalAkhir = formData.get('tanggal_akhir') as string;
-  const instruktur = formData.get('instruktur') as string;
+  const id = formData.get('id_mapel_kelas') as string;
+  const idKelas = formData.get('id_kelas') as string;
+  const idMapel = formData.get('id_mapel') as string;
   const idUser = formData.get('id_user') as string;
 
   const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
@@ -26,34 +23,33 @@ export async function updatePrakerin(formData: FormData) {
   try {
     if (id) {
       await pool.query(
-        `UPDATE prakerin SET mitra = ?, lokasi = ?, tanggal_mulai = ?, tanggal_akhir = ?, instruktur = ?, id_user = ?
-         WHERE id_prakerin = ?`,
-        [mitra, lokasi, tanggalMulai || null, tanggalAkhir || null, instruktur, idUser, id]
+        `UPDATE mapel_kelas SET id_kelas = ?, id_mapel = ?, id_user = ? WHERE id_mapel_kelas = ?`,
+        [idKelas, idMapel, idUser || null, id]
       );
     } else {
       await pool.query(
-        `INSERT INTO prakerin (tahun, semester, mitra, lokasi, tanggal_mulai, tanggal_akhir, instruktur, id_user)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [tahun, semester, mitra, lokasi, tanggalMulai || null, tanggalAkhir || null, instruktur, idUser]
+        `INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user)
+         VALUES (?, ?, ?, ?, ?)`,
+        [tahun, semester, idKelas, idMapel, idUser || null]
       );
     }
 
-    revalidatePath('/tu/prakerin');
+    revalidatePath('/tu/mapel-kelas');
     return { success: true } as const;
   } catch (e: any) {
     return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
   }
 }
 
-export async function deletePrakerin(id: number) {
+export async function deleteMapelKelas(id: number) {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
   try {
-    await pool.query('DELETE FROM prakerin WHERE id_prakerin = ?', [id]);
-    revalidatePath('/tu/prakerin');
+    await pool.query('DELETE FROM mapel_kelas WHERE id_mapel_kelas = ?', [id]);
+    revalidatePath('/tu/mapel-kelas');
     return { success: true } as const;
   } catch (e: any) {
     return { success: false, error: e.message || 'Gagal menghapus data' } as const;

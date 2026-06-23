@@ -15,7 +15,6 @@ async function getPegawai() {
     LEFT JOIN jenis_kelamin jk ON u.kelamin = jk.id_jenis_kelamin
     LEFT JOIN kepegawaian k ON u.id_kepegawaian = k.id_kepegawaian
     LEFT JOIN tugas_tambahan tt ON u.id_tugas_tambahan = tt.id_tugas_tambahan
-    WHERE u.deleted_at IS NULL
     ORDER BY u.id_user ASC
   `);
   return pegawai;
