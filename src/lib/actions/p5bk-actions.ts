@@ -4,19 +4,22 @@ import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-export async function updatePrakerin(formData: FormData) {
+function generateKode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+export async function updateP5BK(formData: FormData) {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
-  const id = formData.get('id_prakerin') as string;
-  const mitra = formData.get('mitra') as string;
-  const lokasi = formData.get('lokasi') as string;
-  const tanggalMulai = formData.get('tanggal_mulai') as string;
-  const tanggalAkhir = formData.get('tanggal_akhir') as string;
-  const instruktur = formData.get('instruktur') as string;
+  const id = formData.get('id_proyek_kelas') as string;
+  const idKelas = formData.get('id_kelas') as string;
+  const idTema = formData.get('id_tema') as string;
   const idUser = formData.get('id_user') as string;
+  const judulProyek = formData.get('judul_proyek') as string;
+  const deskripsiSingkat = formData.get('deskripsi_singkat') as string;
 
   const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
   const sekolah = sekolahRows[0];
@@ -26,34 +29,33 @@ export async function updatePrakerin(formData: FormData) {
   try {
     if (id) {
       await pool.query(
-        `UPDATE prakerin SET mitra = ?, lokasi = ?, tanggal_mulai = ?, tanggal_akhir = ?, instruktur = ?, id_user = ?
-         WHERE id_prakerin = ?`,
-        [mitra, lokasi, tanggalMulai || null, tanggalAkhir || null, instruktur, idUser, id]
+        `UPDATE proyek_kelas SET id_kelas = ?, id_tema = ?, id_user = ?, judul_proyek = ?, deskripsi_singkat = ? WHERE id_proyek_kelas = ?`,
+        [idKelas, idTema, idUser, judulProyek, deskripsiSingkat, id]
       );
     } else {
       await pool.query(
-        `INSERT INTO prakerin (tahun, semester, mitra, lokasi, tanggal_mulai, tanggal_akhir, instruktur, id_user)
+        `INSERT INTO proyek_kelas (kode, tahun, semester, id_kelas, id_tema, id_user, judul_proyek, deskripsi_singkat)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [tahun, semester, mitra, lokasi, tanggalMulai || null, tanggalAkhir || null, instruktur, idUser]
+        [generateKode(), tahun, semester, idKelas, idTema, idUser, judulProyek, deskripsiSingkat]
       );
     }
 
-    revalidatePath('/tu/prakerin');
+    revalidatePath('/tu/p5bk');
     return { success: true } as const;
   } catch (e: any) {
     return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
   }
 }
 
-export async function deletePrakerin(id: number) {
+export async function deleteP5BK(id: number) {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
   try {
-    await pool.query('DELETE FROM prakerin WHERE id_prakerin = ?', [id]);
-    revalidatePath('/tu/prakerin');
+    await pool.query('DELETE FROM proyek_kelas WHERE id_proyek_kelas = ?', [id]);
+    revalidatePath('/tu/p5bk');
     return { success: true } as const;
   } catch (e: any) {
     return { success: false, error: e.message || 'Gagal menghapus data' } as const;

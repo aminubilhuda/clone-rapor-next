@@ -18,3 +18,18 @@ body {
 .animate-modal-in {
   animation: modal-in 0.2s ease-out;
 }
+
+/* Sidebar scrollbar - thin & subtle */
+aside nav::-webkit-scrollbar {
+  width: 4px;
+}
+aside nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+aside nav::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 4px;
+}
+aside nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}

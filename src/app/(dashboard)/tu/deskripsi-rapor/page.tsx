@@ -1,13 +1,22 @@
+import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import DeskripsiClient from './_components/deskripsi-client';
 
-export default async function TUPage() {
+async function getDeskripsi() {
+  const [rows]: any = await pool.query('SELECT * FROM deskripsi_rapor ORDER BY id_deskripsi ASC');
+  return rows;
+}
+
+export default async function DeskripsiRaporPage() {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) redirect('/login');
+  const deskripsi = await getDeskripsi();
+
   return (
-    <div className="text-center py-20">
-      <h4 className="text-xl font-semibold mb-4 text-gray-600">Halaman dalam Pengembangan</h4>
-      <p className="text-gray-400">Halaman ini akan segera tersedia.</p>
+    <div>
+      <h4 className="text-xl font-semibold mb-6">Deskripsi Rapor</h4>
+      <DeskripsiClient deskripsi={deskripsi} />
     </div>
   );
 }

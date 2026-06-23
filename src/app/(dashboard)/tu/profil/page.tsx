@@ -57,11 +57,11 @@ export default async function ProfilPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kepala Sekolah</label>
-                <input defaultValue={kepala.nama_kepala} className="w-full border rounded px-3 py-2 text-sm" />
+                <input defaultValue={kepala.nama} className="w-full border rounded px-3 py-2 text-sm" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">NIP</label>
-                <input defaultValue={kepala.nip_kepala} className="w-full border rounded px-3 py-2 text-sm" />
+                <input defaultValue={kepala.nip} className="w-full border rounded px-3 py-2 text-sm" />
               </div>
             </div>
           </div>
