@@ -17,7 +17,7 @@ async function getRombel(tahun: number, semester: number) {
 }
 
 async function getUser() {
-  const [rows]: any = await pool.query('SELECT id_user, nama FROM users ORDER BY nama ASC');
+  const [rows]: any = await pool.query('SELECT id_user, nama FROM users WHERE deleted_at IS NULL ORDER BY nama ASC');
   return rows;
 }
 

@@ -60,7 +60,9 @@ export async function deleteSiswa(id: number) {
   }
 
   try {
-    await pool.query('UPDATE siswa SET aktif = 0 WHERE id_siswa = ?', [id]);
+    await pool.query('UPDATE siswa SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
+    await pool.query('UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
+    await pool.query('UPDATE mapel_siswa SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
     revalidatePath('/tu/kesiswaan');
     return { success: true } as const;
   } catch (e: any) {

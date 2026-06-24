@@ -24,7 +24,7 @@ async function getSiswa() {
       GROUP BY id_siswa
     ) sk ON s.id_siswa = sk.id_siswa
     LEFT JOIN kelas k ON sk.id_kelas = k.id_kelas
-    WHERE s.aktif = 1
+    WHERE s.deleted_at IS NULL AND s.aktif = 1
     GROUP BY s.id_siswa
     ORDER BY s.id_siswa ASC
   `, [sekolah.tahun, sekolah.semester]);

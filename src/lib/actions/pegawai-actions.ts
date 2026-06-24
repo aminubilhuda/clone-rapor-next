@@ -62,7 +62,7 @@ export async function deletePegawai(id: number) {
   }
 
   try {
-    await pool.query('DELETE FROM users WHERE id_user = ?', [id]);
+    await pool.query('UPDATE users SET deleted_at = NOW() WHERE id_user = ?', [id]);
     revalidatePath('/tu/pegawai');
     return { success: true } as const;
   } catch (e: any) {

@@ -8,11 +8,11 @@ async function getStats() {
   try {
     const sekolah = await getSekolahWithFilter();
 
-    const [userRows]: any = await pool.query('SELECT * FROM users');
+    const [userRows]: any = await pool.query('SELECT * FROM users WHERE deleted_at IS NULL');
     const jmlGuru = userRows.length;
 
     const [siswaKelasRows]: any = await pool.query(
-      'SELECT COUNT(DISTINCT id_siswa) as count FROM siswa_kelas WHERE tahun = ? AND semester = ? AND status = 1',
+      'SELECT COUNT(DISTINCT id_siswa) as count FROM siswa_kelas WHERE tahun = ? AND semester = ? AND status = 1 AND deleted_at IS NULL',
       [sekolah.tahun, sekolah.semester]
     );
     const jmlSiswa = siswaKelasRows[0].count;
