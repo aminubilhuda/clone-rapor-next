@@ -7,7 +7,7 @@ import ModalAnggotaKelas from './modal-anggota-kelas';
 import ModalHapus from './modal-hapus-anggota-kelas';
 
 const COLUMNS = [
-  { key: 'id_siswa_kelas', label: 'ID' },
+  { key: '_no', label: 'NO' },
   { key: 'nama_kelas', label: 'Kelas' },
   { key: 'nama_siswa', label: 'Nama Siswa' },
   { key: 'nis', label: 'NIS' },
@@ -27,10 +27,15 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
   const { showToast } = useToast();
 
   const [search, setSearch] = useState('');
+  const [kelasFilter, setKelasFilter] = useState('');
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(10);
 
-  const filtered = data.filter((row) =>
+  const byKelas = kelasFilter
+    ? data.filter((row) => row.id_kelas === +kelasFilter)
+    : data;
+
+  const filtered = byKelas.filter((row) =>
     COLUMNS.filter((c) => c.key !== '_aksi').some((col) =>
       String(row[col.key] ?? '').toLowerCase().includes(search.toLowerCase())
     )
@@ -89,6 +94,16 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               className="w-full md:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             />
+            <select
+              value={kelasFilter}
+              onChange={(e) => { setKelasFilter(e.target.value); setPage(0); }}
+              className="border border-gray-300 rounded px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <option value="">Semua Kelas</option>
+              {refKelas.map((k: any) => (
+                <option key={k.id_kelas} value={k.id_kelas}>{k.nama_kelas}</option>
+              ))}
+            </select>
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Tampil:</span>
               <select
@@ -119,7 +134,7 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
                     <td colSpan={COLUMNS.length} className="text-center py-8 text-gray-400">Tidak ada data</td>
                   </tr>
                 ) : (
-                  paginatedData.map((row) => (
+                  paginatedData.map((row, i) => (
                     <tr key={row.id_siswa_kelas} className="border-b hover:bg-gray-50 transition">
                       {COLUMNS.map((col) => {
                         if (col.key === '_aksi') {
@@ -139,6 +154,9 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
                               </div>
                             </td>
                           );
+                        }
+                        if (col.key === '_no') {
+                          return <td key={col.key} className="px-4 py-3">{safePage * actualPerPage + i + 1}</td>;
                         }
                         return <td key={col.key} className="px-4 py-3">{row[col.key] ?? '-'}</td>;
                       })}
