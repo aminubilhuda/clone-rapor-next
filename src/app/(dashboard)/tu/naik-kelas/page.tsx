@@ -20,7 +20,7 @@ async function getData() {
 }
 
 async function getKelas() {
-  const [rows]: any = await pool.query('SELECT id_kelas, nama_kelas FROM kelas ORDER BY nama_kelas');
+  const [rows]: any = await pool.query('SELECT id_kelas, nama_kelas, id_tingkat FROM kelas ORDER BY nama_kelas');
   return rows;
 }
 

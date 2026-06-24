@@ -1,38 +1,40 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import DataTable from '@/components/ui/data-table';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import RombelClient from './_components/rombel-client';
 
-async function getRombel() {
-  const [kelas]: any = await pool.query(`
-    SELECT k.*, t.tingkat, kk.kompetensi_keahlian
+async function getRombel(tahun: number, semester: number) {
+  const [rows]: any = await pool.query(`
+    SELECT k.id_kelas, k.nama_kelas, t.tingkat, kw.id_user AS wali_user_id, u.nama AS wali_nama
     FROM kelas k
     JOIN tingkat t ON k.id_tingkat = t.id_tingkat
-    JOIN kompetensi_keahlian kk ON k.id_kompetensi_keahlian = kk.id_kompetensi_keahlian
+    LEFT JOIN kelas_wali kw ON k.id_kelas = kw.id_kelas AND kw.tahun = ? AND kw.semester = ?
+    LEFT JOIN users u ON kw.id_user = u.id_user
     ORDER BY k.id_kelas ASC
-  `);
-  return kelas;
+  `, [tahun, semester]);
+  return rows;
+}
+
+async function getUser() {
+  const [rows]: any = await pool.query('SELECT id_user, nama FROM users ORDER BY nama ASC');
+  return rows;
 }
 
 export default async function RombelPage() {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) redirect('/login');
-  const rombel = await getRombel();
+
+  const sekolah = await getSekolahWithFilter();
+  const [data, refUser] = await Promise.all([
+    getRombel(sekolah.tahun, sekolah.semester),
+    getUser(),
+  ]);
 
   return (
     <div>
       <h4 className="text-xl font-semibold mb-6">Kelas / Rombel</h4>
-      <DataTable
-        title="Daftar Kelas"
-        addLabel="Tambah Kelas"
-        columns={[
-          { key: 'id_kelas', label: 'ID' },
-          { key: 'nama_kelas', label: 'Nama Kelas' },
-          { key: 'tingkat', label: 'Tingkat' },
-          { key: 'kompetensi_keahlian', label: 'Kompetensi Keahlian' },
-        ]}
-        data={rombel}
-      />
+      <RombelClient data={data} refUser={refUser} tahun={sekolah.tahun} semester={sekolah.semester} />
     </div>
   );
 }
