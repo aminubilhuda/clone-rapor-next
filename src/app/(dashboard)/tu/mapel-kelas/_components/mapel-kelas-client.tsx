@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Select from 'react-select';
 import { useToast } from '@/components/ui/toast-provider';
 import { updateMapelKelas, deleteMapelKelas } from '@/lib/actions/mapel-kelas-actions';
 import ModalMapelKelas from './modal-mapel-kelas';
 import ModalHapus from './modal-hapus-mapel-kelas';
 
 const COLUMNS = [
-  { key: 'id_mapel_kelas', label: 'ID' },
+  { key: '_no', label: 'NO' },
   { key: 'nama_kelas', label: 'Kelas' },
   { key: 'nama_mapel', label: 'Mata Pelajaran' },
   { key: 'nama_guru', label: 'Guru Pengampu' },
@@ -25,10 +26,15 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
   const { showToast } = useToast();
 
   const [search, setSearch] = useState('');
+  const [kelasFilter, setKelasFilter] = useState('');
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(10);
 
-  const filtered = data.filter((row) =>
+  const byKelas = kelasFilter
+    ? data.filter((row) => row.id_kelas === +kelasFilter)
+    : data;
+
+  const filtered = byKelas.filter((row) =>
     COLUMNS.filter((c) => c.key !== '_aksi').some((col) =>
       String(row[col.key] ?? '').toLowerCase().includes(search.toLowerCase())
     )
@@ -38,6 +44,12 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
   const totalPages = Math.max(1, Math.ceil(filtered.length / actualPerPage));
   const safePage = Math.min(page, totalPages - 1);
   const paginatedData = filtered.slice(safePage * actualPerPage, (safePage + 1) * actualPerPage);
+
+  const guruOptions = refUser.map((u: any) => ({ value: u.id_user, label: u.nama }));
+
+  const excludedMapelIds = kelasFilter
+    ? data.filter(row => row.id_kelas === +kelasFilter).map(row => row.id_mapel)
+    : [];
 
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
@@ -49,12 +61,32 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
   const closeModals = () => { setModalEdit(false); setModalHapus(false); setSelected(null); };
 
   const handleSave = async (formData: FormData) => {
-    const result = await updateMapelKelas(formData);
-    if (result.success) {
-      showToast('Data mapel kelas berhasil disimpan!', 'success');
+    const idKelas = formData.get('id_kelas') as string;
+    const idUser = formData.get('id_user') as string || '';
+    const mapelIds = formData.getAll('id_mapel') as string[];
+
+    if (mapelIds.length === 0) {
+      showToast('Pilih minimal satu mapel!', 'error');
+      return;
+    }
+
+    let successCount = 0, errorCount = 0, lastError = '';
+
+    for (const idMapel of mapelIds) {
+      const fd = new FormData();
+      fd.set('id_kelas', idKelas);
+      fd.set('id_mapel', idMapel);
+      fd.set('id_user', idUser);
+      const result = await updateMapelKelas(fd);
+      if (result.success) successCount++;
+      else { errorCount++; lastError = result.error || 'Gagal'; }
+    }
+
+    if (successCount > 0) {
+      showToast(`${successCount} mapel berhasil ditambahkan!${errorCount > 0 ? ` ${errorCount} gagal` : ''}`, 'success');
       closeModals();
     } else {
-      showToast(result.error || 'Gagal menyimpan data!', 'error');
+      showToast(lastError || 'Gagal menambahkan mapel!', 'error');
     }
   };
 
@@ -87,6 +119,16 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               className="w-full md:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             />
+            <select
+              value={kelasFilter}
+              onChange={(e) => { setKelasFilter(e.target.value); setPage(0); }}
+              className="border border-gray-300 rounded px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <option value="">Semua Kelas</option>
+              {refKelas.map((k: any) => (
+                <option key={k.id_kelas} value={k.id_kelas}>{k.nama_kelas}</option>
+              ))}
+            </select>
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Tampil:</span>
               <select
@@ -117,7 +159,7 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
                     <td colSpan={COLUMNS.length} className="text-center py-8 text-gray-400">Tidak ada data</td>
                   </tr>
                 ) : (
-                  paginatedData.map((row) => (
+                  paginatedData.map((row, i) => (
                     <tr key={row.id_mapel_kelas} className="border-b hover:bg-gray-50 transition">
                       {COLUMNS.map((col) => {
                         if (col.key === '_aksi') {
@@ -135,6 +177,39 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
                                   </svg>
                                 </button>
                               </div>
+                            </td>
+                          );
+                        }
+                        if (col.key === '_no') {
+                          return <td key={col.key} className="px-4 py-3">{safePage * actualPerPage + i + 1}</td>;
+                        }
+                        if (col.key === 'nama_guru') {
+                          const val = guruOptions.find(o => o.value === row.id_user) || null;
+                          return (
+                            <td key={col.key} className="px-4 py-3 min-w-40">
+                              <Select
+                                options={guruOptions}
+                                value={val}
+                                onChange={(opt: any) => {
+                                  const fd = new FormData();
+                                  fd.set('id_mapel_kelas', String(row.id_mapel_kelas));
+                                  fd.set('id_kelas', String(row.id_kelas));
+                                  fd.set('id_mapel', String(row.id_mapel));
+                                  fd.set('id_user', opt?.value || '');
+                                  updateMapelKelas(fd).then(r => {
+                                    if (r.success) showToast('Guru berhasil diupdate!', 'success');
+                                    else showToast(r.error || 'Gagal mengupdate guru!', 'error');
+                                  });
+                                }}
+                                placeholder="Cari guru..."
+                                isClearable
+                                noOptionsMessage={() => 'Guru tidak ditemukan'}
+                                styles={{
+                                  control: (base: any) => ({ ...base, minHeight: '28px', fontSize: '0.875rem' }),
+                                  menu: (base: any) => ({ ...base, zIndex: 9999 }),
+                                  option: (base: any) => ({ ...base, fontSize: '0.875rem' }),
+                                }}
+                              />
                             </td>
                           );
                         }
@@ -167,8 +242,9 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
         mapelKelas={selected}
         refKelas={refKelas}
         refMapel={refMapel}
-        refUser={refUser}
         onSave={handleSave}
+        kelasFilter={kelasFilter}
+        excludedMapelIds={excludedMapelIds}
       />
 
       <ModalHapus
