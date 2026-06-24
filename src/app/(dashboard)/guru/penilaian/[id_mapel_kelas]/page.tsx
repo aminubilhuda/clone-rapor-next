@@ -38,7 +38,7 @@ async function getPenilaianData(id_mapel_kelas: string, detail: string | undefin
     JOIN mapel_siswa ms ON sk.id_siswa = ms.id_siswa
       AND ms.tahun = sk.tahun AND ms.semester = sk.semester
     WHERE sk.tahun = ? AND sk.semester = ? AND sk.id_kelas = ?
-      AND ms.id_mapel = ? AND ms.aktif = 1 AND s.aktif = 1
+      AND ms.id_mapel = ? AND ms.aktif = 1 AND s.aktif = 1 AND s.deleted_at IS NULL
     ORDER BY s.nis ASC
   `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]);
 

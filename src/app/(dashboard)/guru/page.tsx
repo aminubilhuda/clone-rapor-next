@@ -31,7 +31,7 @@ async function getGuruDashboard() {
     let jumlahAnggotaKelas = 0;
     if (dataKelas) {
       const [anggotaRows]: any = await pool.query(
-        'SELECT COUNT(*) as count FROM siswa_kelas WHERE tahun = ? AND semester = ? AND id_kelas = ?',
+        'SELECT COUNT(*) as count FROM siswa_kelas WHERE tahun = ? AND semester = ? AND id_kelas = ? AND deleted_at IS NULL',
         [sekolah.tahun, sekolah.semester, dataKelas.id_kelas]
       );
       jumlahAnggotaKelas = anggotaRows[0].count;

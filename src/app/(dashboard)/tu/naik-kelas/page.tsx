@@ -13,7 +13,7 @@ async function getData() {
     JOIN siswa s ON sk.id_siswa = s.id_siswa
     JOIN kelas k ON sk.id_kelas = k.id_kelas
     JOIN tingkat t ON sk.id_tingkat = t.id_tingkat
-    WHERE sk.tahun = ? AND sk.semester = ?
+    WHERE sk.tahun = ? AND sk.semester = ? AND s.deleted_at IS NULL
     ORDER BY k.nama_kelas, s.nama_siswa
   `, [sekolah.tahun, sekolah.semester]);
   return rows;

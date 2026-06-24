@@ -51,7 +51,7 @@ export async function deleteAnggotaKelas(id: number) {
   }
 
   try {
-    await pool.query('DELETE FROM siswa_kelas WHERE id_siswa_kelas = ?', [id]);
+    await pool.query('UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa_kelas = ?', [id]);
     revalidatePath('/tu/anggota-kelas');
     return { success: true } as const;
   } catch (e: any) {

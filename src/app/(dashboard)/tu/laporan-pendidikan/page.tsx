@@ -9,7 +9,7 @@ export default async function LaporanPendidikanPage() {
 
   const sekolah = await getSekolahWithFilter();
   const [countSiswa, countKelas, countUser, countMapel, countLulusan, pembagianRows, laporanWa]: any = await Promise.all([
-    pool.query('SELECT COUNT(*) AS total_siswa FROM siswa WHERE aktif = 1'),
+    pool.query('SELECT COUNT(*) AS total_siswa FROM siswa WHERE deleted_at IS NULL AND aktif = 1'),
     pool.query('SELECT COUNT(*) AS total_kelas FROM kelas'),
     pool.query('SELECT COUNT(*) AS total_user FROM users'),
     pool.query('SELECT COUNT(*) AS total_mapel FROM mapel'),

@@ -17,7 +17,7 @@ async function getPrakerin() {
 }
 
 async function getUsers() {
-  const [rows]: any = await pool.query('SELECT id_user, nama, username FROM users ORDER BY nama ASC');
+  const [rows]: any = await pool.query('SELECT id_user, nama, username FROM users WHERE deleted_at IS NULL ORDER BY nama ASC');
   return rows;
 }
 

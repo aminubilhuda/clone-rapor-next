@@ -13,7 +13,7 @@ async function getData() {
     JOIN kelas k ON sk.id_kelas = k.id_kelas
     JOIN siswa s ON sk.id_siswa = s.id_siswa
     JOIN tingkat t ON sk.id_tingkat = t.id_tingkat
-    WHERE sk.tahun = ? AND sk.semester = ?
+    WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL
     ORDER BY sk.id_siswa_kelas DESC
   `, [sekolah.tahun, sekolah.semester]);
   return rows;
@@ -25,7 +25,7 @@ async function getKelas() {
 }
 
 async function getSiswa() {
-  const [rows]: any = await pool.query('SELECT id_siswa, nama_siswa, nisn FROM siswa ORDER BY nama_siswa ASC');
+  const [rows]: any = await pool.query('SELECT id_siswa, nama_siswa, nisn FROM siswa WHERE deleted_at IS NULL ORDER BY nama_siswa ASC');
   return rows;
 }
 
