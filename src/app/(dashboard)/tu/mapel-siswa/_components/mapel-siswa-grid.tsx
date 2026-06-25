@@ -55,7 +55,7 @@ function HeaderCheckbox({
       type="checkbox"
       disabled={disabled}
       onChange={onChange}
-      className="w-4 h-4 text-blue-600 border-white/50 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-wait"
+      className="w-4 h-4 text-[#DC2626] border-white/50 rounded focus:ring-red-500/20 disabled:opacity-50 disabled:cursor-wait"
     />
   );
 }
@@ -176,47 +176,47 @@ export default function MapelSiswaGrid({
 
   if (!selectedKelasId) {
     return (
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-8 text-center">
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] p-8 text-center">
         <select
           value=""
           onChange={(e) => {
             if (e.target.value) router.push(`/tu/mapel-siswa?kelas=${e.target.value}`);
           }}
-          className="w-full md:w-96 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none mb-4"
+          className="w-full md:w-96 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none mb-4 transition-all"
         >
           <option value="">Pilih Kelas</option>
           {kelasList.map((k) => (
             <option key={k.id} value={k.id}>{k.label}</option>
           ))}
         </select>
-        <p className="text-gray-400 mt-2">Pilih kelas untuk melihat data mata pelajaran siswa.</p>
+        <p className="text-[#6B7280] mt-2">Pilih kelas untuk melihat data mata pelajaran siswa.</p>
       </div>
     );
   }
 
   if (students.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-8">
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] p-8">
         <KelasDropdown kelasList={kelasList} selectedKelasId={selectedKelasId} />
-        <p className="text-gray-400 text-center mt-6">Belum ada siswa terdaftar di kelas ini.</p>
+        <p className="text-[#6B7280] text-center mt-6">Belum ada siswa terdaftar di kelas ini.</p>
       </div>
     );
   }
 
   if (subjects.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-8">
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] p-8">
         <KelasDropdown kelasList={kelasList} selectedKelasId={selectedKelasId} />
-        <p className="text-gray-400 text-center mt-6">Belum ada mata pelajaran yang dikonfigurasi untuk kelas ini.</p>
+        <p className="text-[#6B7280] text-center mt-6">Belum ada mata pelajaran yang dikonfigurasi untuk kelas ini.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
-      <div className="px-5 py-4 border-b border-gray-200">
+    <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+      <div className="px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
         <KelasDropdown kelasList={kelasList} selectedKelasId={selectedKelasId} />
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-[#6B7280] mt-1">
           Tahun {tahun} - Semester {semester}
         </p>
       </div>
@@ -224,16 +224,16 @@ export default function MapelSiswaGrid({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-orange-600 text-white">
-              <th rowSpan={2} scope="col" className="text-center px-3 py-2 font-semibold w-12 sticky left-0 bg-orange-600 z-10 align-middle">NO</th>
-              <th rowSpan={2} scope="col" className="text-left px-3 py-2 font-semibold min-w-44 sticky left-12 bg-orange-600 z-10 align-middle">Nama Siswa</th>
+            <tr className="bg-[#DC2626] text-white">
+              <th rowSpan={2} scope="col" className="text-center px-3 py-2 font-semibold w-12 sticky left-0 bg-[#DC2626] z-10 align-middle">NO</th>
+              <th rowSpan={2} scope="col" className="text-left px-3 py-2 font-semibold min-w-44 sticky left-12 bg-[#DC2626] z-10 align-middle">Nama Siswa</th>
               {subjects.map((mapel) => (
                 <th key={mapel.id_mapel} scope="col" className="text-center px-2 py-2 font-semibold min-w-16 max-w-20 align-middle">
                   <span className="text-[11px] leading-tight">{mapel.nama_mapel}</span>
                 </th>
               ))}
             </tr>
-            <tr className="bg-orange-600 text-white">
+            <tr className="bg-[#DC2626] text-white">
               {subjects.map((mapel) => {
                 const allChecked = students.every((s) => isEnrolled(s.id_siswa, mapel.id_mapel));
                 const noneChecked = students.every((s) => !isEnrolled(s.id_siswa, mapel.id_mapel));
@@ -263,10 +263,10 @@ export default function MapelSiswaGrid({
             {students.map((siswa, i) => (
               <tr
                 key={siswa.id_siswa}
-                className={`${i % 2 === 0 ? 'bg-orange-50' : 'bg-white'} hover:bg-orange-100 transition`}
+                className={`${i % 2 === 0 ? 'bg-[#F8F9FB]' : 'bg-white'} hover:bg-[#F8F9FB] transition-colors`}
               >
-                <td className="text-center px-3 py-2 text-gray-500 text-xs sticky left-0 bg-inherit z-[1]">{i + 1}</td>
-                <td className="px-3 py-2 font-medium text-gray-800 sticky left-12 bg-inherit z-[1]">{siswa.nama_siswa}</td>
+                <td className="text-center px-3 py-2 text-[#6B7280] text-xs sticky left-0 bg-inherit z-[1]">{i + 1}</td>
+                <td className="px-3 py-2 font-medium text-[#1A1A2E] sticky left-12 bg-inherit z-[1]">{siswa.nama_siswa}</td>
                 {subjects.map((mapel) => {
                   const key = getCellKey(siswa.id_siswa, mapel.id_mapel);
                   const loading = loadingCells.has(key) || loadingColumns.has(mapel.id_mapel);
@@ -280,10 +280,10 @@ export default function MapelSiswaGrid({
                           disabled={loading}
                           onChange={(e) => handleToggle(siswa.id_siswa, mapel.id_mapel, e.target.checked)}
                           aria-label={`${siswa.nama_siswa} - ${mapel.nama_mapel}`}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-wait"
+                          className="w-4 h-4 text-[#DC2626] border-gray-300 rounded focus:ring-red-500/20 disabled:opacity-50 disabled:cursor-wait"
                         />
                         {loading && (
-                          <svg className="w-3 h-3 ml-1 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+                          <svg className="w-3 h-3 ml-1 animate-spin text-[#DC2626]" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                           </svg>
@@ -313,7 +313,7 @@ function KelasDropdown({
     <select
       value={selectedKelasId}
       onChange={(e) => router.push(`/tu/mapel-siswa?kelas=${e.target.value}`)}
-      className="w-full md:w-96 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+      className="w-full md:w-96 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all"
     >
       <option value="">Pilih Kelas</option>
       {kelasList.map((k) => (

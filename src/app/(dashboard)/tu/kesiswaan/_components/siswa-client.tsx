@@ -77,10 +77,10 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg flex items-center justify-between">
-          <h5 className="font-semibold">Daftar Siswa</h5>
-          <button onClick={openTambah} className="bg-white text-blue-600 px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-50 transition">
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between">
+          <h5 className="font-semibold text-[#1A1A2E]">Daftar Siswa</h5>
+          <button onClick={openTambah} className="bg-[#DC2626] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
             + Tambah Siswa
           </button>
         </div>
@@ -91,14 +91,14 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
               placeholder="Cari data..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-              className="w-full md:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full md:w-64 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all"
             />
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Tampil:</span>
               <select
                 value={perPage}
                 onChange={(e) => { setPerPage(Number(e.target.value)); setPage(0); }}
-                className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all"
               >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
@@ -111,9 +111,9 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b">
+                <tr className="border-b border-[rgba(0,0,0,0.04)]">
                   {COLUMNS.map((col) => (
-                    <th key={col.key} className="text-left px-4 py-3 font-medium text-gray-600">
+                    <th key={col.key} className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">
                       {col.label}
                     </th>
                   ))}
@@ -122,24 +122,24 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
               <tbody>
                 {paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan={COLUMNS.length} className="text-center py-8 text-gray-400">
+                    <td colSpan={COLUMNS.length} className="text-center py-16 text-[#6B7280]">
                       Tidak ada data
                     </td>
                   </tr>
                 ) : (
                   paginatedData.map((row, i) => (
-                    <tr key={row.id_siswa ?? i} className="border-b hover:bg-gray-50 transition">
+                    <tr key={row.id_siswa ?? i} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                       {COLUMNS.map((col) => {
                         if (col.key === '_aksi') {
                           return (
                             <td key={col.key} className="px-4 py-3">
                               <div className="flex items-center gap-2">
-                                <button onClick={() => openEdit(row)} className="text-blue-600 hover:text-blue-800 transition" title="Edit">
+                                <button onClick={() => openEdit(row)} className="text-[#DC2626]/70 hover:text-[#DC2626] transition-colors" title="Edit">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                   </svg>
                                 </button>
-                                <button onClick={() => openHapus(row)} className="text-red-500 hover:text-red-700 transition" title="Hapus">
+                                <button onClick={() => openHapus(row)} className="text-[#DC2626]/70 hover:text-[#DC2626] transition-colors" title="Hapus">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                   </svg>
@@ -160,7 +160,7 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
               </tbody>
             </table>
           </div>
-          <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+          <div className="mt-3 flex items-center justify-between text-xs text-[#6B7280]">
             <span>Total: {filtered.length} data</span>
             {totalPages > 1 && (
               <div className="flex items-center gap-1">

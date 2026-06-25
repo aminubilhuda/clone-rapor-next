@@ -15,7 +15,6 @@ export default async function DeskripsiRaporPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Deskripsi Rapor</h4>
       <DeskripsiClient deskripsi={deskripsi} />
     </div>
   );

@@ -67,86 +67,86 @@ export default function SidebarGuru() {
     <>
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 bg-black/50 z-20 transition-opacity lg:hidden ${collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/40 z-20 transition-opacity duration-300 lg:hidden ${collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setCollapsed(false)}
       />
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-30 h-full w-64 bg-slate-900 text-white flex flex-col transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${collapsed ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed top-0 left-0 z-30 h-full w-64 bg-[#0F0F1A] text-white flex flex-col transform transition-transform duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto ${collapsed ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-700">
-          <Link href="/guru" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="h-16 flex items-center px-6 border-b border-white/[0.06]">
+          <Link href="/guru" className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-sm font-bold">Guru/Wali</h1>
-              <p className="text-xs text-slate-400">E-Rapor SMK</p>
+              <h1 className="text-sm font-semibold tracking-tight">Guru/Wali</h1>
+              <p className="text-[11px] text-white/40">E-Rapor SMK</p>
             </div>
           </Link>
         </div>
 
         {/* Profile */}
-        <div className="px-6 py-4 border-b border-slate-700 flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-600 rounded-full flex items-center justify-center">
-            <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-3">
+          <div className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center">
+            <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate" id="sidebar-user-name">Guru</p>
-            <p className="text-xs text-emerald-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block" />
+            <p className="text-[11px] text-emerald-400/80 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-emerald-400/80 rounded-full inline-block" />
               online
             </p>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="text-slate-400 hover:text-red-400 transition"
+            className="text-white/30 hover:text-red-400/80 transition-colors"
             title="Logout"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
           </button>
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
           {menuItems.map((group) => (
             <div key={group.section}>
               <button
                 onClick={() => toggleSection(group.section)}
-                className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider hover:text-white transition"
+                className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-semibold text-white/30 uppercase tracking-widest hover:text-white/60 transition-colors"
               >
                 {group.section}
                 <svg
-                  className={`w-4 h-4 transition-transform ${expandedSections[group.section] !== false ? 'rotate-90' : ''}`}
+                  className={`w-3 h-3 transition-transform duration-200 ${expandedSections[group.section] !== false ? 'rotate-90' : ''}`}
                   fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
               {(expandedSections[group.section] !== false) && (
-                <div className="space-y-1 mt-1">
+                <div className="space-y-0.5 mt-0.5">
                   {group.items.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                         isActive(item.href)
-                          ? 'bg-emerald-600 text-white'
-                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                          ? 'bg-red-500/10 text-red-400 shadow-[inset_3px_0_0_rgba(239,68,68,0.6)]'
+                          : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
                       }`}
                     >
-                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 flex-shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
                       </svg>
-                      <span>{item.label}</span>
+                      <span className="text-sm">{item.label}</span>
                     </Link>
                   ))}
                 </div>
@@ -159,9 +159,9 @@ export default function SidebarGuru() {
       {/* Mobile toggle button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="fixed top-4 left-4 z-40 lg:hidden bg-slate-900 text-white p-2 rounded-lg"
+        className="fixed top-4 left-4 z-40 lg:hidden bg-[#0F0F1A] text-white p-2 rounded-lg premium-shadow"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={collapsed ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
         </svg>
       </button>

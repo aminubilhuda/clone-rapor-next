@@ -15,7 +15,6 @@ export default async function KompetensiPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Kompetensi Keahlian</h4>
       <KompetensiClient kompetensi={kompetensi} />
     </div>
   );

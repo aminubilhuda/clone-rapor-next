@@ -16,7 +16,7 @@ export default function DashboardLayout({ children, sidebar }: DashboardLayoutPr
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <main className="flex-1 overflow-y-auto bg-[#F8F9FB] p-6">
           {children}
         </main>
       </div>

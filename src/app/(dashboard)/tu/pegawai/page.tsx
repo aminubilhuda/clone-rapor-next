@@ -38,7 +38,6 @@ export default async function PegawaiPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Data Pegawai / Tenaga Pendidik</h4>
       <PegawaiClient
         pegawai={pegawai}
         refJabatan={ref.jabatan}

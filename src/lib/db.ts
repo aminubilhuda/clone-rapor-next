@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   password: process.env.DB_PASS || 'REDACTED_DB-PASS',
   database: process.env.DB_NAME || 'abdinega_db_raporkm',
   waitForConnections: true,
-  connectionLimit: 40,
+  connectionLimit: 10,
 });
 
 export { pool };

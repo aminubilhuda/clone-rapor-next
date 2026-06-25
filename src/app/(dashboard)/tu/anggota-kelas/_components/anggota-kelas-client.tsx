@@ -2,43 +2,32 @@
 
 import { useState } from 'react';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateAnggotaKelas, deleteAnggotaKelas } from '@/lib/actions/anggota-kelas-actions';
-import ModalAnggotaKelas from './modal-anggota-kelas';
-import ModalHapus from './modal-hapus-anggota-kelas';
+import ModalTransferAnggotaKelas from './modal-transfer-anggota-kelas';
 
 const COLUMNS = [
-  { key: '_no', label: 'NO' },
+  { key: '_no', label: 'No.' },
   { key: 'nama_kelas', label: 'Kelas' },
-  { key: 'nama_siswa', label: 'Nama Siswa' },
-  { key: 'nis', label: 'NIS' },
-  { key: 'nisn', label: 'NISN' },
-  { key: 'tingkat', label: 'Tingkat' },
-  { key: 'status_label', label: 'Status' },
+  { key: 'jumlah_anggota', label: 'Jumlah Anggota' },
   { key: '_aksi', label: 'Aksi' },
 ];
 
 interface AnggotaKelasClientProps {
   data: any[];
-  refKelas: any[];
   refSiswa: any[];
+  anggotaKelas: any[];
 }
 
-export default function AnggotaKelasClient({ data, refKelas, refSiswa }: AnggotaKelasClientProps) {
+export default function AnggotaKelasClient({ data, refSiswa, anggotaKelas }: AnggotaKelasClientProps) {
   const { showToast } = useToast();
 
   const [search, setSearch] = useState('');
-  const [kelasFilter, setKelasFilter] = useState('');
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(10);
+  const [modalTransfer, setModalTransfer] = useState(false);
+  const [selected, setSelected] = useState<any | null>(null);
 
-  const byKelas = kelasFilter
-    ? data.filter((row) => row.id_kelas === +kelasFilter)
-    : data;
-
-  const filtered = byKelas.filter((row) =>
-    COLUMNS.filter((c) => c.key !== '_aksi').some((col) =>
-      String(row[col.key] ?? '').toLowerCase().includes(search.toLowerCase())
-    )
+  const filtered = data.filter((row) =>
+    String(row.nama_kelas ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
   const actualPerPage = perPage === 0 ? filtered.length : perPage;
@@ -46,70 +35,33 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
   const safePage = Math.min(page, totalPages - 1);
   const paginatedData = filtered.slice(safePage * actualPerPage, (safePage + 1) * actualPerPage);
 
-  const [modalEdit, setModalEdit] = useState(false);
-  const [modalHapus, setModalHapus] = useState(false);
-  const [selected, setSelected] = useState<any | null>(null);
-
-  const openTambah = () => { setSelected(null); setModalEdit(true); };
-  const openEdit = (row: any) => { setSelected(row); setModalEdit(true); };
-  const openHapus = (row: any) => { setSelected(row); setModalHapus(true); };
-  const closeModals = () => { setModalEdit(false); setModalHapus(false); setSelected(null); };
-
-  const handleSave = async (formData: FormData) => {
-    const result = await updateAnggotaKelas(formData);
-    if (result.success) {
-      showToast('Data anggota kelas berhasil disimpan!', 'success');
-      closeModals();
-    } else {
-      showToast(result.error || 'Gagal menyimpan data!', 'error');
-    }
+  const openAnggota = (row: any) => {
+    setSelected(row);
+    setModalTransfer(true);
   };
-
-  const handleDelete = async () => {
-    if (!selected) return;
-    const result = await deleteAnggotaKelas(selected.id_siswa_kelas);
-    if (result.success) {
-      showToast('Data anggota kelas berhasil dihapus!', 'success');
-      closeModals();
-    } else {
-      showToast(result.error || 'Gagal menghapus data!', 'error');
-    }
-  };
+  const closeModals = () => { setModalTransfer(false); setSelected(null); };
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg flex items-center justify-between">
-          <h5 className="font-semibold">Daftar Anggota Kelas</h5>
-          <button onClick={openTambah} className="bg-white text-blue-600 px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-50 transition">
-            + Tambah Anggota
-          </button>
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
+          <h3 className="font-semibold text-[#1A1A2E]">Daftar Anggota Kelas</h3>
         </div>
         <div className="p-4">
           <div className="mb-4 flex items-center gap-4 flex-wrap">
             <input
               type="text"
-              placeholder="Cari data..."
+              placeholder="Cari kelas..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-              className="w-full md:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full md:w-64 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all"
             />
-            <select
-              value={kelasFilter}
-              onChange={(e) => { setKelasFilter(e.target.value); setPage(0); }}
-              className="border border-gray-300 rounded px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none"
-            >
-              <option value="">Semua Kelas</option>
-              {refKelas.map((k: any) => (
-                <option key={k.id_kelas} value={k.id_kelas}>{k.nama_kelas}</option>
-              ))}
-            </select>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-xs text-[#6B7280]">
               <span>Tampil:</span>
               <select
                 value={perPage}
                 onChange={(e) => { setPerPage(Number(e.target.value)); setPage(0); }}
-                className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all"
               >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
@@ -122,41 +74,35 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b">
+                <tr className="border-b border-[rgba(0,0,0,0.04)]">
                   {COLUMNS.map((col) => (
-                    <th key={col.key} className="text-left px-4 py-3 font-medium text-gray-600">{col.label}</th>
+                    <th key={col.key} className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">{col.label}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {paginatedData.length === 0 ? (
                   <tr>
-                    <td colSpan={COLUMNS.length} className="text-center py-8 text-gray-400">Tidak ada data</td>
+                    <td colSpan={COLUMNS.length} className="text-center py-16 text-[#6B7280]">Tidak ada data</td>
                   </tr>
                 ) : (
                   paginatedData.map((row, i) => (
-                    <tr key={row.id_siswa_kelas} className="border-b hover:bg-gray-50 transition">
+                    <tr key={row.id_kelas} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                       {COLUMNS.map((col) => {
+                        if (col.key === '_no') {
+                          return <td key={col.key} className="px-4 py-3">{safePage * actualPerPage + i + 1}</td>;
+                        }
                         if (col.key === '_aksi') {
                           return (
                             <td key={col.key} className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <button onClick={() => openEdit(row)} className="text-blue-600 hover:text-blue-800 transition" title="Edit">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                </button>
-                                <button onClick={() => openHapus(row)} className="text-red-500 hover:text-red-700 transition" title="Hapus">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                </button>
-                              </div>
+                              <button onClick={() => openAnggota(row)} className="inline-flex items-center gap-1.5 text-sm font-medium text-white bg-[#DC2626] rounded-xl px-3 py-2 hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                Kelola Anggota
+                              </button>
                             </td>
                           );
-                        }
-                        if (col.key === '_no') {
-                          return <td key={col.key} className="px-4 py-3">{safePage * actualPerPage + i + 1}</td>;
                         }
                         return <td key={col.key} className="px-4 py-3">{row[col.key] ?? '-'}</td>;
                       })}
@@ -166,7 +112,7 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
               </tbody>
             </table>
           </div>
-          <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+          <div className="mt-3 flex items-center justify-between text-xs text-[#6B7280]">
             <span>Total: {filtered.length} data</span>
             {totalPages > 1 && (
               <div className="flex items-center gap-1">
@@ -181,20 +127,12 @@ export default function AnggotaKelasClient({ data, refKelas, refSiswa }: Anggota
         </div>
       </div>
 
-      <ModalAnggotaKelas
-        open={modalEdit}
+      <ModalTransferAnggotaKelas
+        open={modalTransfer}
         onClose={closeModals}
-        anggota={selected}
-        refKelas={refKelas}
-        refSiswa={refSiswa}
-        onSave={handleSave}
-      />
-
-      <ModalHapus
-        open={modalHapus}
-        onClose={closeModals}
-        anggota={selected}
-        onConfirm={handleDelete}
+        kelas={selected}
+        semuaSiswa={refSiswa}
+        anggotaKelas={anggotaKelas}
       />
     </>
   );

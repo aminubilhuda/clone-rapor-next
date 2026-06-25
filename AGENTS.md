@@ -29,3 +29,11 @@ Dengan filter sidebar: pakai cookie `view_tahun`/`view_semester`.
 Server actions yang INSERT cukup SELECT tahun/semester langsung dari tabel `sekolah` — record baru selalu di periode aktif.
 
 Tabel **master** (tanpa tahun/semester): `kelas`, `users`, `mapel`, `eskul`, `kompetensi_keahlian`, `deskripsi_rapor`, `piket_harian` — gak perlu filter.
+
+## Post-Change Routine — Wajib
+
+Setelah selesai perubahan code (apapun), jalankan 3 langkah ini secara berurutan:
+
+1. **Build** — `npm run build` sampai 0 error
+2. **Restart dev server** — `taskkill /F /IM node.exe`, lalu start ulang `npm run dev`, tunggu 8 detik
+3. **Browser MCP test** — login (admin/admin123), screenshot halaman yang diubah, verifikasi tidak ada error visual atau console error

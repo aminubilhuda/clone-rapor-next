@@ -50,3 +50,18 @@ export async function deleteMapel(id: number) {
     return { success: false, error: e.message || 'Gagal menghapus data' } as const;
   }
 }
+
+export async function updateUrutMapel(idMapel: number, urut: number) {
+  const session = await auth();
+  if (!session?.user || session.user.jabatan !== 2) {
+    return { success: false, error: 'Unauthorized' } as const;
+  }
+
+  try {
+    await pool.query('UPDATE mapel SET urut = ? WHERE id_mapel = ?', [urut, idMapel]);
+    revalidatePath('/tu/mapel');
+    return { success: true } as const;
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Gagal mengupdate urutan' } as const;
+  }
+}

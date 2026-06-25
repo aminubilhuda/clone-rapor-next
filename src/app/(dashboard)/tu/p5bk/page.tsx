@@ -40,7 +40,6 @@ export default async function P5BKPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">P5BK</h4>
       <P5BKClient data={data} refKelas={refKelas} refTema={refTema} refUser={refUser} />
     </div>
   );

@@ -46,7 +46,6 @@ export default async function LegerNilaiPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Leger Nilai</h4>
       <LegerClient data={data} refKelas={kelas} refNilaiKelas={nilaiKelas} />
     </div>
   );

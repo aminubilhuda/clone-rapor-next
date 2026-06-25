@@ -25,12 +25,12 @@ export default function ModalDeskripsi({ open, onClose, deskripsi, onSave }: Mod
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 animate-modal-in">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-lg mx-4 animate-modal-in border border-[rgba(0,0,0,0.04)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
+          <h3 className="text-lg font-semibold text-[#1A1A2E]">
             {isEdit ? 'Edit Deskripsi Rapor' : 'Tambah Deskripsi Rapor'}
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
@@ -45,31 +45,31 @@ export default function ModalDeskripsi({ open, onClose, deskripsi, onSave }: Mod
 
           <div className="px-6 py-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kriteria</label>
-              <input name="kriteria" defaultValue={deskripsi?.kriteria ?? ''} required maxLength={15} className="w-full border rounded px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Kriteria</label>
+              <input name="kriteria" defaultValue={deskripsi?.kriteria ?? ''} required maxLength={15} className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
-              <input name="keterangan" defaultValue={deskripsi?.keterangan ?? ''} required maxLength={50} className="w-full border rounded px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Keterangan</label>
+              <input name="keterangan" defaultValue={deskripsi?.keterangan ?? ''} required maxLength={50} className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contoh</label>
-              <textarea name="contoh" defaultValue={deskripsi?.contoh ?? ''} rows={3} className="w-full border rounded px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Contoh</label>
+              <textarea name="contoh" defaultValue={deskripsi?.contoh ?? ''} rows={3} className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nilai</label>
-              <input name="nilai" type="number" defaultValue={deskripsi?.nilai ?? ''} required min={0} max={100} className="w-full border rounded px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Nilai</label>
+              <input name="nilai" type="number" defaultValue={deskripsi?.nilai ?? ''} required min={0} max={100} className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all" />
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-[rgba(0,0,0,0.04)]">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-[#1A1A2E]/60 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.06)] active:scale-[0.98] transition-all">
               Batal
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition"
+              className="px-4 py-2 text-sm font-medium text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-[0.98] disabled:opacity-50 transition-all"
             >
               {saving ? 'Menyimpan...' : 'Simpan'}
             </button>

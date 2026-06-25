@@ -118,14 +118,14 @@ export default function LegerClient({
 
   return (
     <div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="mb-5">
+        <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">
           Pilih Kelas
         </label>
         <select
           value={selectedKelas}
           onChange={(e) => setSelectedKelas(e.target.value)}
-          className="w-full max-w-xs border border-gray-300 rounded-md px-3 py-2 text-sm"
+          className="w-full max-w-xs bg-white border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm text-[#1A1A2E] focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/40 transition-all premium-shadow"
         >
           <option value="">-- Pilih Kelas --</option>
           {refKelas.map((k) => (
@@ -137,61 +137,61 @@ export default function LegerClient({
       </div>
 
       {!selectedKelas ? (
-        <p className="text-gray-400 text-center py-8">
-          Pilih kelas untuk melihat Leger Nilai.
-        </p>
+        <div className="text-center py-16">
+          <p className="text-[#6B7280]">Pilih kelas untuk melihat Leger Nilai.</p>
+        </div>
       ) : students.length === 0 ? (
-        <p className="text-gray-400 text-center py-8">
-          Belum ada data nilai untuk kelas {selectedKelasName}.
-        </p>
+        <div className="text-center py-16">
+          <p className="text-[#6B7280]">Belum ada data nilai untuk kelas {selectedKelasName}.</p>
+        </div>
       ) : (
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-x-auto">
-          <table className="w-full text-sm whitespace-nowrap">
+        <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] overflow-x-auto">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 border-b">
-                <th className="text-left px-3 py-2 font-medium text-gray-600 w-10">
+              <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                <th className="text-left px-4 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider w-10">
                   No
                 </th>
-                <th className="text-left px-3 py-2 font-medium text-gray-600 min-w-[180px]">
+                <th className="text-left px-4 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider min-w-[180px]">
                   Nama Siswa
                 </th>
                 {mapels.map((m) => (
                   <th
                     key={m.id_mapel}
-                    className="text-center px-2 py-2 font-medium text-gray-600 min-w-[60px]"
+                    className="text-center px-3 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider min-w-[60px]"
                     title={m.nama_mapel}
                   >
                     {m.singkatan || m.nama_mapel}
                   </th>
                 ))}
-                <th className="text-center px-3 py-2 font-medium text-gray-600 w-20">
+                <th className="text-center px-4 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider w-20">
                   Rata-rata
                 </th>
-                <th className="text-center px-3 py-2 font-medium text-gray-600 w-14">
+                <th className="text-center px-4 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider w-14">
                   Rank
                 </th>
               </tr>
             </thead>
             <tbody>
-              {rankedStudents.map((siswa) => (
-                <tr key={siswa.id_siswa} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-1.5 text-gray-500">{siswa.rank}</td>
-                  <td className="px-3 py-1.5 font-medium">
+              {rankedStudents.map((siswa, idx) => (
+                <tr key={siswa.id_siswa} className="border-b border-[rgba(0,0,0,0.03)] transition-colors hover:bg-[#F8F9FB]">
+                  <td className="px-4 py-2.5 text-[#6B7280] text-xs">{idx + 1}</td>
+                  <td className="px-4 py-2.5 font-medium text-[#1A1A2E]">
                     {siswa.nama_siswa}
                   </td>
                   {mapels.map((m) => {
                     const val =
                       nilaiLookup[`${siswa.id_siswa}_${m.id_mapel}`];
                     return (
-                      <td key={m.id_mapel} className="px-2 py-1.5 text-center">
-                        {val || '-'}
+                      <td key={m.id_mapel} className="px-3 py-2.5 text-center text-[#1A1A2E]">
+                        {val || <span className="text-[#6B7280]/40">&mdash;</span>}
                       </td>
                     );
                   })}
-                  <td className="px-3 py-1.5 text-center font-semibold">
+                  <td className="px-4 py-2.5 text-center font-semibold text-[#1A1A2E]">
                     {siswa.avg ? siswa.avg.toFixed(2) : '-'}
                   </td>
-                  <td className="px-3 py-1.5 text-center font-bold text-blue-600">
+                  <td className="px-4 py-2.5 text-center font-bold text-red-500/80">
                     {siswa.rank}
                   </td>
                 </tr>

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Outfit } from 'next/font/google';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast-provider';
 
-const inter = Inter({ subsets: ['latin'] });
+const outfit = Outfit({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'E-Rapor SMK Abdi Negara Tuban',
@@ -21,7 +21,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="h-full antialiased">
-      <body className={`${inter.className} min-h-full flex flex-col`}>
+      <body className={`${outfit.className} min-h-full flex flex-col`}>
         <SessionProvider session={session}>
           <ToastProvider>
             {children}

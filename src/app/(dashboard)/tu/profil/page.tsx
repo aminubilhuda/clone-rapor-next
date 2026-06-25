@@ -30,38 +30,35 @@ export default async function ProfilPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">
-        Profile Sekolah
-        {sekolah.is_historical_view && (
-          <span className="ml-2 text-sm text-yellow-600 font-normal">
-            (Histori: {sem?.semester} {tahun?.tahun_pelajaran})
-          </span>
-        )}
-      </h4>
-
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg font-semibold">
-          Data Sekolah
+      {sekolah.is_historical_view && (
+        <div className="mb-4 text-sm text-yellow-600 bg-yellow-50 rounded-xl px-4 py-2 border border-yellow-200">
+          Histori: {sem?.semester} {tahun?.tahun_pelajaran}
         </div>
-        <div className="p-5">
+      )}
+
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
+          <h3 className="font-semibold text-[#1A1A2E]">Data Sekolah</h3>
+        </div>
+        <div className="p-6">
           <ProfilForm sekolah={sekolah} kepala={kepala} />
         </div>
       </div>
 
       {kepala && (
-        <div className="bg-white rounded-lg shadow border border-gray-200 mt-6">
-          <div className="bg-green-600 text-white px-5 py-3 rounded-t-lg font-semibold">
-            Kepala Sekolah
+        <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] mt-6">
+          <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
+            <h3 className="font-semibold text-[#1A1A2E]">Kepala Sekolah</h3>
           </div>
-          <div className="p-5">
+          <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Kepala Sekolah</label>
-                <input defaultValue={kepala.nama} className="w-full border rounded px-3 py-2 text-sm" />
+                <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Nama Kepala Sekolah</label>
+                <input defaultValue={kepala.nama} className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">NIP</label>
-                <input defaultValue={kepala.nip} className="w-full border rounded px-3 py-2 text-sm" />
+                <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">NIP</label>
+                <input defaultValue={kepala.nip} className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all" />
               </div>
             </div>
           </div>
