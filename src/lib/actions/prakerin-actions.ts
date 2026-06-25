@@ -59,3 +59,54 @@ export async function deletePrakerin(id: number) {
     return { success: false, error: e.message || 'Gagal menghapus data' } as const;
   }
 }
+
+export async function importPrakerin(rows: {
+  mitra: string;
+  lokasi?: string;
+  tanggal_mulai?: string | null;
+  tanggal_akhir?: string | null;
+  instruktur?: string;
+}[]) {
+  const session = await auth();
+  if (!session?.user || session.user.jabatan !== 2) {
+    return { success: false, error: 'Unauthorized' } as const;
+  }
+
+  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
+  const sekolah = sekolahRows[0];
+  const tahun = sekolah?.tahun || 1;
+  const semester = sekolah?.semester || 1;
+
+  let count = 0;
+  const errors: string[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    if (!r.mitra) { errors.push(`Baris ${i + 1}: mitra wajib diisi`); continue; }
+    try {
+      const [existing]: any = await pool.query(
+        'SELECT id_prakerin FROM prakerin WHERE mitra = ? AND tahun = ? AND semester = ?',
+        [r.mitra, tahun, semester]
+      );
+      if (existing.length > 0) {
+        await pool.query(
+          `UPDATE prakerin SET lokasi = ?, tanggal_mulai = ?, tanggal_akhir = ?, instruktur = ?
+           WHERE id_prakerin = ?`,
+          [r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null, existing[0].id_prakerin]
+        );
+      } else {
+        await pool.query(
+          `INSERT INTO prakerin (tahun, semester, mitra, lokasi, tanggal_mulai, tanggal_akhir, instruktur)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [tahun, semester, r.mitra, r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null]
+        );
+      }
+      count++;
+    } catch (e: any) {
+      errors.push(`Baris ${i + 1} (${r.mitra}): ${e.message}`);
+    }
+  }
+
+  revalidatePath('/tu/prakerin');
+  return { success: errors.length === 0, count, errors } as const;
+}

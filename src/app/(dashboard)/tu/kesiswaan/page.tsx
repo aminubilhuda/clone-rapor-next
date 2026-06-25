@@ -69,7 +69,6 @@ export default async function KesiswaanPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Data Siswa (Kesiswaan)</h4>
       <SiswaClient
         siswa={siswa}
         refKelamin={ref.kelamin}

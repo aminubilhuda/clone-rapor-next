@@ -7,20 +7,13 @@ import AnggotaKelasClient from './_components/anggota-kelas-client';
 async function getData() {
   const sekolah = await getSekolahWithFilter();
   const [rows]: any = await pool.query(`
-    SELECT sk.*, k.nama_kelas, s.nama_siswa, s.nis, s.nisn, t.tingkat,
-      CASE WHEN sk.status = 1 THEN 'Aktif' ELSE 'Nonaktif' END AS status_label
-    FROM siswa_kelas sk
-    JOIN kelas k ON sk.id_kelas = k.id_kelas
-    JOIN siswa s ON sk.id_siswa = s.id_siswa
-    JOIN tingkat t ON sk.id_tingkat = t.id_tingkat
-    WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL
-    ORDER BY sk.id_siswa_kelas DESC
+    SELECT k.id_kelas, k.nama_kelas, COUNT(sk.id_siswa_kelas) AS jumlah_anggota
+    FROM kelas k
+    LEFT JOIN siswa_kelas sk ON k.id_kelas = sk.id_kelas
+      AND sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL
+    GROUP BY k.id_kelas, k.nama_kelas
+    ORDER BY k.nama_kelas ASC
   `, [sekolah.tahun, sekolah.semester]);
-  return rows;
-}
-
-async function getKelas() {
-  const [rows]: any = await pool.query('SELECT id_kelas, nama_kelas FROM kelas ORDER BY nama_kelas ASC');
   return rows;
 }
 
@@ -29,15 +22,25 @@ async function getSiswa() {
   return rows;
 }
 
+async function getAnggotaKelas() {
+  const sekolah = await getSekolahWithFilter();
+  const [rows]: any = await pool.query(`
+    SELECT sk.id_siswa_kelas, sk.id_kelas, sk.id_siswa, s.nama_siswa, s.nisn
+    FROM siswa_kelas sk
+    JOIN siswa s ON sk.id_siswa = s.id_siswa
+    WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL
+  `, [sekolah.tahun, sekolah.semester]);
+  return rows;
+}
+
 export default async function AnggotaKelasPage() {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) redirect('/login');
-  const [data, refKelas, refSiswa] = await Promise.all([getData(), getKelas(), getSiswa()]);
+  const [data, refSiswa, anggotaKelas] = await Promise.all([getData(), getSiswa(), getAnggotaKelas()]);
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Anggota Kelas</h4>
-      <AnggotaKelasClient data={data} refKelas={refKelas} refSiswa={refSiswa} />
+      <AnggotaKelasClient data={data} refSiswa={refSiswa} anggotaKelas={anggotaKelas} />
     </div>
   );
 }

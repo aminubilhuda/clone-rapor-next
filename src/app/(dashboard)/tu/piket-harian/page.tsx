@@ -31,7 +31,6 @@ export default async function PiketHarianPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Piket Harian</h4>
       <PiketHarianClient data={data} refHarian={refHarian} refUser={refUser} />
     </div>
   );

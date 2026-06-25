@@ -36,7 +36,6 @@ export default async function NaikKelasPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Naik Kelas</h4>
       <NaikKelasClient data={data} refKelas={refKelas} refTingkat={refTingkat} />
     </div>
   );

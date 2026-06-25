@@ -30,29 +30,28 @@ export default function LoginPage() {
       return;
     }
 
-    // Refresh to let middleware handle redirect
     router.refresh();
-    // Fallback: redirect based on role via page
     window.location.href = '/';
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-[#F8F9FB]">
+      <div className="w-full max-w-sm">
+        <div className="bg-white rounded-2xl p-8 premium-shadow-lg border border-[rgba(0,0,0,0.04)]">
+          {/* Brand */}
           <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H10m9.364-7.364A9 9 0 1112 3a9 9 0 017.364 4.636z" />
+            <div className="mx-auto w-12 h-12 rounded-xl bg-[#1A1A2E] flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">E-Rapor SMK</h2>
-            <p className="text-gray-500 mt-1">Silahkan login untuk melanjutkan</p>
+            <h2 className="text-xl font-bold text-[#1A1A2E] tracking-tight">E-Rapor SMK</h2>
+            <p className="text-sm text-[#6B7280] mt-1">Masuk ke akun Anda</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="username" className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">
                 Username
               </label>
               <input
@@ -61,13 +60,13 @@ export default function LoginPage() {
                 type="text"
                 required
                 autoFocus
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition"
+                className="w-full px-3.5 py-2.5 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl text-sm text-[#1A1A2E] placeholder-[#6B7280]/50 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/40 transition-all"
                 placeholder="Masukkan username"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">
                 Password
               </label>
               <input
@@ -75,13 +74,13 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition"
+                className="w-full px-3.5 py-2.5 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl text-sm text-[#1A1A2E] placeholder-[#6B7280]/50 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/40 transition-all"
                 placeholder="Masukkan password"
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-200">
+              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl border border-red-100">
                 {error}
               </div>
             )}
@@ -89,7 +88,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center"
+              className="w-full py-2.5 px-4 bg-[#DC2626] hover:bg-[#B91C1C] active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 text-white font-medium rounded-xl transition-all duration-150 flex items-center justify-center"
             >
               {loading ? (
                 <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
@@ -102,7 +101,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-xs text-gray-400">
+          <div className="mt-8 text-center text-xs text-[#6B7280]/60">
             &copy; {new Date().getFullYear()} E-Rapor SMK Abdi Negara Tuban
           </div>
         </div>

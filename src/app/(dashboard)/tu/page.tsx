@@ -120,70 +120,61 @@ export default async function TUDashboardPage() {
   };
 
   return (
-    <div>
-      <h4 className="text-xl font-semibold mb-6">Dashboard Tata Usaha</h4>
-
-      {/* Stat Cards Row 1 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="space-y-6">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <CardStat icon="school" value={stats.npsn} label="NPSN / Profil Sekolah" color="green" />
         <CardStat icon="users" value={stats.jmlGuru} label="Tenaga Pendidik" color="blue" />
         <CardStat icon="students" value={stats.jmlSiswa} label="Peserta Didik" color="yellow" />
         <CardStat icon="database" value={stats.jmlKelas} label="Kelas / Rombel" color="blue" />
       </div>
 
-      {/* Stat Cards Row 2 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <CardStat icon="book" value={stats.jmlMapel} label="Mata Pelajaran" color="green" />
         <CardStat icon="building" value={stats.jmlPrakerin} label="Praktik Kerja Industri" color="blue" />
         <CardStat icon="star" value={stats.jmlEskul} label="Ekstrakurikuler" color="yellow" />
         <CardStat icon="database" value={stats.jmlJurusan} label="Jurusan" color="blue" />
       </div>
 
-      {/* Stat Cards Row 3 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <CardStat icon="users" value={stats.jmlMutasiMasuk} label="Mutasi Masuk" color="green" />
         <CardStat icon="users" value={stats.jmlMutasiKeluar} label="Mutasi Keluar" color="blue" />
         <CardStat icon="users" value={stats.jmlLulusan} label="Lulusan" color="yellow" />
       </div>
 
-      {/* Rapor Statistics Card */}
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg">
-          <h5 className="font-semibold flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Statistik Rapor
-            <small className="ml-auto text-blue-200">
-              Tahun {stats.tahunPelajaran} - Semester {stats.semester}
-            </small>
-          </h5>
+      {/* Rapor Statistics */}
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[rgba(0,0,0,0.04)] flex items-center justify-between">
+          <h5 className="font-semibold text-[#1A1A2E] text-sm">Statistik Rapor</h5>
+          <span className="text-xs text-[#6B7280]">
+            Tahun {stats.tahunPelajaran} - Semester {stats.semester}
+          </span>
         </div>
-        <div className="p-5">
+        <div className="p-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <div className="border rounded p-3 text-center bg-gray-50">
-              <div className="text-blue-600 text-xl font-bold mb-1">{stats.sudahDinilai}</div>
-              <small className="text-gray-500">Sudah Dinilai</small>
+            <div className="bg-[#F8F9FB] rounded-xl p-4 text-center">
+              <div className="text-lg font-bold text-red-500 mb-0.5">{stats.sudahDinilai}</div>
+              <div className="text-[11px] text-[#6B7280]">Sudah Dinilai</div>
             </div>
-            <div className="border rounded p-3 text-center bg-gray-50">
-              <div className="text-green-600 text-xl font-bold mb-1">{stats.rataNilai}</div>
-              <small className="text-gray-500">Rata-rata Nilai</small>
+            <div className="bg-[#F8F9FB] rounded-xl p-4 text-center">
+              <div className="text-lg font-bold text-emerald-600 mb-0.5">{stats.rataNilai}</div>
+              <div className="text-[11px] text-[#6B7280]">Rata-rata Nilai</div>
             </div>
-            <div className="border rounded p-3 text-center bg-gray-50">
-              <div className="text-yellow-600 text-xl font-bold mb-1">{stats.rataMid}</div>
-              <small className="text-gray-500">Rata-rata Tengah Semester</small>
+            <div className="bg-[#F8F9FB] rounded-xl p-4 text-center">
+              <div className="text-lg font-bold text-amber-600 mb-0.5">{stats.rataMid}</div>
+              <div className="text-[11px] text-[#6B7280]">Rata-rata Tengah Semester</div>
             </div>
-            <div className="border rounded p-3 text-center bg-gray-50">
-              <div className="text-red-600 text-xl font-bold mb-1">
+            <div className="bg-[#F8F9FB] rounded-xl p-4 text-center">
+              <div className="text-lg font-bold text-[#1A1A2E] mb-0.5">
                 {formatDate(stats.tanggalRapor)}
               </div>
-              <small className="text-gray-500">Pembagian Rapor</small>
+              <div className="text-[11px] text-[#6B7280]">Pembagian Rapor</div>
             </div>
-            <div className="border rounded p-3 text-center bg-gray-50">
-              <div className="text-gray-600 text-xl font-bold mb-1">
+            <div className="bg-[#F8F9FB] rounded-xl p-4 text-center">
+              <div className="text-lg font-bold text-[#1A1A2E] mb-0.5">
                 {formatDate(stats.tanggalMid)}
               </div>
-              <small className="text-gray-500">Pembagian Raport Tengah</small>
+              <div className="text-[11px] text-[#6B7280]">Pembagian Raport Tengah</div>
             </div>
           </div>
         </div>

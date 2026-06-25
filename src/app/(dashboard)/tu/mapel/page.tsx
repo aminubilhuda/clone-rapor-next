@@ -26,7 +26,6 @@ export default async function MapelPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Mata Pelajaran</h4>
       <MapelClient mapel={mapel} refKelompok={kelompok} />
     </div>
   );

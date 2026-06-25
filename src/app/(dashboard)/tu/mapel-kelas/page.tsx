@@ -40,7 +40,6 @@ export default async function MapelKelasPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Mapel Kelas</h4>
       <MapelKelasClient data={data} refKelas={refKelas} refMapel={refMapel} refUser={refUser} />
     </div>
   );

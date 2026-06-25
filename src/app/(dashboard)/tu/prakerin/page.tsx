@@ -29,7 +29,6 @@ export default async function PrakerinPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Prakerin</h4>
       <PrakerinClient prakerin={prakerin} users={users} />
     </div>
   );

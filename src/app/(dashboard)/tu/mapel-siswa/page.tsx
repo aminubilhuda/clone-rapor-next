@@ -87,7 +87,6 @@ export default async function MapelSiswaPage({
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Mapel Pilihan Siswa</h4>
       <MapelSiswaGrid
         kelasList={kelasList}
         selectedKelasId={kelas ? parseInt(kelas) : null}

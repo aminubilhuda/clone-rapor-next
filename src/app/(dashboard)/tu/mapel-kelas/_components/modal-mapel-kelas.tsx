@@ -37,12 +37,12 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 animate-modal-in">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-lg mx-4 animate-modal-in border border-[rgba(0,0,0,0.04)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
+          <h3 className="text-lg font-semibold text-[#1A1A2E]">
             {isEdit ? 'Edit Mapel Kelas' : 'Tambah Mapel Kelas'}
           </h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
@@ -57,14 +57,14 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
 
           <div className="px-6 py-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+              <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Kelas</label>
               {autoKelas ? (
                 <>
                   <input type="hidden" name="id_kelas" value={kelasFilter} />
                   <p className="text-sm text-gray-800 border border-gray-200 rounded px-3 py-2 bg-gray-50">{kelasNama}</p>
                 </>
               ) : (
-                <select name="id_kelas" defaultValue={mapelKelas?.id_kelas ?? ''} required className="w-full border rounded px-3 py-2 text-sm bg-white">
+                <select name="id_kelas" defaultValue={mapelKelas?.id_kelas ?? ''} required className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all">
                   <option value="">Pilih Kelas</option>
                   {refKelas.map((k: any) => (
                     <option key={k.id_kelas} value={k.id_kelas}>{k.nama_kelas}</option>
@@ -73,9 +73,9 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran {!isEdit && <span className="text-gray-400 font-normal">(bisa pilih banyak)</span>}</label>
+              <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Mata Pelajaran {!isEdit && <span className="text-gray-400 font-normal">(bisa pilih banyak)</span>}</label>
               {isEdit ? (
-                <select name="id_mapel" defaultValue={mapelKelas?.id_mapel ?? ''} required className="w-full border rounded px-3 py-2 text-sm bg-white">
+                <select name="id_mapel" defaultValue={mapelKelas?.id_mapel ?? ''} required className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all">
                   <option value="">Pilih Mapel</option>
                   {refMapel.map((m: any) => (
                     <option key={m.id_mapel} value={m.id_mapel}>{m.nama_mapel}</option>
@@ -88,7 +88,7 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
                     placeholder="Cari mapel..."
                     value={cariMapel}
                     onChange={(e) => setCariMapel(e.target.value)}
-                    className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm mb-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all mb-2"
                   />
                   <div className="max-h-48 overflow-y-auto border border-gray-200 rounded p-2 space-y-1">
                     {filteredMapel.map((m: any) => {
@@ -108,14 +108,14 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-[rgba(0,0,0,0.04)]">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-[#1A1A2E]/60 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.06)] active:scale-[0.98] transition-all">
               Batal
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition"
+              className="px-4 py-2 text-sm font-medium text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-[0.98] disabled:opacity-50 transition-all"
             >
               {saving ? 'Menyimpan...' : 'Simpan'}
             </button>

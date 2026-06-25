@@ -33,7 +33,6 @@ export default async function RombelPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Kelas / Rombel</h4>
       <RombelClient data={data} refUser={refUser} tahun={sekolah.tahun} semester={sekolah.semester} />
     </div>
   );

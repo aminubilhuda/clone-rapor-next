@@ -82,19 +82,17 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
   const tingkatOptions = refTingkat.map((t: any) => ({ value: t.id_tingkat, label: t.tingkat }));
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
-      <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg">
-        <h5 className="font-semibold">Naik Kelas</h5>
-      </div>
+    <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+      <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between"><h3 className="font-semibold text-[#1A1A2E]">Naik Kelas</h3></div>
       <div className="p-4">
 
         {/* Source class filter */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Kelas Asal</label>
+          <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1">Kelas Asal</label>
           <select
             value={sourceKelasId}
             onChange={(e) => setSourceKelasId(e.target.value)}
-            className="w-full md:w-96 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full md:w-96 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all"
           >
             <option value="">Pilih Kelas</option>
             {refKelas.map((k: any) => (
@@ -104,23 +102,23 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
         </div>
 
         {!sourceKelasId && (
-          <p className="text-gray-400 text-center py-8">Pilih kelas asal untuk memulai.</p>
+          <p className="text-[#6B7280] text-center py-16">Pilih kelas asal untuk memulai.</p>
         )}
 
         {sourceKelasId && filteredData.length === 0 && (
-          <p className="text-gray-400 text-center py-8">Tidak ada siswa di kelas ini.</p>
+          <p className="text-[#6B7280] text-center py-16">Tidak ada siswa di kelas ini.</p>
         )}
 
         {sourceKelasId && filteredData.length > 0 && (
           <>
             {/* Batch promote section */}
-            <div className="border border-blue-200 bg-blue-50 rounded-lg p-4 mb-6">
-              <h6 className="font-semibold text-blue-800 mb-3">
+            <div className="border border-[rgba(0,0,0,0.04)] bg-[#F8F9FB] rounded-xl p-4 mb-6">
+              <h6 className="font-semibold text-[#1A1A2E]/80 mb-3">
                 Promosikan {filteredData.length} Siswa
               </h6>
               <div className="flex items-end gap-4 flex-wrap">
                 <div>
-                  <label className="block text-xs text-blue-700 mb-1">Tingkat Tujuan</label>
+                  <label className="block text-xs text-[#1A1A2E]/80 mb-1">Tingkat Tujuan</label>
                   {isMaxTingkat ? (
                     <p className="text-sm text-yellow-700 py-1.5">
                       {sourceKelas?.nama_kelas} sudah di tingkat tertinggi (lulus).
@@ -129,7 +127,7 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
                     <select
                       value={destTingkatId}
                       onChange={(e) => { setDestTingkatId(e.target.value); setDestKelasId(''); }}
-                      className="border border-blue-300 rounded px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                      className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all"
                     >
                       <option value="">Pilih Tingkat</option>
                       {destTingkatList.map((t: any) => (
@@ -140,11 +138,11 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
                 </div>
                 {destTingkatId && !isMaxTingkat && (
                   <div>
-                    <label className="block text-xs text-blue-700 mb-1">Kelas Tujuan</label>
+                    <label className="block text-xs text-[#1A1A2E]/80 mb-1">Kelas Tujuan</label>
                     <select
                       value={destKelasId}
                       onChange={(e) => setDestKelasId(e.target.value)}
-                      className="border border-blue-300 rounded px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                      className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all"
                     >
                       <option value="">Pilih Kelas</option>
                       {destKelasList.map((k: any) => (
@@ -157,7 +155,7 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
                   <button
                     onClick={handlePromote}
                     disabled={promoting}
-                    className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                    className="bg-[#DC2626] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all disabled:opacity-50"
                   >
                     {promoting ? 'Memproses...' : 'Promosikan Semua'}
                   </button>
@@ -166,38 +164,38 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
             </div>
 
             {/* Individual edit section */}
-            <h6 className="font-semibold text-gray-700 mb-2">Edit Per Siswa</h6>
+            <h6 className="font-semibold text-[#1A1A2E]/80 mb-2">Edit Per Siswa</h6>
             <div className="mb-3">
               <input
                 type="text"
                 placeholder="Cari siswa..."
                 value={individualFilter}
                 onChange={(e) => setIndividualFilter(e.target.value)}
-                className="w-full md:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full md:w-64 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all"
               />
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="text-center px-3 py-3 font-medium text-gray-600 w-12">NO</th>
-                    <th className="text-left px-3 py-3 font-medium text-gray-600">NISN</th>
-                    <th className="text-left px-3 py-3 font-medium text-gray-600">Nama Siswa</th>
-                    <th className="text-left px-3 py-3 font-medium text-gray-600">Kelas</th>
-                    <th className="text-left px-3 py-3 font-medium text-gray-600">Tingkat</th>
-                    <th className="text-left px-3 py-3 font-medium text-gray-600">Status</th>
-                    <th className="text-left px-3 py-3 font-medium text-gray-600 w-64">Aksi</th>
+                  <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                    <th className="text-center px-3 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium w-12">NO</th>
+                    <th className="text-left px-3 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">NISN</th>
+                    <th className="text-left px-3 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Nama Siswa</th>
+                    <th className="text-left px-3 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Kelas</th>
+                    <th className="text-left px-3 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Tingkat</th>
+                    <th className="text-left px-3 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Status</th>
+                    <th className="text-left px-3 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium w-64">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {individualData.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-8 text-gray-400">Tidak ada data</td>
+                      <td colSpan={7} className="text-center py-16 text-[#6B7280]">Tidak ada data</td>
                     </tr>
                   ) : (
                     individualData.map((row: any, i: number) => (
-                      <tr key={row.id_siswa_kelas} className="border-b hover:bg-gray-50 transition">
-                        <td className="text-center px-3 py-3 text-gray-500">{i + 1}</td>
+                      <tr key={row.id_siswa_kelas} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
+                        <td className="text-center px-3 py-3 text-[#1A1A2E]/80">{i + 1}</td>
                         <td className="px-3 py-3">{row.nisn || '-'}</td>
                         <td className="px-3 py-3">{row.nama_siswa}</td>
                         <td className="px-3 py-3">{row.nama_kelas}</td>
@@ -206,17 +204,17 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
                         <td className="px-3 py-3">
                           <form onSubmit={handleSingleSave} className="flex items-center gap-2">
                             <input type="hidden" name="id_siswa_kelas" value={row.id_siswa_kelas} />
-                            <select name="id_kelas" defaultValue={row.id_kelas} className="border rounded px-2 py-1 text-xs bg-white">
+                            <select name="id_kelas" defaultValue={row.id_kelas} className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-2 py-1 text-xs focus:ring-2 focus:ring-red-500/20 outline-none transition-all">
                               {refKelas.map((k: any) => (
                                 <option key={k.id_kelas} value={k.id_kelas}>{k.nama_kelas}</option>
                               ))}
                             </select>
-                            <select name="id_tingkat" defaultValue={row.id_tingkat} className="border rounded px-2 py-1 text-xs bg-white">
+                            <select name="id_tingkat" defaultValue={row.id_tingkat} className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-2 py-1 text-xs focus:ring-2 focus:ring-red-500/20 outline-none transition-all">
                               {refTingkat.map((t: any) => (
                                 <option key={t.id_tingkat} value={t.id_tingkat}>{t.tingkat}</option>
                               ))}
                             </select>
-                            <button type="submit" className="bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-blue-700 transition">Simpan</button>
+                            <button type="submit" className="bg-[#DC2626] text-white px-3 py-1 rounded-xl text-xs font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all">Simpan</button>
                           </form>
                         </td>
                       </tr>
