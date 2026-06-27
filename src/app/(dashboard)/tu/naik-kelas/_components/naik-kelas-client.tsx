@@ -1,5 +1,6 @@
 'use client';
 
+import { confirmAlert } from '@/lib/swal';
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { useToast } from '@/components/ui/toast-provider';
@@ -47,7 +48,7 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
   const handlePromote = async () => {
     if (!canPromote) return;
     const destKelas = refKelas.find((k: any) => String(k.id_kelas) === destKelasId);
-    const ok = window.confirm(`Promosikan ${filteredData.length} siswa dari ${sourceKelas?.nama_kelas} ke ${destKelas?.nama_kelas}?`);
+    const ok = await confirmAlert('Promosikan Siswa', `Promosikan ${filteredData.length} siswa dari ${sourceKelas?.nama_kelas} ke ${destKelas?.nama_kelas}?`);
     if (!ok) return;
 
     setPromoting(true);

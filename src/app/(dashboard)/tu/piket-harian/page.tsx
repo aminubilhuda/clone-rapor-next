@@ -9,13 +9,8 @@ async function getData() {
     FROM piket_harian ph
     JOIN harian h ON ph.id_harian = h.id_harian
     LEFT JOIN users u ON ph.id_user = u.id_user
-    ORDER BY ph.id_piket_harian DESC
+    ORDER BY h.id_harian ASC, ph.id_piket_harian ASC
   `);
-  return rows;
-}
-
-async function getHarian() {
-  const [rows]: any = await pool.query('SELECT id_harian, harian FROM harian ORDER BY id_harian ASC');
   return rows;
 }
 
@@ -27,11 +22,11 @@ async function getUser() {
 export default async function PiketHarianPage() {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) redirect('/login');
-  const [data, refHarian, refUser] = await Promise.all([getData(), getHarian(), getUser()]);
+  const [data, refUser] = await Promise.all([getData(), getUser()]);
 
   return (
     <div>
-      <PiketHarianClient data={data} refHarian={refHarian} refUser={refUser} />
+      <PiketHarianClient data={data} refUser={refUser} />
     </div>
   );
 }
