@@ -5,6 +5,14 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { signOut } from 'next-auth/react';
 
+type MenuItem =
+  | { label: string; href: string; icon: string }
+  | { label: string; icon: string; children: { label: string; href: string }[] };
+
+function isParent(item: MenuItem): item is { label: string; icon: string; children: { label: string; href: string }[] } {
+  return 'children' in item;
+}
+
 interface Option {
   value: string;
   label: string;
@@ -51,7 +59,10 @@ const menuItems = [
   {
     section: 'Laporan & Pengaturan',
     items: [
-      { label: 'Leger Nilai', href: '/tu/laporan-pendidikan', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+      { label: 'Laporan Pendidikan', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', children: [
+        { label: 'Leger Nilai', href: '/tu/laporan-pendidikan' },
+        { label: 'Daftar Rapor', href: '/tu/laporan-pendidikan/daftar-rapor' },
+      ] },
       { label: 'P5BK', href: '/tu/p5bk', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
       { label: 'Piket Harian', href: '/tu/piket-harian', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
       { label: 'Pengaturan', href: '/tu/pengaturan', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
@@ -63,6 +74,7 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [expandedParents, setExpandedParents] = useState<Record<string, boolean>>({});
 
   const options = data?.options || [];
   const currentValue = data?.currentValue || '';
@@ -189,22 +201,68 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
               </button>
               {(expandedSections[group.section] !== false) && (
                 <div className="space-y-0.5 mt-0.5">
-                  {group.items.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
-                        isActive(item.href)
-                          ? 'bg-red-500/10 text-red-400 shadow-[inset_3px_0_0_rgba(239,68,68,0.6)]'
-                          : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
-                      }`}
-                    >
-                      <svg className="w-4 h-4 flex-shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-                      </svg>
-                      <span className="text-sm">{item.label}</span>
-                    </Link>
-                  ))}
+                  {group.items.map((item) => {
+                    if (isParent(item)) {
+                      const anyActive = item.children.some((c) => isActive(c.href));
+                      const isOpen = expandedParents[item.label] ?? anyActive;
+                      return (
+                        <div key={item.label}>
+                          <button
+                            onClick={() => setExpandedParents((prev) => ({ ...prev, [item.label]: !prev[item.label] }))}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                              anyActive
+                                ? 'bg-red-500/10 text-red-400'
+                                : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                            }`}
+                          >
+                            <svg className="w-4 h-4 flex-shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                            </svg>
+                            <span className="text-sm flex-1 text-left">{item.label}</span>
+                            <svg
+                              className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+                              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                          {isOpen && (
+                            <div className="ml-4 border-l border-white/[0.06] pl-2 mt-0.5 space-y-0.5">
+                              {item.children.map((child) => (
+                                <Link
+                                  key={child.href}
+                                  href={child.href}
+                                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                                    isActive(child.href)
+                                      ? 'bg-red-500/10 text-red-400'
+                                      : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                                  }`}
+                                >
+                                  <span className="text-sm">{child.label}</span>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                          isActive(item.href)
+                            ? 'bg-red-500/10 text-red-400 shadow-[inset_3px_0_0_rgba(239,68,68,0.6)]'
+                            : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                        }`}
+                      >
+                        <svg className="w-4 h-4 flex-shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                        </svg>
+                        <span className="text-sm">{item.label}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>

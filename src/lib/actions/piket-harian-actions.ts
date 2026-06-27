@@ -48,3 +48,39 @@ export async function deletePiketHarian(id: number) {
     return { success: false, error: e.message || 'Gagal menghapus data' } as const;
   }
 }
+
+export async function addPiketHarian(idHarian: number, idUser: number) {
+  const session = await auth();
+  if (!session?.user || session.user.jabatan !== 2) {
+    return { success: false, error: 'Unauthorized' } as const;
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO piket_harian (id_harian, id_user) VALUES (?, ?)',
+      [idHarian, idUser]
+    );
+    revalidatePath('/tu/piket-harian');
+    return { success: true } as const;
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+  }
+}
+
+export async function deletePiketHarianByHariUser(idHarian: number, idUser: number) {
+  const session = await auth();
+  if (!session?.user || session.user.jabatan !== 2) {
+    return { success: false, error: 'Unauthorized' } as const;
+  }
+
+  try {
+    await pool.query(
+      'DELETE FROM piket_harian WHERE id_harian = ? AND id_user = ? LIMIT 1',
+      [idHarian, idUser]
+    );
+    revalidatePath('/tu/piket-harian');
+    return { success: true } as const;
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+  }
+}

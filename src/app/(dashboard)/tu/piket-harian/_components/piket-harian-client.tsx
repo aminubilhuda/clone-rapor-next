@@ -1,178 +1,143 @@
 'use client';
 
 import { useState } from 'react';
+import { confirmAlert } from '@/lib/swal';
 import { useToast } from '@/components/ui/toast-provider';
-import { updatePiketHarian, deletePiketHarian } from '@/lib/actions/piket-harian-actions';
-import ModalPiketHarian from './modal-piket-harian';
-import ModalHapus from './modal-hapus-piket-harian';
+import { addPiketHarian, deletePiketHarianByHariUser } from '@/lib/actions/piket-harian-actions';
 
-const COLUMNS = [
-  { key: 'id_piket_harian', label: 'ID' },
-  { key: 'harian', label: 'Hari' },
-  { key: 'nama_user', label: 'Guru' },
-  { key: '_aksi', label: 'Aksi' },
+const DAYS = [
+  { id: 1, label: 'Senin' },
+  { id: 2, label: 'Selasa' },
+  { id: 3, label: 'Rabu' },
+  { id: 4, label: 'Kamis' },
+  { id: 5, label: 'Jumat' },
+  { id: 6, label: 'Sabtu' },
 ];
+
+const MAX_ROWS = 5;
 
 interface PiketHarianClientProps {
   data: any[];
-  refHarian: any[];
   refUser: any[];
 }
 
-export default function PiketHarianClient({ data, refHarian, refUser }: PiketHarianClientProps) {
+export default function PiketHarianClient({ data, refUser }: PiketHarianClientProps) {
   const { showToast } = useToast();
+  const [activeDropdown, setActiveDropdown] = useState<{ dayId: number; row: number } | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
-  const [perPage, setPerPage] = useState(10);
+  const dayMap: Record<number, any[]> = {};
+  for (const d of DAYS) dayMap[d.id] = [];
+  for (const row of data) {
+    if (dayMap[row.id_harian]) dayMap[row.id_harian].push(row);
+  }
 
-  const filtered = data.filter((row) =>
-    COLUMNS.filter((c) => c.key !== '_aksi').some((col) =>
-      String(row[col.key] ?? '').toLowerCase().includes(search.toLowerCase())
-    )
-  );
-
-  const actualPerPage = perPage === 0 ? filtered.length : perPage;
-  const totalPages = Math.max(1, Math.ceil(filtered.length / actualPerPage));
-  const safePage = Math.min(page, totalPages - 1);
-  const paginatedData = filtered.slice(safePage * actualPerPage, (safePage + 1) * actualPerPage);
-
-  const [modalEdit, setModalEdit] = useState(false);
-  const [modalHapus, setModalHapus] = useState(false);
-  const [selected, setSelected] = useState<any | null>(null);
-
-  const openTambah = () => { setSelected(null); setModalEdit(true); };
-  const openEdit = (row: any) => { setSelected(row); setModalEdit(true); };
-  const openHapus = (row: any) => { setSelected(row); setModalHapus(true); };
-  const closeModals = () => { setModalEdit(false); setModalHapus(false); setSelected(null); };
-
-  const handleSave = async (formData: FormData) => {
-    const result = await updatePiketHarian(formData);
-    if (result.success) {
-      showToast('Data piket harian berhasil disimpan!', 'success');
-      closeModals();
-    } else {
-      showToast(result.error || 'Gagal menyimpan data!', 'error');
-    }
+  const getUsersForDay = (dayId: number) => {
+    const assignedIds = new Set(dayMap[dayId].map((r: any) => r.id_user));
+    return refUser.filter((u: any) => !assignedIds.has(u.id_user));
   };
 
-  const handleDelete = async () => {
-    if (!selected) return;
-    const result = await deletePiketHarian(selected.id_piket_harian);
+  const handleAdd = async (dayId: number, userId: number) => {
+    setSaving(true);
+    setActiveDropdown(null);
+    const result = await addPiketHarian(dayId, userId);
     if (result.success) {
-      showToast('Data piket harian berhasil dihapus!', 'success');
-      closeModals();
+      showToast('Guru berhasil ditambahkan!', 'success');
     } else {
-      showToast(result.error || 'Gagal menghapus data!', 'error');
+      showToast(result.error || 'Gagal!', 'error');
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async (dayId: number, userId: number, nama: string) => {
+    const ok = await confirmAlert('Hapus Piket', `Hapus ${nama} dari piket hari ini?`);
+    if (!ok) return;
+    const result = await deletePiketHarianByHariUser(dayId, userId);
+    if (result.success) {
+      showToast('Guru berhasil dihapus!', 'success');
+    } else {
+      showToast(result.error || 'Gagal!', 'error');
     }
   };
 
   return (
-    <>
-      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
-        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between"><h3 className="font-semibold text-[#1A1A2E]">Daftar Piket Harian</h3>
-          <button onClick={openTambah} className="bg-[#DC2626] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
-            + Tambah Piket
-          </button>
-        </div>
-        <div className="p-4">
-          <div className="mb-4 flex items-center gap-4 flex-wrap">
-            <input
-              type="text"
-              placeholder="Cari data..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-              className="w-full md:w-64 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all"
-            />
-            <div className="flex items-center gap-2 text-xs text-[#6B7280]">
-              <span>Tampil:</span>
-              <select
-                value={perPage}
-                onChange={(e) => { setPerPage(Number(e.target.value)); setPage(0); }}
-                className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-                <option value={0}>All</option>
-              </select>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[rgba(0,0,0,0.04)]">
-                  {COLUMNS.map((col) => (
-                    <th key={col.key} className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">{col.label}</th>
-                  ))}
+    <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+      <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between">
+        <h3 className="font-semibold text-[#1A1A2E]">Jadwal Piket Harian</h3>
+      </div>
+      <div className="p-4">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium w-12">No</th>
+                {DAYS.map((d) => (
+                  <th key={d.id} className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">{d.label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: MAX_ROWS }, (_, i) => (
+                <tr key={i} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB]/50 transition-colors">
+                  <td className="px-4 py-3 text-[#6B7280] font-medium">{i + 1}</td>
+                  {DAYS.map((day) => {
+                    const items = dayMap[day.id];
+                    const user = items[i];
+                    const available = getUsersForDay(day.id);
+
+                    return (
+                      <td key={day.id} className="px-4 py-3 relative">
+                        {user ? (
+                          <div className="inline-flex items-center gap-1.5 bg-[#F8F9FB] border border-[rgba(0,0,0,0.06)] rounded-lg px-2.5 py-1.5 text-sm text-[#1A1A2E] group">
+                            <span className="truncate max-w-[120px]">{user.nama_user}</span>
+                            <button
+                              onClick={() => handleDelete(day.id, user.id_user, user.nama_user)}
+                              className="text-[#DC2626]/50 hover:text-[#DC2626] transition-colors flex-shrink-0"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="relative">
+                            <button
+                              onClick={() => setActiveDropdown(activeDropdown?.dayId === day.id && activeDropdown?.row === i ? null : { dayId: day.id, row: i })}
+                              disabled={saving || available.length === 0}
+                              className="inline-flex items-center justify-center w-7 h-7 rounded-lg border border-dashed border-[rgba(0,0,0,0.15)] text-[#6B7280] hover:border-[#DC2626] hover:text-[#DC2626] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                            </button>
+
+                            {activeDropdown?.dayId === day.id && activeDropdown?.row === i && (
+                              <>
+                                <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)} />
+                                <div className="absolute top-full left-0 mt-1 z-50 bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.06)] min-w-[180px] max-h-[180px] overflow-y-auto">
+                                  {available.map((u: any) => (
+                                    <button
+                                      key={u.id_user}
+                                      onClick={() => handleAdd(day.id, u.id_user)}
+                                      className="block w-full text-left px-3 py-2 text-sm text-[#1A1A2E] hover:bg-[#F8F9FB] transition-colors"
+                                    >
+                                      {u.nama}
+                                    </button>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
-              </thead>
-              <tbody>
-                {paginatedData.length === 0 ? (
-                  <tr>
-                    <td colSpan={COLUMNS.length} className="text-center py-16 text-[#6B7280]">Tidak ada data</td>
-                  </tr>
-                ) : (
-                  paginatedData.map((row) => (
-                    <tr key={row.id_piket_harian} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
-                      {COLUMNS.map((col) => {
-                        if (col.key === '_aksi') {
-                          return (
-                            <td key={col.key} className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <button onClick={() => openEdit(row)} className="text-[#DC2626]/70 hover:text-[#DC2626] transition-colors" title="Edit">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                </button>
-                                <button onClick={() => openHapus(row)} className="text-[#DC2626]/70 hover:text-[#DC2626] transition-colors" title="Hapus">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          );
-                        }
-                        return <td key={col.key} className="px-4 py-3">{row[col.key] ?? '-'}</td>;
-                      })}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-[#6B7280]">
-            <span>Total: {filtered.length} data</span>
-            {totalPages > 1 && (
-              <div className="flex items-center gap-1">
-                <button onClick={() => setPage(0)} disabled={safePage === 0} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&laquo;</button>
-                <button onClick={() => setPage(safePage - 1)} disabled={safePage === 0} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&lsaquo;</button>
-                <span className="px-3 text-[#1A1A2E]/80">{safePage + 1} / {totalPages}</span>
-                <button onClick={() => setPage(safePage + 1)} disabled={safePage >= totalPages - 1} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&rsaquo;</button>
-                <button onClick={() => setPage(totalPages - 1)} disabled={safePage >= totalPages - 1} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&raquo;</button>
-              </div>
-            )}
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-
-      <ModalPiketHarian
-        open={modalEdit}
-        onClose={closeModals}
-        piket={selected}
-        refHarian={refHarian}
-        refUser={refUser}
-        onSave={handleSave}
-      />
-
-      <ModalHapus
-        open={modalHapus}
-        onClose={closeModals}
-        piket={selected}
-        onConfirm={handleDelete}
-      />
-    </>
+    </div>
   );
 }

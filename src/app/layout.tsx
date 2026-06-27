@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
+import 'sweetalert2/dist/sweetalert2.min.css';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast-provider';
