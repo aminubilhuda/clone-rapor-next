@@ -2,18 +2,21 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
+import { getGuruTugas, GuruTugas } from '@/lib/actions/guru-actions';
 
-const menuItems = [
+const ALL_MENU_SECTIONS = [
   {
     section: 'Main',
+    roles: ['ALL'] as string[],
     items: [
       { label: 'Dashboard', href: '/guru', icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zm12 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
     ],
   },
   {
     section: 'Penilaian',
+    roles: ['ALL'] as string[],
     items: [
       { label: 'Tujuan Pembelajaran', href: '/guru/tujuan-pembelajaran', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
       { label: 'Penilaian Angka', href: '/guru/kelas-ku', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
@@ -21,18 +24,21 @@ const menuItems = [
   },
   {
     section: 'Ekstrakurikuler',
+    roles: ['EXTRA'] as string[],
     items: [
       { label: 'Ekstra', href: '/guru/ekstra', icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' },
     ],
   },
   {
     section: 'Organisasi',
+    roles: ['ORG'] as string[],
     items: [
       { label: 'Organisasi', href: '/guru/organisasi', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
     ],
   },
   {
     section: 'Kelas (Wali Kelas)',
+    roles: ['WALI'] as string[],
     items: [
       { label: 'Anggota Kelas', href: '/guru/anggota-kelas', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857' },
       { label: 'Rekap Presensi', href: '/guru/rekap-presensi', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
@@ -43,6 +49,7 @@ const menuItems = [
   },
   {
     section: 'Tambahan',
+    roles: ['ALL'] as string[],
     items: [
       { label: 'Piket Harian', href: '/guru/piket-harian', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
       { label: 'Prakerin', href: '/guru/prakerin', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
@@ -52,16 +59,33 @@ const menuItems = [
   },
 ];
 
+function getVisibleSections(tugas: GuruTugas | null) {
+  if (!tugas) return ALL_MENU_SECTIONS; // fallback: show all
+  return ALL_MENU_SECTIONS.filter((group) => {
+    if (group.roles.includes('ALL')) return true;
+    if (group.roles.includes('WALI') && tugas.isWaliKelas) return true;
+    if (group.roles.includes('EXTRA') && tugas.isPembinaEkstra) return true;
+    if (group.roles.includes('ORG') && tugas.isPembinaOrganisasi) return true;
+    return false;
+  });
+}
+
 export default function SidebarGuru() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [tugas, setTugas] = useState<GuruTugas | null>(null);
+
+  useEffect(() => {
+    getGuruTugas().then(setTugas);
+  }, []);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
   const isActive = (href: string) => pathname === href;
+  const visibleSections = getVisibleSections(tugas);
 
   return (
     <>
@@ -117,7 +141,7 @@ export default function SidebarGuru() {
 
         {/* Menu */}
         <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
-          {menuItems.map((group) => (
+          {visibleSections.map((group) => (
             <div key={group.section}>
               <button
                 onClick={() => toggleSection(group.section)}

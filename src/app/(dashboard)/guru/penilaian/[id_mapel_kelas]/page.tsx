@@ -1,6 +1,7 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import PenilaianClient from './_components/penilaian-client';
 
 interface PageProps {
@@ -8,9 +9,8 @@ interface PageProps {
   searchParams: Promise<{ detail?: string }>;
 }
 
-async function getPenilaianData(id_mapel_kelas: string, detail: string | undefined, idUser: number) {
-  const [sekolahRows]: any = await pool.query('SELECT * FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+async function getPenilaianData(id_mapel_kelas: string, detail: string | undefined) {
+  const sekolah = await getSekolahWithFilter();
 
   const [mapelKelasRows]: any = await pool.query(`
     SELECT mk.*, k.nama_kelas, m.nama_mapel, m.s_mapel
@@ -23,14 +23,12 @@ async function getPenilaianData(id_mapel_kelas: string, detail: string | undefin
   if (mapelKelasRows.length === 0) return null;
   const mapelKelas = mapelKelasRows[0];
 
-  // Get Tujuan Pembelajaran
   const [tujuanRows]: any = await pool.query(`
     SELECT * FROM tujuan_pembelajaran
     WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ?
     ORDER BY urut ASC
   `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]);
 
-  // Get siswa in class with this mapel
   const [siswaRows]: any = await pool.query(`
     SELECT sk.*, s.nama_siswa, s.nis
     FROM siswa_kelas sk
@@ -42,43 +40,76 @@ async function getPenilaianData(id_mapel_kelas: string, detail: string | undefin
     ORDER BY s.nis ASC
   `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]);
 
-  // Get existing values based on detail type
-  let nilaiRows: any[] = [];
-  const tableMap: Record<string, string> = {
+  const activeDetail = detail || 'formatif';
+
+  if (activeDetail === 'sumatif-as') {
+    const [rf]: any = await pool.query(`
+      SELECT n.*, tp.urut as tp_urut FROM nilai_formatif n
+      LEFT JOIN tujuan_pembelajaran tp ON n.id_tujuan = tp.id_tujuan AND tp.tahun = n.tahun AND tp.semester = n.semester
+      WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
+      ORDER BY n.id_siswa, tp_urut ASC
+    `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]);
+
+    const [rph]: any = await pool.query(`
+      SELECT n.*, tp.urut as tp_urut FROM nilai_sumatif_ph n
+      LEFT JOIN tujuan_pembelajaran tp ON n.id_tujuan = tp.id_tujuan AND tp.tahun = n.tahun AND tp.semester = n.semester
+      WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
+      ORDER BY n.id_siswa, tp_urut ASC
+    `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]);
+
+    const [ras]: any = await pool.query(`
+      SELECT * FROM nilai_sumatif_as
+      WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ?
+      ORDER BY id_siswa
+    `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]);
+
+    return {
+      mapelKelas,
+      tujuanPembelajaran: [...tujuanRows],
+      siswa: [...siswaRows],
+      nilai: [...ras],
+      activeDetail,
+      nilaiFormatif: [...rf],
+      nilaiPH: [...rph],
+      nilaiAS: [...ras],
+    };
+  }
+
+  const tableName = {
     'formatif': 'nilai_formatif',
     'sumatif-harian': 'nilai_sumatif_ph',
     'sumatif-ts': 'nilai_sumatif_ts',
     'sumatif-as': 'nilai_sumatif_as',
-  };
-  const activeDetail = detail || 'formatif';
-  const tableName = tableMap[activeDetail] || 'nilai_formatif';
+  }[activeDetail] || 'nilai_formatif';
 
-  if (tableName) {
-    const hasIdTujuan = activeDetail !== 'sumatif-ts' && activeDetail !== 'sumatif-as';
-    let query: string;
-    if (hasIdTujuan) {
-      query = `SELECT n.*, tp.urut as tp_urut FROM \`${tableName}\` n
-               LEFT JOIN tujuan_pembelajaran tp ON n.id_tujuan = tp.id_tujuan AND tp.tahun = n.tahun AND tp.semester = n.semester
-               WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
-               ORDER BY n.id_siswa, tp_urut ASC`;
-    } else {
-      query = `SELECT n.* FROM \`${tableName}\` n
-               WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
-               ORDER BY n.id_siswa`;
-    }
-    const [rows]: any = await pool.query(query,
+  if (activeDetail === 'sumatif-ts') {
+    const [rows]: any = await pool.query(
+      `SELECT * FROM nilai_sumatif_ts WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? ORDER BY id_siswa`,
       [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]
     );
-    nilaiRows = rows;
+    return {
+      mapelKelas, siswa: [...siswaRows], tujuanPembelajaran: [],
+      nilai: rows, activeDetail, nilaiFormatif: [], nilaiPH: [], nilaiAS: [],
+    };
   }
 
+  const [rows]: any = await pool.query(
+    `SELECT n.*, tp.urut as tp_urut FROM \`${tableName}\` n
+     LEFT JOIN tujuan_pembelajaran tp ON n.id_tujuan = tp.id_tujuan AND tp.tahun = n.tahun AND tp.semester = n.semester
+     WHERE n.tahun = ? AND n.semester = ? AND n.id_kelas = ? AND n.id_mapel = ?
+     ORDER BY n.id_siswa, tp_urut ASC`,
+    [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]
+  );
+
   return {
-    sekolah,
     mapelKelas,
-    tujuanPembelajaran: tujuanRows,
-    siswa: siswaRows,
-    nilai: nilaiRows,
+    tujuanPembelajaran: [...tujuanRows],
+    siswa: [...siswaRows],
+    nilai: rows,
     activeDetail,
+    nilaiFormatif: [],
+    nilaiPH: [],
+    nilaiAS: [],
   };
 }
 
@@ -88,24 +119,17 @@ export default async function PenilaianPage({ params, searchParams }: PageProps)
 
   const { id_mapel_kelas } = await params;
   const { detail } = await searchParams;
+  const data = await getPenilaianData(id_mapel_kelas, detail);
 
-  const data = await getPenilaianData(id_mapel_kelas, detail, session.user.id_user!);
   if (!data) return <div className="text-red-500">Data tidak ditemukan.</div>;
 
   return (
     <div>
       <div className="mb-4">
-        <a
-          href="/guru/kelas-ku"
-          className="inline-flex items-center gap-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Kembali
+        <a href="/guru/kelas-ku" className="inline-flex items-center gap-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+          ← Kembali
         </a>
       </div>
-
       <PenilaianClient data={data} idMapelKelas={id_mapel_kelas} />
     </div>
   );
