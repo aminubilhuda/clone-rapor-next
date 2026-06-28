@@ -33,14 +33,32 @@ async function getUser() {
   return rows;
 }
 
+async function getDimensiTree() {
+  const [dimensi]: any = await pool.query('SELECT * FROM dimensi ORDER BY id_dimensi ASC');
+  const [elemen]: any = await pool.query('SELECT * FROM elemen ORDER BY id_elemen ASC');
+  const [subElemen]: any = await pool.query('SELECT * FROM sub_elemen ORDER BY id_dimensi, id_elemen, id_sub_elemen ASC');
+
+  return dimensi.map((d: any) => ({
+    ...d,
+    elemen: elemen
+      .filter((e: any) => e.id_dimensi === d.id_dimensi)
+      .map((e: any) => ({
+        ...e,
+        sub_elemen: subElemen.filter((s: any) => s.id_elemen === e.id_elemen),
+      })),
+  }));
+}
+
 export default async function P5BKPage() {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 2) redirect('/login');
-  const [data, refKelas, refTema, refUser] = await Promise.all([getData(), getKelas(), getTema(), getUser()]);
+  const [data, refKelas, refTema, refUser, dimensiTree] = await Promise.all([
+    getData(), getKelas(), getTema(), getUser(), getDimensiTree(),
+  ]);
 
   return (
     <div>
-      <P5BKClient data={data} refKelas={refKelas} refTema={refTema} refUser={refUser} />
+      <P5BKClient data={data} refKelas={refKelas} refTema={refTema} refUser={refUser} dimensiTree={dimensiTree} />
     </div>
   );
 }

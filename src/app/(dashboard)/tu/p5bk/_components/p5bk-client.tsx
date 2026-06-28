@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateP5BK, deleteP5BK } from '@/lib/actions/p5bk-actions';
+import { updateP5BK, deleteP5BK, getSubelemenByProyek, getDataNilaiP5BK, saveNilaiP5BK } from '@/lib/actions/p5bk-actions';
 import ModalP5BK from './modal-p5bk';
 import ModalHapus from './modal-hapus-p5bk';
+import ModalNilaiP5BK from './modal-nilai-p5bk';
 
 const COLUMNS = [
-  { key: 'id_proyek_kelas', label: 'ID' },
-  { key: 'kode', label: 'Kode' },
+  { key: '_no', label: 'No' },
   { key: 'nama_kelas', label: 'Kelas' },
   { key: 'tema', label: 'Tema' },
   { key: 'judul_proyek', label: 'Judul Proyek' },
@@ -21,9 +21,10 @@ interface P5BKClientProps {
   refKelas: any[];
   refTema: any[];
   refUser: any[];
+  dimensiTree: any[];
 }
 
-export default function P5BKClient({ data, refKelas, refTema, refUser }: P5BKClientProps) {
+export default function P5BKClient({ data, refKelas, refTema, refUser, dimensiTree }: P5BKClientProps) {
   const { showToast } = useToast();
 
   const [search, setSearch] = useState('');
@@ -31,7 +32,7 @@ export default function P5BKClient({ data, refKelas, refTema, refUser }: P5BKCli
   const [perPage, setPerPage] = useState(10);
 
   const filtered = data.filter((row) =>
-    COLUMNS.filter((c) => c.key !== '_aksi').some((col) =>
+    COLUMNS.filter((c) => c.key !== '_aksi' && c.key !== '_no').some((col) =>
       String(row[col.key] ?? '').toLowerCase().includes(search.toLowerCase())
     )
   );
@@ -43,20 +44,67 @@ export default function P5BKClient({ data, refKelas, refTema, refUser }: P5BKCli
 
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
+  const [modalNilai, setModalNilai] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
+  const [selectedSubElemen, setSelectedSubElemen] = useState<number[]>([]);
+  const [loadingSubElemen, setLoadingSubElemen] = useState(false);
+  const [nilaiData, setNilaiData] = useState<any | null>(null);
+  const [loadingNilai, setLoadingNilai] = useState(false);
 
-  const openTambah = () => { setSelected(null); setModalEdit(true); };
-  const openEdit = (row: any) => { setSelected(row); setModalEdit(true); };
+  const openTambah = () => { setSelected(null); setSelectedSubElemen([]); setModalEdit(true); };
+  const openEdit = async (row: any) => {
+    setSelected(row);
+    setSelectedSubElemen([]);
+    setLoadingSubElemen(true);
+    setModalEdit(true);
+    const result = await getSubelemenByProyek(row.id_proyek_kelas);
+    if (result.success) {
+      setSelectedSubElemen(result.data);
+    }
+    setLoadingSubElemen(false);
+  };
   const openHapus = (row: any) => { setSelected(row); setModalHapus(true); };
-  const closeModals = () => { setModalEdit(false); setModalHapus(false); setSelected(null); };
+  const openNilai = async (row: any) => {
+    setSelected(row);
+    setNilaiData(null);
+    setLoadingNilai(true);
+    setModalNilai(true);
+    const result = await getDataNilaiP5BK(row.id_proyek_kelas);
+    if (result.success) {
+      setNilaiData({ ...result.data, _debug: result.debug });
+    } else {
+      showToast(result.error || 'Gagal mengambil data nilai', 'error');
+      setModalNilai(false);
+    }
+    setLoadingNilai(false);
+  };
+  const closeModals = () => {
+    setModalEdit(false);
+    setModalHapus(false);
+    setModalNilai(false);
+    setSelected(null);
+    setSelectedSubElemen([]);
+    setNilaiData(null);
+  };
 
   const handleSave = async (formData: FormData) => {
+    formData.set('sub_elemen_ids', JSON.stringify(selectedSubElemen));
     const result = await updateP5BK(formData);
     if (result.success) {
       showToast('Data P5BK berhasil disimpan!', 'success');
       closeModals();
     } else {
       showToast(result.error || 'Gagal menyimpan data!', 'error');
+    }
+  };
+
+  const handleSaveNilai = async (formData: FormData) => {
+    const result = await saveNilaiP5BK(formData);
+    if (result.success) {
+      showToast('Nilai P5BK berhasil disimpan!', 'success');
+      closeModals();
+    } else {
+      showToast(result.error || 'Gagal menyimpan nilai!', 'error');
     }
   };
 
@@ -118,16 +166,24 @@ export default function P5BKClient({ data, refKelas, refTema, refUser }: P5BKCli
                     <td colSpan={COLUMNS.length} className="text-center py-16 text-[#6B7280]">Tidak ada data</td>
                   </tr>
                 ) : (
-                  paginatedData.map((row) => (
+                  paginatedData.map((row, idx) => (
                     <tr key={row.id_proyek_kelas} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                       {COLUMNS.map((col) => {
+                        if (col.key === '_no') {
+                          return <td key={`${row.id_proyek_kelas}-${col.key}`} className="px-4 py-3">{safePage * actualPerPage + idx + 1}</td>;
+                        }
                         if (col.key === '_aksi') {
                           return (
-                            <td key={col.key} className="px-4 py-3">
+                            <td key={`${row.id_proyek_kelas}-${col.key}`} className="px-4 py-3">
                               <div className="flex items-center gap-2">
                                 <button onClick={() => openEdit(row)} className="text-[#DC2626]/70 hover:text-[#DC2626] transition-colors" title="Edit">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                </button>
+                                <button onClick={() => openNilai(row)} className="text-blue-600/70 hover:text-blue-600 transition-colors" title="Nilai">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                   </svg>
                                 </button>
                                 <button onClick={() => openHapus(row)} className="text-[#DC2626]/70 hover:text-[#DC2626] transition-colors" title="Hapus">
@@ -139,7 +195,7 @@ export default function P5BKClient({ data, refKelas, refTema, refUser }: P5BKCli
                             </td>
                           );
                         }
-                        return <td key={col.key} className="px-4 py-3">{row[col.key] ?? '-'}</td>;
+                        return <td key={`${row.id_proyek_kelas}-${col.key}`} className="px-4 py-3">{row[col.key] ?? '-'}</td>;
                       })}
                     </tr>
                   ))
@@ -169,6 +225,10 @@ export default function P5BKClient({ data, refKelas, refTema, refUser }: P5BKCli
         refKelas={refKelas}
         refTema={refTema}
         refUser={refUser}
+        dimensiTree={dimensiTree}
+        selectedSubElemen={selectedSubElemen}
+        setSelectedSubElemen={setSelectedSubElemen}
+        loadingSubElemen={loadingSubElemen}
         onSave={handleSave}
       />
 
@@ -177,6 +237,15 @@ export default function P5BKClient({ data, refKelas, refTema, refUser }: P5BKCli
         onClose={closeModals}
         p5bk={selected}
         onConfirm={handleDelete}
+      />
+
+      <ModalNilaiP5BK
+        open={modalNilai}
+        onClose={closeModals}
+        p5bk={selected}
+        loadingData={loadingNilai}
+        nilaiData={nilaiData}
+        onSave={handleSaveNilai}
       />
     </>
   );
