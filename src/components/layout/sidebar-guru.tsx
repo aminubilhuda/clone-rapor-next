@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { getGuruTugas, GuruTugas } from '@/lib/actions/guru-actions';
@@ -70,8 +70,30 @@ function getVisibleSections(tugas: GuruTugas | null) {
   });
 }
 
+function getVisibleItems(items: typeof ALL_MENU_SECTIONS[0]['items'], section: string, tugas: GuruTugas | null) {
+  if (!tugas) return items;
+  if (section === 'Ekstrakurikuler' && tugas.ekstraList.length > 0) {
+    return tugas.ekstraList.map((e) => ({
+      label: e.nama_eskul,
+      href: `/guru/ekstra?id_eskul=${e.id_eskul}`,
+      icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z',
+    }));
+  }
+  const visibilityMap: Record<string, keyof GuruTugas> = {
+    '/guru/piket-harian': 'isPiketHarian',
+    '/guru/prakerin': 'isPembimbingPrakerin',
+    '/guru/p5bk': 'isP5BK',
+    '/guru/kokurikuler': 'isKokurikuler',
+  };
+  return items.filter((item) => {
+    const flag = visibilityMap[item.href];
+    return !flag || tugas[flag];
+  });
+}
+
 export default function SidebarGuru() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [tugas, setTugas] = useState<GuruTugas | null>(null);
@@ -84,7 +106,14 @@ export default function SidebarGuru() {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => {
+    const [hrefPath, hrefQuery] = href.split('?');
+    if (hrefQuery) {
+      const hp = new URLSearchParams(hrefQuery);
+      return pathname === hrefPath && Array.from(hp.entries()).every(([k, v]) => searchParams.get(k) === v);
+    }
+    return pathname === href;
+  };
   const visibleSections = getVisibleSections(tugas);
 
   return (
@@ -141,7 +170,12 @@ export default function SidebarGuru() {
 
         {/* Menu */}
         <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
-          {visibleSections.map((group) => (
+          {tugas === null && (
+            <div className="flex items-center justify-center py-10">
+              <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            </div>
+          )}
+          {tugas !== null && visibleSections.map((group) => (
             <div key={group.section}>
               <button
                 onClick={() => toggleSection(group.section)}
@@ -157,7 +191,7 @@ export default function SidebarGuru() {
               </button>
               {(expandedSections[group.section] !== false) && (
                 <div className="space-y-0.5 mt-0.5">
-                  {group.items.map((item) => (
+                  {getVisibleItems(group.items, group.section, tugas).map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}

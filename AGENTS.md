@@ -30,6 +30,15 @@ Server actions yang INSERT cukup SELECT tahun/semester langsung dari tabel `seko
 
 Tabel **master** (tanpa tahun/semester): `kelas`, `users`, `mapel`, `eskul`, `kompetensi_keahlian`, `deskripsi_rapor`, `piket_harian` — gak perlu filter.
 
+## Chrome DevTools MCP — Sudah Terpasang
+
+`chrome-devtools-mcp` sudah dikonfigurasi di `opencode.json`. Tools:
+- Navigasi, klik, isi form, screenshot, snapshot aksesibilitas
+- Network, console, performance tracing
+- Lighthouse audit, heap snapshot
+
+Mulai pakai: cukup panggil tool `chrome-devtools_*` langsung.
+
 ## Post-Change Routine — Wajib
 
 Setelah selesai perubahan code (apapun), jalankan 3 langkah ini secara berurutan:
