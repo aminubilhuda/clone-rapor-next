@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 
 type MenuItem =
@@ -75,6 +75,18 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [expandedParents, setExpandedParents] = useState<Record<string, boolean>>({});
+  const [logo, setLogo] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/sekolah-logo')
+      .then(res => res.json())
+      .then(data => {
+        if (data.logo) {
+          setLogo(`/api/uploads/sekolah/${data.logo}`);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const options = data?.options || [];
   const currentValue = data?.currentValue || '';
@@ -125,10 +137,14 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-white/[0.06]">
           <Link href="/tu" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10 overflow-hidden">
+              {logo ? (
+                <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+              ) : (
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              )}
             </div>
             <div>
               <h1 className="text-sm font-semibold tracking-tight">Tata Usaha</h1>

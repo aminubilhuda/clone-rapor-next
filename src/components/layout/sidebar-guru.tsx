@@ -97,9 +97,18 @@ export default function SidebarGuru() {
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [tugas, setTugas] = useState<GuruTugas | null>(null);
+  const [logo, setLogo] = useState<string | null>(null);
 
   useEffect(() => {
     getGuruTugas().then(setTugas);
+    fetch('/api/sekolah-logo')
+      .then(res => res.json())
+      .then(data => {
+        if (data.logo) {
+          setLogo(`/api/uploads/sekolah/${data.logo}`);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const toggleSection = (section: string) => {
@@ -131,10 +140,14 @@ export default function SidebarGuru() {
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-white/[0.06]">
           <Link href="/guru" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-              </svg>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10 overflow-hidden">
+              {logo ? (
+                <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+              ) : (
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                </svg>
+              )}
             </div>
             <div>
               <h1 className="text-sm font-semibold tracking-tight">Guru/Wali</h1>

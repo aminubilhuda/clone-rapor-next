@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import bcrypt from 'bcryptjs';
 
 export async function updateSiswa(formData: FormData) {
   const session = await auth();
@@ -24,6 +25,7 @@ export async function updateSiswa(formData: FormData) {
   const terimaKelas = formData.get('terima_kelas') as string;
   const username = formData.get('username') as string;
   const password = formData.get('password') as string;
+  const hashedPassword = password ? await bcrypt.hash(password, 10) : '';
 
   try {
     if (id) {
@@ -35,14 +37,14 @@ export async function updateSiswa(formData: FormData) {
           kontak_siswa = ?, alamat = ?, jurusan = ?,
           terima_kelas = ?, username = ?, password = ?
         WHERE id_siswa = ?`,
-        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, password || '', id]
+        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, hashedPassword, id]
       );
     } else {
       // Insert
       await pool.query(
         `INSERT INTO siswa (nama_siswa, nis, nisn, tempat_lahir, tanggal_lahir, kelamin, agama, kontak_siswa, alamat, jurusan, terima_kelas, username, password, aktif, terima_tingkat)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, SUBSTRING(?, 1, 2))`,
-        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, password, terimaKelas]
+        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, hashedPassword, terimaKelas]
       );
     }
 

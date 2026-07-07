@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useToast } from '@/components/ui/toast-provider';
 import { updateProfil } from '@/lib/actions/profil-actions';
 
@@ -12,6 +12,29 @@ interface ProfilFormProps {
 export default function ProfilForm({ sekolah, kepala }: ProfilFormProps) {
   const [saving, setSaving] = useState(false);
   const { showToast } = useToast();
+  const [logoPreview, setLogoPreview] = useState<string | null>(
+    sekolah.logo ? `/api/uploads/sekolah/${sekolah.logo}` : null
+  );
+  const [logoProvPreview, setLogoProvPreview] = useState<string | null>(
+    sekolah.logo_prov ? `/api/uploads/sekolah/${sekolah.logo_prov}` : null
+  );
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const logoProvInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'logo_prov') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (type === 'logo') {
+          setLogoPreview(reader.result as string);
+        } else {
+          setLogoProvPreview(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,6 +53,92 @@ export default function ProfilForm({ sekolah, kepala }: ProfilFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* Logo Upload Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Logo Sekolah */}
+        <div className="bg-[#F8F9FB] rounded-xl p-4 border border-[rgba(0,0,0,0.08)]">
+          <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-3">Logo Sekolah</label>
+          <div className="flex items-center gap-4">
+            <div
+              className="w-24 h-24 rounded-xl bg-white border-2 border-dashed border-[rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer overflow-hidden"
+              onClick={() => logoInputRef.current?.click()}
+            >
+              {logoPreview ? (
+                <img
+                  src={logoPreview}
+                  alt="Logo Sekolah"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              )}
+            </div>
+            <div className="flex-1">
+              <input
+                ref={logoInputRef}
+                type="file"
+                name="logo_file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleLogoChange(e, 'logo')}
+              />
+              <button
+                type="button"
+                onClick={() => logoInputRef.current?.click()}
+                className="text-sm text-[#DC2626] hover:text-[#B91C1C] font-medium"
+              >
+                Pilih Logo
+              </button>
+              <p className="text-xs text-gray-500 mt-1">PNG, JPG, max 2MB</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Logo Provinsi */}
+        <div className="bg-[#F8F9FB] rounded-xl p-4 border border-[rgba(0,0,0,0.08)]">
+          <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-3">Logo Provinsi</label>
+          <div className="flex items-center gap-4">
+            <div
+              className="w-24 h-24 rounded-xl bg-white border-2 border-dashed border-[rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer overflow-hidden"
+              onClick={() => logoProvInputRef.current?.click()}
+            >
+              {logoProvPreview ? (
+                <img
+                  src={logoProvPreview}
+                  alt="Logo Provinsi"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              )}
+            </div>
+            <div className="flex-1">
+              <input
+                ref={logoProvInputRef}
+                type="file"
+                name="logo_prov_file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleLogoChange(e, 'logo_prov')}
+              />
+              <button
+                type="button"
+                onClick={() => logoProvInputRef.current?.click()}
+                className="text-sm text-[#DC2626] hover:text-[#B91C1C] font-medium"
+              >
+                Pilih Logo
+              </button>
+              <p className="text-xs text-gray-500 mt-1">PNG, JPG, max 2MB</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Form Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">NPSN</label>
