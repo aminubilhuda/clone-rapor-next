@@ -1,155 +1,112 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import DataTable from '@/components/ui/data-table';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import TPMultiKelasClient from './_components/tp-multi-kelas-client';
 
 interface PageProps {
-  searchParams: Promise<{ id_mapel_kelas?: string }>;
+  searchParams: Promise<{ id_mapel?: string; id_tingkat?: string }>;
 }
 
-async function getData(id_mapel_kelas: string | undefined, idUser: number) {
-  const [sekolahRows]: any = await pool.query('SELECT * FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+async function getOptions(idUser: number) {
+  const sekolah = await getSekolahWithFilter();
 
-  if (id_mapel_kelas) {
-    const [mkRows]: any = await pool.query(`
-      SELECT mk.*, m.nama_mapel, k.nama_kelas
-      FROM mapel_kelas mk
-      JOIN mapel m ON mk.id_mapel = m.id_mapel
-      JOIN kelas k ON mk.id_kelas = k.id_kelas
-      WHERE mk.id_mapel_kelas = ?
-    `, [id_mapel_kelas]);
-
-    if (mkRows.length === 0) return null;
-    const mk = mkRows[0];
-
-    const [tpRows]: any = await pool.query(
-      'SELECT * FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? ORDER BY urut ASC',
-      [sekolah.tahun, sekolah.semester, mk.id_kelas, mk.id_mapel]
-    );
-
-    return { sekolah, mapelKelas: mk, tp: tpRows, mode: 'detail' as const };
-  }
-
-  // Show list of mapel kelas for this user
-  const [mapelKelas]: any = await pool.query(`
-    SELECT mk.*, m.nama_mapel, k.nama_kelas
+  const [rows]: any = await pool.query(`
+    SELECT m.id_mapel, m.nama_mapel, t.id_tingkat, t.tingkat, t.tabjad,
+      GROUP_CONCAT(DISTINCT k.nama_kelas ORDER BY k.nama_kelas SEPARATOR ', ') AS kelas_list
     FROM mapel_kelas mk
     JOIN mapel m ON mk.id_mapel = m.id_mapel
     JOIN kelas k ON mk.id_kelas = k.id_kelas
+    JOIN tingkat t ON k.id_tingkat = t.id_tingkat
     WHERE mk.tahun = ? AND mk.semester = ? AND mk.id_user = ?
+    GROUP BY m.id_mapel, m.nama_mapel, t.id_tingkat, t.tingkat, t.tabjad
+    ORDER BY t.tingkat ASC, m.nama_mapel ASC
   `, [sekolah.tahun, sekolah.semester, idUser]);
 
-  return { sekolah, mapelKelas, mode: 'list' as const };
+  return rows;
+}
+
+async function getDetail(idMapel: number, idTingkat: number, idUser: number) {
+  const sekolah = await getSekolahWithFilter();
+
+  const [mapelRows]: any = await pool.query(
+    'SELECT * FROM mapel WHERE id_mapel = ?', [idMapel]
+  );
+  if (mapelRows.length === 0) return null;
+
+  const [kelasRows]: any = await pool.query(`
+    SELECT DISTINCT k.id_kelas, k.nama_kelas, mk.id_mapel_kelas
+    FROM mapel_kelas mk
+    JOIN kelas k ON mk.id_kelas = k.id_kelas
+    WHERE mk.id_mapel = ? AND mk.tahun = ? AND mk.semester = ? AND mk.id_user = ? AND k.id_tingkat = ?
+    ORDER BY k.nama_kelas ASC
+  `, [idMapel, sekolah.tahun, sekolah.semester, idUser, idTingkat]);
+
+  if (kelasRows.length === 0) return null;
+
+  const kelasIds = kelasRows.map((k: any) => k.id_kelas);
+
+  const [tpRows]: any = await pool.query(`
+    SELECT tp.id_tujuan, tp.kode, tp.tipe, tp.tujuan, tp.ringkasan,
+           tp.contoh_deskripsi_rapor, tp.munculkan_sebagai_deskripsi_rapor, tp.kktp, tp.urut,
+           k.nama_kelas, k.id_kelas
+    FROM tujuan_pembelajaran tp
+    JOIN kelas k ON tp.id_kelas = k.id_kelas
+    WHERE tp.tahun = ? AND tp.semester = ? AND tp.id_mapel = ? AND tp.id_user = ?
+      AND tp.id_kelas IN (${kelasIds.map(() => '?').join(',')})
+    ORDER BY tp.urut ASC
+  `, [sekolah.tahun, sekolah.semester, idMapel, idUser, ...kelasIds]);
+
+  const displayKey = (row: any) => {
+    if (!row.kode) return row.urut;
+    const parts = row.kode.split('-');
+    return parts[parts.length - 1] || row.urut;
+  };
+
+  const tpGrouped = tpRows.reduce((acc: any[], row: any) => {
+    const key = displayKey(row);
+    const existing = acc.find(t => displayKey(t) === key);
+    if (existing) {
+      existing.kelas.push({ id_kelas: row.id_kelas, nama_kelas: row.nama_kelas });
+    } else {
+      acc.push({
+        id_tujuan: row.id_tujuan,
+        kode: row.kode, tipe: row.tipe,
+        tujuan: row.tujuan, ringkasan: row.ringkasan,
+        contoh_deskripsi_rapor: row.contoh_deskripsi_rapor,
+        munculkan_sebagai_deskripsi_rapor: row.munculkan_sebagai_deskripsi_rapor,
+        kktp: row.kktp, urut: row.urut,
+        kelas: [{ id_kelas: row.id_kelas, nama_kelas: row.nama_kelas }],
+      });
+    }
+    return acc;
+  }, []);
+
+  return {
+    mapel: mapelRows[0],
+    kelasList: kelasRows,
+    tp: tpGrouped,
+  };
 }
 
 export default async function TujuanPembelajaranPage({ searchParams }: PageProps) {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 3) redirect('/login');
 
-  const { id_mapel_kelas } = await searchParams;
-  const data = await getData(id_mapel_kelas, session.user.id_user!);
+  const { id_mapel, id_tingkat } = await searchParams;
+  const options = await getOptions(session.user.id_user!);
 
-  if (!data) return <div className="text-red-500">Data tidak ditemukan.</div>;
-
-  if (data.mode === 'detail') {
-    return (
-      <div>
-        <div className="mb-4">
-          <a href="/guru/tujuan-pembelajaran" className="text-blue-600 hover:underline text-sm">
-            &larr; Kembali ke daftar
-          </a>
-        </div>
-
-        <div className="bg-white rounded-lg shadow border border-gray-200">
-          <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg font-semibold">
-            Tujuan Pembelajaran {data.mapelKelas.nama_mapel} - {data.mapelKelas.nama_kelas}
-          </div>
-          <div className="p-5">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="text-left px-4 py-3">No</th>
-                    <th className="text-left px-4 py-3">Tujuan Pembelajaran</th>
-                    <th className="text-left px-4 py-3">KKTP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.tp.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="text-center py-8 text-gray-400">
-                        Belum ada tujuan pembelajaran. Silahkan tambah melalui aplikasi PHP.
-                      </td>
-                    </tr>
-                  ) : (
-                    data.tp.map((t: any, i: number) => (
-                      <tr key={t.id_tujuan} className="border-b hover:bg-gray-50">
-                        <td className="px-4 py-3">{i + 1}</td>
-                        <td className="px-4 py-3">{t.tujuan}</td>
-                        <td className="px-4 py-3">
-                          <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">
-                            {t.kktp}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  let selectedData = null;
+  if (id_mapel && id_tingkat) {
+    selectedData = await getDetail(Number(id_mapel), Number(id_tingkat), session.user.id_user!);
   }
 
   return (
-    <div>
-      <h4 className="text-xl font-semibold mb-6">Tujuan Pembelajaran</h4>
-
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg font-semibold">
-          Pilih Mata Pelajaran
-        </div>
-        <div className="p-5">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-50 border-b">
-                <th className="text-left px-4 py-3">No</th>
-                <th className="text-left px-4 py-3">Mata Pelajaran</th>
-                <th className="text-left px-4 py-3">Kelas</th>
-                <th className="text-left px-4 py-3">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.mapelKelas.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="text-center py-8 text-gray-400">
-                    Tidak ada data
-                  </td>
-                </tr>
-              ) : (
-                data.mapelKelas.map((mk: any, i: number) => (
-                  <tr key={mk.id_mapel_kelas} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-3">{i + 1}</td>
-                    <td className="px-4 py-3">{mk.nama_mapel}</td>
-                    <td className="px-4 py-3">{mk.nama_kelas}</td>
-                    <td className="px-4 py-3">
-                      <a
-                        href={`/guru/tujuan-pembelajaran?id_mapel_kelas=${mk.id_mapel_kelas}`}
-                        className="bg-blue-100 text-blue-700 px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-200 transition"
-                      >
-                        Lihat TP
-                      </a>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <TPMultiKelasClient
+      options={options}
+      selectedMapel={id_mapel ? Number(id_mapel) : null}
+      selectedTingkat={id_tingkat ? Number(id_tingkat) : null}
+      selectedData={selectedData}
+    />
   );
 }

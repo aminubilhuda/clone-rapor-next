@@ -9,6 +9,10 @@ export interface GuruTugas {
   isPembinaEkstra: boolean;
   isPembinaOrganisasi: boolean;
   isGuruMapel: boolean;
+  isPiketHarian: boolean;
+  isPembimbingPrakerin: boolean;
+  isP5BK: boolean;
+  isKokurikuler: boolean;
   kelasList: { id_kelas: number; nama_kelas: string }[];
   ekstraList: { id_eskul: number; nama_eskul: string }[];
   organisasiList: { id_organisasi: number; nama_organisasi: string }[];
@@ -55,11 +59,37 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
       [idUser, tahun, semester]
     );
 
+    const [piketRows]: any = await pool.query(
+      `SELECT 1 FROM piket_harian WHERE id_user = ? LIMIT 1`,
+      [idUser]
+    );
+
+    const [prakerinRows]: any = await pool.query(
+      `SELECT 1 FROM prakerin WHERE id_user = ? AND tahun = ? AND semester = ? LIMIT 1`,
+      [idUser, tahun, semester]
+    );
+
+    const [p5bkRows]: any = await pool.query(
+      `SELECT 1 FROM proyek_kelas WHERE id_user = ? AND tahun = ? AND semester = ? LIMIT 1`,
+      [idUser, tahun, semester]
+    );
+
+    const [kokurikulerRows]: any = await pool.query(
+      `SELECT 1 FROM nilai_kokurikuler nk
+       JOIN proyek_kelas pk ON nk.id_proyek_kelas = pk.id_proyek_kelas
+       WHERE pk.id_user = ? AND nk.tahun = ? AND nk.semester = ? LIMIT 1`,
+      [idUser, tahun, semester]
+    );
+
     return {
       isWaliKelas: waliRows.length > 0,
       isPembinaEkstra: ekstraRows.length > 0,
       isPembinaOrganisasi: orgRows.length > 0,
       isGuruMapel: mapelRows.length > 0,
+      isPiketHarian: piketRows.length > 0,
+      isPembimbingPrakerin: prakerinRows.length > 0,
+      isP5BK: p5bkRows.length > 0,
+      isKokurikuler: kokurikulerRows.length > 0,
       kelasList: waliRows.map((r: any) => ({ id_kelas: r.id_kelas, nama_kelas: r.nama_kelas })),
       ekstraList: ekstraRows.map((r: any) => ({ id_eskul: r.id_eskul, nama_eskul: r.nama_eskul })),
       organisasiList: orgRows.map((r: any) => ({ id_organisasi: r.id_organisasi, nama_organisasi: r.nama_organisasi })),

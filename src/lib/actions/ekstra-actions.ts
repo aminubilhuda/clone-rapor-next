@@ -82,9 +82,13 @@ export async function updatePembinaEkstra(formData: FormData) {
   }
 }
 
+function canManageEskul(jabatan: number | undefined) {
+  return jabatan === 2 || jabatan === 3;
+}
+
 export async function addSiswaEkstra(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || !canManageEskul(session.user.jabatan)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -118,7 +122,7 @@ export async function addSiswaEkstra(formData: FormData) {
 
 export async function removeSiswaEkstra(idSiswaEkstra: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || !canManageEskul(session.user.jabatan)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -133,7 +137,7 @@ export async function removeSiswaEkstra(idSiswaEkstra: number) {
 
 export async function updateSiswaEkstra(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || !canManageEskul(session.user.jabatan)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -155,7 +159,7 @@ export async function updateSiswaEkstra(formData: FormData) {
 
 export async function bulkUpdateSiswaEkstra(items: { id_siswa_eskul: number; predikat: string; keterangan: string }[]) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || !canManageEskul(session.user.jabatan)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
