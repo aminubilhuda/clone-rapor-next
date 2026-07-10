@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function updateNaikKelas(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -33,7 +33,7 @@ export async function updateNaikKelas(formData: FormData) {
 
 export async function promoteKelas(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 

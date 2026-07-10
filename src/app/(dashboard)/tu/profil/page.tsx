@@ -21,7 +21,7 @@ async function getProfil() {
 
 export default async function ProfilPage() {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) redirect('/login');
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
 
   const data = await getProfil();
   if (!data) return <div className="text-red-500">Gagal memuat data.</div>;

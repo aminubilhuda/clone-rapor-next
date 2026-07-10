@@ -5,25 +5,35 @@ import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import PrakerinClient from './_components/prakerin-client';
 
 async function getPrakerin() {
-  const sekolah = await getSekolahWithFilter();
-  const [rows]: any = await pool.query(`
-    SELECT p.*, u.nama AS nama_user
-    FROM prakerin p
-    LEFT JOIN users u ON p.id_user = u.id_user
-    WHERE p.tahun = ? AND p.semester = ?
-    ORDER BY p.id_prakerin ASC
-  `, [sekolah.tahun, sekolah.semester]);
-  return rows;
+  try {
+    const sekolah = await getSekolahWithFilter();
+    const [rows]: any = await pool.query(`
+      SELECT p.*, u.nama AS nama_user
+      FROM prakerin p
+      LEFT JOIN users u ON p.id_user = u.id_user
+      WHERE p.tahun = ? AND p.semester = ?
+      ORDER BY p.id_prakerin ASC
+    `, [sekolah.tahun, sekolah.semester]);
+    return rows;
+  } catch (error) {
+    console.error('Prakerin fetch error:', error);
+    return [];
+  }
 }
 
 async function getUsers() {
-  const [rows]: any = await pool.query('SELECT id_user, nama, username FROM users WHERE deleted_at IS NULL ORDER BY nama ASC');
-  return rows;
+  try {
+    const [rows]: any = await pool.query('SELECT id_user, nama, username FROM users WHERE deleted_at IS NULL ORDER BY nama ASC');
+    return rows;
+  } catch (error) {
+    console.error('Users fetch error:', error);
+    return [];
+  }
 }
 
 export default async function PrakerinPage() {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) redirect('/login');
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
   const prakerin = await getPrakerin();
   const users = await getUsers();
 

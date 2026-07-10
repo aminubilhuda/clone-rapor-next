@@ -2,20 +2,21 @@ import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
-import EkstraClient from './_components/ekstra-client';
+import OrganisasiClient from './_components/organisasi-client';
 
-async function getEkstra(tahun: number, semester: number) {
+async function getOrganisasi(tahun: number, semester: number) {
   try {
     const [rows]: any = await pool.query(`
-      SELECT e.*, u.nama AS nama_pembina, pe.id_user AS pembina_user_id
-      FROM eskul e
-      LEFT JOIN pembina_eskul pe ON e.id_eskul = pe.id_eskul AND pe.tahun = ? AND pe.semester = ?
-      LEFT JOIN users u ON pe.id_user = u.id_user
-      ORDER BY e.id_eskul ASC
+      SELECT o.*, u.nama AS nama_pembina, po.id_user AS pembina_user_id
+      FROM organisasi o
+      LEFT JOIN pembina_organisasi po ON o.id_organisasi = po.id_organisasi AND po.tahun = ? AND po.semester = ?
+      LEFT JOIN users u ON po.id_user = u.id_user
+      WHERE o.deleted_at IS NULL
+      ORDER BY o.id_organisasi ASC
     `, [tahun, semester]);
     return rows;
   } catch (error) {
-    console.error('Ekstra fetch error:', error);
+    console.error('Organisasi fetch error:', error);
     return [];
   }
 }
@@ -40,36 +41,36 @@ async function getSiswa() {
   }
 }
 
-async function getSiswaEkstra(tahun: number, semester: number) {
+async function getSiswaOrganisasi(tahun: number, semester: number) {
   try {
     const [rows]: any = await pool.query(`
-      SELECT se.*, s.nama_siswa, s.nisn
-      FROM siswa_eskul se
-      JOIN siswa s ON se.id_siswa = s.id_siswa
-      WHERE se.tahun = ? AND se.semester = ?
-      ORDER BY se.id_eskul, s.nama_siswa ASC
+      SELECT so.*, s.nama_siswa, s.nisn
+      FROM siswa_organisasi so
+      JOIN siswa s ON so.id_siswa = s.id_siswa
+      WHERE so.tahun = ? AND so.semester = ?
+      ORDER BY so.id_organisasi, s.nama_siswa ASC
     `, [tahun, semester]);
     return rows;
   } catch (error) {
-    console.error('Siswa ekstra fetch error:', error);
+    console.error('Siswa organisasi fetch error:', error);
     return [];
   }
 }
 
-export default async function EkstraPage() {
+export default async function OrganisasiPage() {
   const session = await auth();
   if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
   const sekolah = await getSekolahWithFilter();
-  const [ekstra, users, refSiswa, siswaEkstra] = await Promise.all([
-    getEkstra(sekolah.tahun, sekolah.semester),
+  const [organisasi, users, refSiswa, siswaOrganisasi] = await Promise.all([
+    getOrganisasi(sekolah.tahun, sekolah.semester),
     getUsers(),
     getSiswa(),
-    getSiswaEkstra(sekolah.tahun, sekolah.semester),
+    getSiswaOrganisasi(sekolah.tahun, sekolah.semester),
   ]);
 
   return (
     <div>
-      <EkstraClient ekstra={ekstra} users={users} refSiswa={refSiswa} siswaEkstra={siswaEkstra} tahun={sekolah.tahun} semester={sekolah.semester} />
+      <OrganisasiClient organisasi={organisasi} users={users} refSiswa={refSiswa} siswaOrganisasi={siswaOrganisasi} tahun={sekolah.tahun} semester={sekolah.semester} />
     </div>
   );
 }

@@ -4,13 +4,18 @@ import { redirect } from 'next/navigation';
 import DeskripsiClient from './_components/deskripsi-client';
 
 async function getDeskripsi() {
-  const [rows]: any = await pool.query('SELECT * FROM deskripsi_rapor ORDER BY id_deskripsi ASC');
-  return rows;
+  try {
+    const [rows]: any = await pool.query('SELECT * FROM deskripsi_rapor ORDER BY id_deskripsi ASC');
+    return rows;
+  } catch (error) {
+    console.error('Deskripsi fetch error:', error);
+    return [];
+  }
 }
 
 export default async function DeskripsiRaporPage() {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) redirect('/login');
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
   const deskripsi = await getDeskripsi();
 
   return (

@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function updateEkstra(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -30,7 +30,7 @@ export async function updateEkstra(formData: FormData) {
 
 export async function deleteEkstra(id: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -45,7 +45,7 @@ export async function deleteEkstra(id: number) {
 
 export async function updatePembinaEkstra(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -83,7 +83,7 @@ export async function updatePembinaEkstra(formData: FormData) {
 }
 
 function canManageEskul(jabatan: number | undefined) {
-  return jabatan === 2 || jabatan === 3;
+  return jabatan === 1 || jabatan === 2 || jabatan === 3;
 }
 
 export async function addSiswaEkstra(formData: FormData) {

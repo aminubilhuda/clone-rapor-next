@@ -6,7 +6,7 @@ export default async function Home() {
 
   if (session?.user) {
     const jabatan = session.user.jabatan;
-    if (jabatan === 2) redirect('/tu');
+    if (jabatan === 1 || jabatan === 2) redirect('/tu'); // ponytail: jabatan=1 treated as TU admin
     if (jabatan === 3) redirect('/guru');
   }
 

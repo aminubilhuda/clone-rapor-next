@@ -10,7 +10,7 @@ function generateKode() {
 
 export async function updateP5BK(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -80,7 +80,7 @@ export async function updateP5BK(formData: FormData) {
 
 export async function getSubelemenByProyek(idProyek: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -97,7 +97,7 @@ export async function getSubelemenByProyek(idProyek: number) {
 
 export async function getDataNilaiP5BK(idProyek: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -165,7 +165,7 @@ export async function getDataNilaiP5BK(idProyek: number) {
 
 export async function saveNilaiP5BK(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -234,7 +234,7 @@ export async function saveNilaiP5BK(formData: FormData) {
 
 export async function deleteP5BK(id: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 

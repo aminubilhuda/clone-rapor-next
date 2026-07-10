@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { getGuruTugas, GuruTugas } from '@/lib/actions/guru-actions';
 
 const ALL_MENU_SECTIONS = [
@@ -94,10 +94,12 @@ function getVisibleItems(items: typeof ALL_MENU_SECTIONS[0]['items'], section: s
 export default function SidebarGuru() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [tugas, setTugas] = useState<GuruTugas | null>(null);
   const [logo, setLogo] = useState<string | null>(null);
+  const userName = session?.user?.name || 'Guru';
 
   useEffect(() => {
     getGuruTugas().then(setTugas);
@@ -164,7 +166,7 @@ export default function SidebarGuru() {
             </svg>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" id="sidebar-user-name">Guru</p>
+            <p className="text-sm font-medium truncate" id="sidebar-user-name">{userName}</p>
             <p className="text-[11px] text-emerald-400/80 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-emerald-400/80 rounded-full inline-block" />
               online

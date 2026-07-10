@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function updateMapelSiswa(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -47,7 +47,7 @@ export async function updateMapelSiswa(formData: FormData) {
 
 export async function toggleMapelSiswa(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -93,7 +93,7 @@ export async function toggleMapelSiswa(formData: FormData) {
 
 export async function toggleMapelSiswaBatch(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -138,7 +138,7 @@ export async function toggleMapelSiswaBatch(formData: FormData) {
 
 export async function deleteMapelSiswa(id: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
