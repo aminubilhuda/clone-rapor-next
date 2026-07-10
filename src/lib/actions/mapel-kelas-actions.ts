@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function updateMapelKelas(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -43,7 +43,7 @@ export async function updateMapelKelas(formData: FormData) {
 
 export async function deleteMapelKelas(id: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 

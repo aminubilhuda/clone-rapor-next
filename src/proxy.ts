@@ -62,7 +62,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    if (pathname.startsWith('/tu') && session.user.jabatan !== 2) {
+    if (pathname.startsWith('/tu') && session.user.jabatan !== 1 && session.user.jabatan !== 2) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
     if (pathname.startsWith('/guru') && session.user.jabatan !== 3) {

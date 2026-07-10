@@ -100,7 +100,7 @@ async function getStats() {
 
 export default async function TUDashboardPage() {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) redirect('/login');
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
 
   const { sekolah, stats } = await getStats();
 

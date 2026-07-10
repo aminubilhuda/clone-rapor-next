@@ -5,48 +5,68 @@ import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import MapelSiswaGrid from './_components/mapel-siswa-grid';
 
 async function getKelasList() {
-  const [rows]: any = await pool.query(`
-    SELECT k.id_kelas, k.nama_kelas, t.tingkat, kk.kompetensi_keahlian
-    FROM kelas k
-    JOIN tingkat t ON k.id_tingkat = t.id_tingkat
-    LEFT JOIN kompetensi_keahlian kk ON k.id_kompetensi_keahlian = kk.id_kompetensi_keahlian
-    ORDER BY k.id_kelas ASC
-  `);
-  return rows.map((k: any) => ({
-    id: k.id_kelas,
-    label: `${k.tingkat} ${k.nama_kelas} (${k.kompetensi_keahlian || '-'})`,
-  }));
+  try {
+    const [rows]: any = await pool.query(`
+      SELECT k.id_kelas, k.nama_kelas, t.tingkat, kk.kompetensi_keahlian
+      FROM kelas k
+      JOIN tingkat t ON k.id_tingkat = t.id_tingkat
+      LEFT JOIN kompetensi_keahlian kk ON k.id_kompetensi_keahlian = kk.id_kompetensi_keahlian
+      ORDER BY k.id_kelas ASC
+    `);
+    return rows.map((k: any) => ({
+      id: k.id_kelas,
+      label: `${k.tingkat} ${k.nama_kelas} (${k.kompetensi_keahlian || '-'})`,
+    }));
+  } catch (error) {
+    console.error('Kelas list fetch error:', error);
+    return [];
+  }
 }
 
 async function getSubjects(kelasId: number, tahun: number, semester: number) {
-  const [rows]: any = await pool.query(`
-    SELECT m.id_mapel, m.nama_mapel
-    FROM mapel_kelas mk
-    JOIN mapel m ON mk.id_mapel = m.id_mapel
-    WHERE mk.id_kelas = ? AND mk.tahun = ? AND mk.semester = ?
-    ORDER BY m.urut ASC
-  `, [kelasId, tahun, semester]);
-  return rows;
+  try {
+    const [rows]: any = await pool.query(`
+      SELECT m.id_mapel, m.nama_mapel
+      FROM mapel_kelas mk
+      JOIN mapel m ON mk.id_mapel = m.id_mapel
+      WHERE mk.id_kelas = ? AND mk.tahun = ? AND mk.semester = ?
+      ORDER BY m.urut ASC
+    `, [kelasId, tahun, semester]);
+    return rows;
+  } catch (error) {
+    console.error('Subjects fetch error:', error);
+    return [];
+  }
 }
 
 async function getStudents(kelasId: number, tahun: number, semester: number) {
-  const [rows]: any = await pool.query(`
-    SELECT s.id_siswa, s.nama_siswa, s.nisn
-    FROM siswa_kelas sk
-    JOIN siswa s ON sk.id_siswa = s.id_siswa
-    WHERE sk.id_kelas = ? AND sk.tahun = ? AND sk.semester = ? AND sk.status = 1 AND s.deleted_at IS NULL
-    ORDER BY s.nama_siswa ASC
-  `, [kelasId, tahun, semester]);
-  return rows;
+  try {
+    const [rows]: any = await pool.query(`
+      SELECT s.id_siswa, s.nama_siswa, s.nisn
+      FROM siswa_kelas sk
+      JOIN siswa s ON sk.id_siswa = s.id_siswa
+      WHERE sk.id_kelas = ? AND sk.tahun = ? AND sk.semester = ? AND sk.status = 1 AND s.deleted_at IS NULL
+      ORDER BY s.nama_siswa ASC
+    `, [kelasId, tahun, semester]);
+    return rows;
+  } catch (error) {
+    console.error('Students fetch error:', error);
+    return [];
+  }
 }
 
 async function getEnrollments(kelasId: number, tahun: number, semester: number) {
-  const [rows]: any = await pool.query(`
-    SELECT id_siswa, id_mapel
-    FROM mapel_siswa
-    WHERE id_kelas = ? AND tahun = ? AND semester = ? AND aktif = 1
-  `, [kelasId, tahun, semester]);
-  return rows;
+  try {
+    const [rows]: any = await pool.query(`
+      SELECT id_siswa, id_mapel
+      FROM mapel_siswa
+      WHERE id_kelas = ? AND tahun = ? AND semester = ? AND aktif = 1
+    `, [kelasId, tahun, semester]);
+    return rows;
+  } catch (error) {
+    console.error('Enrollments fetch error:', error);
+    return [];
+  }
 }
 
 export default async function MapelSiswaPage({
@@ -55,7 +75,7 @@ export default async function MapelSiswaPage({
   searchParams: Promise<{ kelas?: string }>;
 }) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) redirect('/login');
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
 
   const { kelas } = await searchParams;
   const sekolah = await getSekolahWithFilter();

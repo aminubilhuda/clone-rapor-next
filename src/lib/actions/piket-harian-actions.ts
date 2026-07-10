@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function updatePiketHarian(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -36,7 +36,7 @@ export async function updatePiketHarian(formData: FormData) {
 
 export async function deletePiketHarian(id: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -51,7 +51,7 @@ export async function deletePiketHarian(id: number) {
 
 export async function addPiketHarian(idHarian: number, idUser: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -69,7 +69,7 @@ export async function addPiketHarian(idHarian: number, idUser: number) {
 
 export async function deletePiketHarianByHariUser(idHarian: number, idUser: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 

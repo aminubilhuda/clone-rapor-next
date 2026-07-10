@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function updateAnggotaKelas(formData: FormData) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -46,7 +46,7 @@ export async function updateAnggotaKelas(formData: FormData) {
 
 export async function deleteAnggotaKelas(id: number) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -61,7 +61,7 @@ export async function deleteAnggotaKelas(id: number) {
 
 export async function bulkAddAnggotaKelas(idKelas: number, idSiswaList: number[]) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
@@ -90,7 +90,7 @@ export async function bulkAddAnggotaKelas(idKelas: number, idSiswaList: number[]
 
 export async function bulkRemoveAnggotaKelas(idSiswaKelasList: number[]) {
   const session = await auth();
-  if (!session?.user || session.user.jabatan !== 2) {
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
     return { success: false, error: 'Unauthorized' } as const;
   }
 
