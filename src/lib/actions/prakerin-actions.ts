@@ -80,19 +80,26 @@ export async function importPrakerin(rows: {
   let count = 0;
   const errors: string[] = [];
 
+  // Batch: ambil semua mitra yang sudah ada untuk periode ini
+  const [existingRows]: any = await pool.query(
+    'SELECT mitra, id_prakerin FROM prakerin WHERE tahun = ? AND semester = ?',
+    [tahun, semester]
+  );
+  const existingMitra = new Map<string, number>();
+  for (const row of existingRows) {
+    existingMitra.set(row.mitra, row.id_prakerin);
+  }
+
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];
     if (!r.mitra) { errors.push(`Baris ${i + 1}: mitra wajib diisi`); continue; }
     try {
-      const [existing]: any = await pool.query(
-        'SELECT id_prakerin FROM prakerin WHERE mitra = ? AND tahun = ? AND semester = ?',
-        [r.mitra, tahun, semester]
-      );
-      if (existing.length > 0) {
+      const existingId = existingMitra.get(r.mitra);
+      if (existingId) {
         await pool.query(
           `UPDATE prakerin SET lokasi = ?, tanggal_mulai = ?, tanggal_akhir = ?, instruktur = ?
            WHERE id_prakerin = ?`,
-          [r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null, existing[0].id_prakerin]
+          [r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null, existingId]
         );
       } else {
         await pool.query(

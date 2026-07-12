@@ -10,7 +10,11 @@ async function getKelasKu() {
   const sekolah = sekolahRows[0];
 
   const [mapelKelas]: any = await pool.query(`
-    SELECT mk.*, m.nama_mapel, m.s_mapel, m.urut, k.nama_kelas
+    SELECT mk.*, m.nama_mapel, m.s_mapel, m.urut, k.nama_kelas,
+      (SELECT COUNT(*) FROM tujuan_pembelajaran tp
+       WHERE tp.tahun = mk.tahun AND tp.semester = mk.semester
+         AND tp.id_mapel = mk.id_mapel AND tp.id_user = mk.id_user
+         AND tp.id_kelas = mk.id_kelas) AS jumlah_tp
     FROM mapel_kelas mk
     JOIN mapel m ON mk.id_mapel = m.id_mapel
     JOIN kelas k ON mk.id_kelas = k.id_kelas
@@ -64,16 +68,13 @@ export default async function KelasKuPage() {
                       <td className="px-4 py-3 font-medium">{mk.nama_mapel}</td>
                       <td className="px-4 py-3">{mk.nama_kelas}</td>
                       <td className="px-4 py-3">
-                        <a
-                          href={`/guru/tujuan-pembelajaran?id_mapel_kelas=${mk.id_mapel_kelas}`}
-                          className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-200 transition"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                          Lihat TP
-                        </a>
+                        {mk.jumlah_tp > 0 ? (
+                          <span className="inline-flex items-center justify-center bg-blue-100 text-blue-700 text-xs font-bold rounded-full min-w-[22px] h-[22px] px-1.5">
+                            {mk.jumlah_tp} TP
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-400">-</span>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <a

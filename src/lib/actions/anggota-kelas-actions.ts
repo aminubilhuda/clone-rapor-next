@@ -71,6 +71,7 @@ export async function bulkAddAnggotaKelas(idKelas: number, idSiswaList: number[]
   const semester = sekolah?.semester || 1;
 
   try {
+    // Query id_tingkat sekali — tidak perlu diulang di setiap iterasi
     const [kelasRows]: any = await pool.query('SELECT id_tingkat FROM kelas WHERE id_kelas = ?', [idKelas]);
     const idTingkat = kelasRows[0]?.id_tingkat || 1;
 
@@ -95,8 +96,12 @@ export async function bulkRemoveAnggotaKelas(idSiswaKelasList: number[]) {
   }
 
   try {
-    for (const id of idSiswaKelasList) {
-      await pool.query('UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa_kelas = ?', [id]);
+    // Batch: soft-delete semua dalam satu query
+    if (idSiswaKelasList.length > 0) {
+      await pool.query(
+        'UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa_kelas IN (?)',
+        [idSiswaKelasList]
+      );
     }
 
     revalidatePath('/tu/anggota-kelas');

@@ -51,22 +51,23 @@ export async function updateP5BK(formData: FormData) {
       await pool.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [proyekId]);
 
       if (subElemenIds.length > 0) {
-        const values = subElemenIds.map((idSub: number) => {
-          // Look up dimensi & elemen for this sub_elemen
-          return `(${proyekId}, ${idSub})`;
-        });
-        // Simpler approach: insert one by one
+        // Batch: ambil dimensi & elemen untuk semua sub_elemen sekaligus
+        const [subRows]: any = await pool.query(
+          'SELECT id_sub_elemen, id_dimensi, id_elemen FROM sub_elemen WHERE id_sub_elemen IN (?)',
+          [subElemenIds]
+        );
+        const subMap = new Map<number, { id_dimensi: number; id_elemen: number }>();
+        for (const sub of subRows) {
+          subMap.set(sub.id_sub_elemen, { id_dimensi: sub.id_dimensi, id_elemen: sub.id_elemen });
+        }
+
         for (const idSub of subElemenIds) {
-          const [subRow]: any = await pool.query(
-            'SELECT id_dimensi, id_elemen FROM sub_elemen WHERE id_sub_elemen = ?',
-            [idSub]
+          const info = subMap.get(idSub);
+          if (!info) continue;
+          await pool.query(
+            'INSERT INTO proyek_subelemen (id_proyek_kelas, id_dimensi, id_elemen, id_sub_elemen) VALUES (?, ?, ?, ?)',
+            [proyekId, info.id_dimensi, info.id_elemen, idSub]
           );
-          if (subRow.length > 0) {
-            await pool.query(
-              'INSERT INTO proyek_subelemen (id_proyek_kelas, id_dimensi, id_elemen, id_sub_elemen) VALUES (?, ?, ?, ?)',
-              [proyekId, subRow[0].id_dimensi, subRow[0].id_elemen, idSub]
-            );
-          }
         }
       }
     }
@@ -196,6 +197,17 @@ export async function saveNilaiP5BK(formData: FormData) {
   }
 
   try {
+    // Batch: ambil semua existing nilai_proyek sekaligus
+    const [existingNilaiRows]: any = await pool.query(
+      'SELECT id_nilai_proyek, id_siswa, id_sub_elemen FROM nilai_proyek WHERE proyek = ?',
+      [idProyek]
+    );
+    const existingKey = new Set(existingNilaiRows.map((r: any) => `${r.id_siswa}_${r.id_sub_elemen}`));
+    const existingMap = new Map<string, number>();
+    for (const r of existingNilaiRows) {
+      existingMap.set(`${r.id_siswa}_${r.id_sub_elemen}`, r.id_nilai_proyek);
+    }
+
     for (const idSiswa of siswaIds) {
       for (const idSubElemen of subElemenIds) {
         const nilaiRaw = formData.get(`nilai_${idSiswa}_${idSubElemen}`) as string;
@@ -204,16 +216,11 @@ export async function saveNilaiP5BK(formData: FormData) {
         const info = subMap[idSubElemen];
         if (!info) continue;
 
-        // Check if row exists in nilai_proyek
-        const [existing]: any = await pool.query(
-          'SELECT id_nilai_proyek FROM nilai_proyek WHERE proyek = ? AND id_siswa = ? AND id_sub_elemen = ?',
-          [idProyek, idSiswa, idSubElemen]
-        );
-
-        if (existing.length > 0) {
+        const key = `${idSiswa}_${idSubElemen}`;
+        if (existingMap.has(key)) {
           await pool.query(
             'UPDATE nilai_proyek SET nilai = ?, tahun = ?, semester = ? WHERE id_nilai_proyek = ?',
-            [nilai, tahun, semester, existing[0].id_nilai_proyek]
+            [nilai, tahun, semester, existingMap.get(key)]
           );
         } else {
           await pool.query(
