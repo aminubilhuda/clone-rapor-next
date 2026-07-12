@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Select from 'react-select';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateMapelKelas, deleteMapelKelas } from '@/lib/actions/mapel-kelas-actions';
+import { updateMapelKelas, deleteMapelKelas, copyMapelKelasFromPreviousYear } from '@/lib/actions/mapel-kelas-actions';
+import { confirmAlert } from '@/lib/swal';
 import ModalMapelKelas from './modal-mapel-kelas';
 import ModalHapus from './modal-hapus-mapel-kelas';
 
@@ -54,6 +55,8 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
+  const [copying, setCopying] = useState(false);
+  const [copyResults, setCopyResults] = useState<any[] | null>(null);
 
   const openTambah = () => { setSelected(null); setModalEdit(true); };
   const openEdit = (row: any) => { setSelected(row); setModalEdit(true); };
@@ -101,6 +104,27 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
     }
   };
 
+  const handleCopyPrevious = async () => {
+    const jumlahMapel = data.length;
+
+    const ok = await confirmAlert(
+      'Salin Mapel dari Tahun Lalu?',
+      `Data ${jumlahMapel} mapel kelas akan disalin ke tahun pelajaran baru.\n\nMapel yang sudah ada di tahun baru akan dilewati.\nLanjutkan?`
+    );
+    if (!ok) return;
+
+    setCopying(true);
+    const result = await copyMapelKelasFromPreviousYear();
+    setCopying(false);
+
+    if (result.success) {
+      setCopyResults(result.hasil);
+      showToast(`${result.totalDisalin} mapel berhasil disalin!${result.totalSkip > 0 ? ` (${result.totalSkip} sudah ada)` : ''}`, 'success');
+    } else {
+      showToast(result.error || 'Gagal menyalin mapel!', 'error');
+    }
+  };
+
   return (
     <>
       <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
@@ -110,6 +134,95 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
           </button>
         </div>
         <div className="p-4">
+
+          {/* Panel Salin dari Tahun Lalu */}
+          {!copyResults && (
+            <div className="border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-xl p-5 mb-6">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <h6 className="font-semibold text-emerald-800">Salin Mapel dari Tahun Sebelumnya</h6>
+                  <p className="text-sm text-emerald-600 mt-0.5">
+                    Salin semua mata pelajaran beserta guru pengampu dari tahun pelajaran sebelumnya.
+                    Mapel yang sudah ada di tahun baru akan dilewati.
+                  </p>
+                </div>
+                <button
+                  onClick={handleCopyPrevious}
+                  disabled={copying}
+                  className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2 flex-shrink-0"
+                >
+                  {copying ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Menyalin...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Salin dari Tahun Lalu
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Hasil Salin */}
+          {copyResults && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+              onClick={(e) => { if (e.target === e.currentTarget) setCopyResults(null); }}>
+              <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-2xl mx-4 animate-modal-in border border-[rgba(0,0,0,0.04)] max-h-[80vh] flex flex-col">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
+                  <h3 className="text-lg font-semibold text-[#1A1A2E]">
+                    Hasil Salin Mapel Kelas
+                  </h3>
+                  <button onClick={() => setCopyResults(null)} className="text-gray-400 hover:text-gray-600 transition">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="overflow-y-auto px-6 py-4">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                        <th className="text-left px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Kelas</th>
+                        <th className="text-left px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Total Mapel</th>
+                        <th className="text-center px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Disalin</th>
+                        <th className="text-center px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Sudah Ada</th>
+                        <th className="text-left px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {copyResults.map((r, i) => (
+                        <tr key={i} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
+                          <td className="px-3 py-2.5 font-medium">{r.kelas}</td>
+                          <td className="px-3 py-2.5">{r.mapel}</td>
+                          <td className="px-3 py-2.5 text-center text-emerald-600 font-medium">{r.disalin}</td>
+                          <td className="px-3 py-2.5 text-center text-yellow-600 font-medium">{r.skip}</td>
+                          <td className="px-3 py-2.5">
+                            <span className="text-emerald-600 text-xs font-medium">{r.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="flex justify-end px-6 py-4 border-t border-[rgba(0,0,0,0.04)]">
+                  <button onClick={() => setCopyResults(null)}
+                    className="px-4 py-2 text-sm font-medium text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
+                    Tutup
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mb-4 flex items-center gap-4 flex-wrap">
             <input
               type="text"

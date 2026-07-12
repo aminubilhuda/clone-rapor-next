@@ -4,7 +4,7 @@ import { confirmAlert } from '@/lib/swal';
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateNaikKelas, promoteKelas } from '@/lib/actions/naik-kelas-actions';
+import { updateNaikKelas, promoteKelas, promoteAllKelas } from '@/lib/actions/naik-kelas-actions';
 
 interface Props {
   data: any[];
@@ -18,6 +18,8 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
   const [destTingkatId, setDestTingkatId] = useState('');
   const [destKelasId, setDestKelasId] = useState('');
   const [promoting, setPromoting] = useState(false);
+  const [promotingAll, setPromotingAll] = useState(false);
+  const [promoteResults, setPromoteResults] = useState<any[] | null>(null);
   const [individualFilter, setIndividualFilter] = useState('');
 
   const filteredData = sourceKelasId
@@ -67,6 +69,33 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
     }
   };
 
+  const handlePromoteAll = async () => {
+    const totalNaik = data.filter((d: any) => {
+      const kelas = refKelas.find((k: any) => k.id_kelas === d.id_kelas);
+      return kelas && refTingkat.some((t: any) => t.id_tingkat === kelas.id_tingkat && t.akhir === 0);
+    }).length;
+    const totalLulus = data.filter((d: any) => {
+      return refTingkat.some((t: any) => t.id_tingkat === d.id_tingkat && t.akhir === 1);
+    }).length;
+
+    const ok = await confirmAlert(
+      'Naikkan Semua Kelas?',
+      `• ${totalNaik} siswa akan dinaikkan ke tingkat berikutnya (X→XI, XI→XII)\n• ${totalLulus} siswa kelas XII akan dipindahkan ke lulusan\n\nProses ini tidak bisa dibatalkan. Lanjutkan?`
+    );
+    if (!ok) return;
+
+    setPromotingAll(true);
+    const result = await promoteAllKelas();
+    setPromotingAll(false);
+
+    if (result.success) {
+      setPromoteResults(result.hasil);
+      showToast('Semua kelas berhasil dinaikkan!', 'success');
+    } else {
+      showToast(result.error || 'Gagal menaikkan kelas!', 'error');
+    }
+  };
+
   const handleSingleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -86,6 +115,94 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
     <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
       <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between"><h3 className="font-semibold text-[#1A1A2E]">Naik Kelas</h3></div>
       <div className="p-4">
+
+        {/* Naikkan Semua Kelas */}
+        <div className="border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-xl p-5 mb-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h6 className="font-semibold text-emerald-800">Naikkan Semua Kelas Sekaligus</h6>
+              <p className="text-sm text-emerald-600 mt-0.5">
+                Promosikan semua siswa (X → XI, XI → XII) ke tahun pelajaran berikutnya secara otomatis.
+                Siswa kelas XII akan dipindahkan ke data lulusan.
+              </p>
+            </div>
+            <button
+              onClick={handlePromoteAll}
+              disabled={promotingAll}
+              className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2 flex-shrink-0"
+            >
+              {promotingAll ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Memproses...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                  Naikkan Semua Kelas
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Results Modal */}
+        {promoteResults && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={(e) => { if (e.target === e.currentTarget) setPromoteResults(null); }}>
+            <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-2xl mx-4 animate-modal-in border border-[rgba(0,0,0,0.04)] max-h-[80vh] flex flex-col">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
+                <h3 className="text-lg font-semibold text-[#1A1A2E]">
+                  Hasil Kenaikan Kelas
+                </h3>
+                <button onClick={() => setPromoteResults(null)} className="text-gray-400 hover:text-gray-600 transition">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="overflow-y-auto px-6 py-4">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                      <th className="text-left px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Kelas Asal</th>
+                      <th className="text-left px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Kelas Tujuan</th>
+                      <th className="text-center px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Siswa</th>
+                      <th className="text-left px-3 py-2 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {promoteResults.map((r, i) => (
+                      <tr key={i} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
+                        <td className="px-3 py-2.5 font-medium">{r.kelas}</td>
+                        <td className="px-3 py-2.5">{r.target}</td>
+                        <td className="px-3 py-2.5 text-center">{r.siswa}</td>
+                        <td className="px-3 py-2.5">
+                          {r.status === 'skip' ? (
+                            <span className="text-yellow-600 text-xs font-medium">{r.target === '(tidak ditemukan)' ? 'Kelas tujuan tidak ditemukan' : 'Tidak ada siswa'}</span>
+                          ) : (
+                            <span className="text-emerald-600 text-xs font-medium">{r.status}</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex justify-end px-6 py-4 border-t border-[rgba(0,0,0,0.04)]">
+                <button onClick={() => setPromoteResults(null)}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
+                  Tutup
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Source class filter */}
         <div className="mb-4">

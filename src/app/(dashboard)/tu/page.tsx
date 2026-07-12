@@ -23,7 +23,7 @@ async function getStats() {
     const [mapelRows]: any = await pool.query('SELECT * FROM mapel');
     const jmlMapel = mapelRows.length;
 
-    const [prakerinRows]: any = await pool.query('SELECT * FROM prakerin');
+    const [prakerinRows]: any = await pool.query('SELECT * FROM prakerin WHERE tahun = ? AND semester = ?', [sekolah.tahun, sekolah.semester]);
     const jmlPrakerin = prakerinRows.length;
 
     const [eskulRows]: any = await pool.query('SELECT * FROM eskul');
@@ -32,13 +32,13 @@ async function getStats() {
     const [kompetensiRows]: any = await pool.query('SELECT * FROM kompetensi_keahlian');
     const jmlJurusan = kompetensiRows.length;
 
-    const [mutasiMasukRows]: any = await pool.query('SELECT * FROM mutasi_masuk');
+    const [mutasiMasukRows]: any = await pool.query('SELECT * FROM mutasi_masuk WHERE tahun = ?', [sekolah.tahun]);
     const jmlMutasiMasuk = mutasiMasukRows.length;
 
-    const [mutasiKeluarRows]: any = await pool.query('SELECT * FROM mutasi_keluar');
+    const [mutasiKeluarRows]: any = await pool.query('SELECT * FROM mutasi_keluar WHERE tahun = ?', [sekolah.tahun]);
     const jmlMutasiKeluar = mutasiKeluarRows.length;
 
-    const [lulusanRows]: any = await pool.query('SELECT * FROM lulusan');
+    const [lulusanRows]: any = await pool.query('SELECT * FROM lulusan WHERE tahun = ? AND semester = ?', [sekolah.tahun, sekolah.semester]);
     const jmlLulusan = lulusanRows.length;
 
     // Rapor stats

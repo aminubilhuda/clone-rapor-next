@@ -2,6 +2,7 @@ import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getSekolahInfo } from '@/lib/actions/rapor-actions';
 import DaftarRaporClient from './_components/daftar-rapor-client';
 
 async function getKelas() {
@@ -17,7 +18,7 @@ async function getKelas() {
 async function getSiswaKelas(tahun: number, semester: number) {
   try {
     const [rows]: any = await pool.query(`
-      SELECT sk.id_siswa_kelas, sk.id_kelas, s.id_siswa, s.nama_siswa, s.nis, s.nisn
+      SELECT sk.id_siswa_kelas, sk.id_kelas, sk.id_tingkat, s.id_siswa, s.nama_siswa, s.nis, s.nisn
       FROM siswa_kelas sk
       JOIN siswa s ON sk.id_siswa = s.id_siswa
       WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL
@@ -30,19 +31,46 @@ async function getSiswaKelas(tahun: number, semester: number) {
   }
 }
 
+async function getTahunSemesterInfo(tahun: number, semester: number) {
+  try {
+    const [tpRows]: any = await pool.query(
+      'SELECT tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran = ?', [tahun]
+    );
+    const [semRows]: any = await pool.query(
+      'SELECT semester FROM semester WHERE id_semester = ?', [semester]
+    );
+    return {
+      tahunPelajaran: tpRows[0]?.tahun_pelajaran || '',
+      semesterLabel: semRows[0]?.semester || '',
+    };
+  } catch {
+    return { tahunPelajaran: '', semesterLabel: '' };
+  }
+}
+
 export default async function DaftarRaporPage() {
   const session = await auth();
   if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
 
   const sekolah = await getSekolahWithFilter();
-  const [kelas, siswaKelas] = await Promise.all([
+  const [kelas, siswaKelas, sekolahInfo, tsInfo] = await Promise.all([
     getKelas(),
     getSiswaKelas(sekolah.tahun, sekolah.semester),
+    getSekolahInfo(),
+    getTahunSemesterInfo(sekolah.tahun, sekolah.semester),
   ]);
 
   return (
     <div>
-      <DaftarRaporClient refKelas={kelas} siswaKelas={siswaKelas} />
+      <DaftarRaporClient
+        refKelas={kelas}
+        siswaKelas={siswaKelas}
+        sekolahInfo={sekolahInfo}
+        tahun={sekolah.tahun}
+        semester={sekolah.semester}
+        tahunPelajaran={tsInfo.tahunPelajaran}
+        semesterLabel={tsInfo.semesterLabel}
+      />
     </div>
   );
 }

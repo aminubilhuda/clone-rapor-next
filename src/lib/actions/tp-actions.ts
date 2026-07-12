@@ -54,24 +54,35 @@ export async function addTujuanMulti(formData: FormData) {
   try {
     const sekolah = await getSekolahWithFilter();
 
-    for (const idKelas of kelasIds) {
-      const [mkRows]: any = await pool.query(
-        'SELECT id_tingkat FROM kelas WHERE id_kelas = ?',
-        [idKelas]
-      );
-      if (mkRows.length === 0) continue;
+    // Batch: ambil semua id_tingkat sekaligus
+    const [kelasRows]: any = await pool.query(
+      'SELECT id_kelas, id_tingkat FROM kelas WHERE id_kelas IN (?)',
+      [kelasIds]
+    );
+    const tingkatByKelas = new Map<number, number>();
+    for (const row of kelasRows) {
+      tingkatByKelas.set(row.id_kelas, row.id_tingkat);
+    }
 
-      const [lastTp]: any = await pool.query(
-        'SELECT MAX(urut) as last_urut FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?',
-        [sekolah.tahun, sekolah.semester, idMapel, session.user.id_user]
-      );
-      const nextUrut = lastTp[0]?.last_urut ? String(Number(lastTp[0].last_urut) + 1) : '1';
+    // Batch: ambil MAX(urut) sekali untuk semua kelas
+    const [lastTp]: any = await pool.query(
+      'SELECT MAX(urut) as last_urut FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?',
+      [sekolah.tahun, sekolah.semester, idMapel, session.user.id_user]
+    );
+    let nextUrutCounter = Number(lastTp[0]?.last_urut || 0);
+
+    for (const idKelas of kelasIds) {
+      const idTingkat = tingkatByKelas.get(idKelas);
+      if (!idTingkat) continue;
+
+      nextUrutCounter++;
+      const nextUrut = String(nextUrutCounter);
 
       await pool.query(
         `INSERT INTO tujuan_pembelajaran
          (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, kode, tipe, tujuan, ringkasan, contoh_deskripsi_rapor, munculkan_sebagai_deskripsi_rapor, kktp, middle_formatif, middle_ph, formatif_as)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Tujuan Pembelajaran', ?, ?, ?, ?, ?, 0, 0, 0)`,
-        [sekolah.tahun, sekolah.semester, mkRows[0].id_tingkat, idKelas, idMapel, session.user.id_user, nextUrut, kode, tujuan, ringkasan, contohDeskripsiRapor, munculkanSebagaiDeskripsiRapor, kktp]
+        [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, session.user.id_user, nextUrut, kode, tujuan, ringkasan, contohDeskripsiRapor, munculkanSebagaiDeskripsiRapor, kktp]
       );
     }
 
@@ -210,33 +221,52 @@ export async function copyTujuan(formData: FormData) {
     let prevSemester = sekolah.semester === 1 ? 2 : 1;
     if (sekolah.semester === 1) prevTahun = sekolah.tahun - 1;
 
+    // Batch: ambil sumber TP untuk semua kode sekaligus
+    const [srcRows]: any = await pool.query(
+      `SELECT * FROM tujuan_pembelajaran
+       WHERE tahun = ? AND semester = ? AND id_mapel = ? AND kode IN (?) AND id_user = ?`,
+      [prevTahun, prevSemester, idMapel, kodes, session.user.id_user]
+    );
+    if (srcRows.length === 0) return { success: false, error: 'TP sumber tidak ditemukan' } as const;
+
+    const srcByKode = new Map<string, any>();
+    for (const row of srcRows) {
+      if (!srcByKode.has(row.kode)) srcByKode.set(row.kode, row);
+    }
+
+    // Batch: ambil id_tingkat semua kelas sekaligus
+    const [kelasRows]: any = await pool.query(
+      'SELECT id_kelas, id_tingkat FROM kelas WHERE id_kelas IN (?)',
+      [kelasIds]
+    );
+    const tingkatByKelas = new Map<number, number>();
+    for (const row of kelasRows) {
+      tingkatByKelas.set(row.id_kelas, row.id_tingkat);
+    }
+
+    // Batch: ambil MAX(urut) sekali
+    const [lastTp]: any = await pool.query(
+      'SELECT MAX(urut) as last_urut FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?',
+      [sekolah.tahun, sekolah.semester, idMapel, session.user.id_user]
+    );
+    let nextUrutCounter = Number(lastTp[0]?.last_urut || 0);
+
     for (const kode of kodes) {
-      const [srcRows]: any = await pool.query(
-        `SELECT * FROM tujuan_pembelajaran
-         WHERE tahun = ? AND semester = ? AND id_mapel = ? AND kode = ? AND id_user = ? LIMIT 1`,
-        [prevTahun, prevSemester, idMapel, kode, session.user.id_user]
-      );
-      if (srcRows.length === 0) continue;
-      const src = srcRows[0];
+      const src = srcByKode.get(kode);
+      if (!src) continue;
 
       for (const idKelas of kelasIds) {
-        const [mkRows]: any = await pool.query(
-          'SELECT id_tingkat FROM kelas WHERE id_kelas = ?',
-          [idKelas]
-        );
-        if (mkRows.length === 0) continue;
+        const idTingkat = tingkatByKelas.get(idKelas);
+        if (!idTingkat) continue;
 
-        const [lastTp]: any = await pool.query(
-          'SELECT MAX(urut) as last_urut FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?',
-          [sekolah.tahun, sekolah.semester, idMapel, session.user.id_user]
-        );
-        const nextUrut = lastTp[0]?.last_urut ? String(Number(lastTp[0].last_urut) + 1) : '1';
+        nextUrutCounter++;
+        const nextUrut = String(nextUrutCounter);
 
         await pool.query(
           `INSERT INTO tujuan_pembelajaran
            (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, kode, tipe, tujuan, ringkasan, contoh_deskripsi_rapor, munculkan_sebagai_deskripsi_rapor, kktp, middle_formatif, middle_ph, formatif_as)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)`,
-          [sekolah.tahun, sekolah.semester, mkRows[0].id_tingkat, idKelas, idMapel, session.user.id_user, nextUrut, kode, src.tipe, src.tujuan, src.ringkasan, src.contoh_deskripsi_rapor, src.munculkan_sebagai_deskripsi_rapor, src.kktp]
+          [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, session.user.id_user, nextUrut, kode, src.tipe, src.tujuan, src.ringkasan, src.contoh_deskripsi_rapor, src.munculkan_sebagai_deskripsi_rapor, src.kktp]
         );
       }
     }

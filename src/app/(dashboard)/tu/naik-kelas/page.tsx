@@ -36,7 +36,7 @@ async function getKelas() {
 
 async function getTingkat() {
   try {
-    const [rows]: any = await pool.query('SELECT id_tingkat, tingkat FROM tingkat ORDER BY id_tingkat');
+    const [rows]: any = await pool.query('SELECT id_tingkat, tingkat, akhir FROM tingkat ORDER BY id_tingkat');
     return rows;
   } catch (error) {
     console.error('Tingkat fetch error:', error);
