@@ -65,10 +65,13 @@ export function generateSemesterRaporHTML(
       const subjectRows = km.mapels.map((m, i) => {
         const nilaiDisplay = m.nilai === 0 ? "0" : String(r(m.nilai));
         const nilaiStyle = m.nilai === 0 || m.nilai < 75 ? 'color:red;' : 'color:black;';
-        return `<tbody style="page-break-inside:avoid;break-inside:avoid;">
-          <tr><td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${i + 1}</td><td style="width:25%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td><td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}" rowspan="2">${nilaiDisplay}</td><td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td></tr>
-          <tr><td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>
-        </tbody>`;
+        return `<tr>
+          <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${i + 1}</td>
+          <td style="width:25%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td>
+          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}" rowspan="2">${nilaiDisplay}</td>
+          <td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td>
+        </tr>
+        <tr><td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
       });
       return kelompokHeader + subjectRows.join('');
     });
