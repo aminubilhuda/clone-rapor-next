@@ -62,13 +62,13 @@ export function generateSemesterRaporHTML(
   const siswaPages = siswaList.map((siswa) => {
     const mapelRows = siswa.kelompok_mapels.flatMap((km) => {
       const kelompokHeader = `<tr><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">${escapeHtml(km.huruf)}. ${escapeHtml(km.kelompok)}</td></tr>`;
-      const subjectRows = km.mapels.flatMap((m, i) => {
+      const subjectRows = km.mapels.map((m, i) => {
         const nilaiDisplay = m.nilai === 0 ? "0" : String(r(m.nilai));
         const nilaiStyle = m.nilai === 0 || m.nilai < 75 ? 'color:red;' : 'color:black;';
-        return [
-          `<tr><td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${i + 1}</td><td style="width:30%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}" rowspan="2">${nilaiDisplay}</td><td style="width:50%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td></tr>`,
-          `<tr><td style="width:50%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`
-        ];
+        return `<tbody style="page-break-inside:avoid;break-inside:avoid;">
+          <tr><td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${i + 1}</td><td style="width:25%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td><td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}" rowspan="2">${nilaiDisplay}</td><td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td></tr>
+          <tr><td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>
+        </tbody>`;
       });
       return kelompokHeader + subjectRows.join('');
     });
@@ -122,42 +122,42 @@ export function generateSemesterRaporHTML(
 
     return `
     <div class="page">
-      <table style="width:100%;border-collapse:collapse;margin-top:5px;font-size:11pt;">
+      <table style="width:100%;border-collapse:collapse;margin-top:0;font-size:9pt;">
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">Nama</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml(siswa.nama_siswa.toUpperCase())}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Nama</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(siswa.nama_siswa.toUpperCase())}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Kelas</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(siswa.nama_kelas.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Kelas</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(siswa.nama_kelas.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">NIS / NISN</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml((siswa.nis || '-') + ' / ' + (siswa.nisn || '-'))}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">NIS / NISN</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml((siswa.nis || '-') + ' / ' + (siswa.nisn || '-'))}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Fase</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(siswa.fase.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Fase</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(siswa.fase.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">Nama Sekolah</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml(sekolah.nama_sekolah.toUpperCase())}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Nama Sekolah</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(sekolah.nama_sekolah.toUpperCase())}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Semester</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(semesterLabel.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Semester</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(semesterLabel.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">Alamat</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml(sekolah.alamat.toUpperCase())}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Alamat</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(sekolah.alamat.toUpperCase())}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Tahun Pelajaran</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(tahunPelajaran.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Tahun Pelajaran</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(tahunPelajaran.toUpperCase())}</td>
         </tr>
       </table>
       <hr style="margin:6px 0 10px;border:1px solid #000;">
@@ -165,12 +165,14 @@ export function generateSemesterRaporHTML(
       <h2 style="text-align:center;font-size:18px;margin:10px 0;">LAPORAN HASIL BELAJAR</h2>
 
       <table style="width:100%;border-collapse:collapse;" border="1">
-        <tr style="background:#f5f3f3;">
-          <td style="width:5%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">No</td>
-          <td style="width:30%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Mata Pelajaran</td>
-          <td style="width:15%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Nilai</td>
-          <td style="width:50%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Capaian Kompetensi</td>
-        </tr>
+        <thead style="display:table-header-group;">
+          <tr style="background:#f5f3f3;">
+            <td style="width:5%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">No</td>
+            <td style="width:25%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Mata Pelajaran</td>
+            <td style="width:10%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Nilai</td>
+            <td style="width:60%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Capaian Kompetensi</td>
+          </tr>
+        </thead>
         ${mapelRows}
       </table>
 
@@ -205,9 +207,6 @@ export function generateSemesterRaporHTML(
       </div>
 
       <div style="page-break-inside:avoid;">
-        <table style="width:100%;border-collapse:collapse;margin-top:20px;">
-          <tr><td style="width:100%;text-align:left;font-weight:bold;">Ekstrakurikuler</td></tr>
-        </table>
         <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
           <tr>
             <td style="width:5%;text-align:center;font-weight:bold;border:1px solid #000;">No</td>
@@ -220,9 +219,6 @@ export function generateSemesterRaporHTML(
       </div>
 
       <div style="page-break-inside:avoid;">
-        <table style="width:100%;border-collapse:collapse;margin-top:20px;">
-          <tr><td style="width:100%;text-align:left;font-weight:bold;">Organisasi</td></tr>
-        </table>
         <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
           <tr>
             <td style="width:5%;text-align:center;font-weight:bold;border:1px solid #000;">No</td>
@@ -233,25 +229,19 @@ export function generateSemesterRaporHTML(
       </div>
 
       <div style="page-break-inside:avoid;">
-        <table style="width:100%;border-collapse:collapse;margin-top:20px;">
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
           <tr>
-            <td style="width:50%;vertical-align:top;">
-              <table style="width:100%;border-collapse:collapse;">
-                <tr><td style="text-align:left;font-weight:bold;">Ketidakhadiran</td></tr>
-              </table>
-              <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
-                ${presensiRows}
-              </table>
-            </td>
-            <td style="width:50%;vertical-align:top;">
-              <table style="width:100%;border-collapse:collapse;">
-                <tr><td style="text-align:left;font-weight:bold;">Catatan Wali Kelas</td></tr>
-              </table>
-              <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
-                <tr><td style="width:100%;text-align:left;height:54px;padding:5px;border:1px solid #000;">${siswa.catatan_wali ? escapeHtml(siswa.catatan_wali) : ''}</td></tr>
-              </table>
-            </td>
+            <td style="width:60%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Absen</td>
+            <td style="width:40%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Jumlah</td>
           </tr>
+          ${presensiRows}
+        </table>
+      </div>
+
+      <div style="page-break-inside:avoid;">
+        <h3 style="text-align:left;font-size:11pt;margin:15px 0 5px;font-weight:bold;">CATATAN WALI KELAS</h3>
+        <table style="width:100%;border-collapse:collapse;" border="1">
+          <tr><td style="width:100%;text-align:left;padding:5px;min-height:54px;border:1px solid #000;">${siswa.catatan_wali ? escapeHtml(siswa.catatan_wali) : ''}</td></tr>
         </table>
       </div>
 

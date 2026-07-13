@@ -31,12 +31,14 @@ export function wrapHtml(content: string): string {
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: A4; margin: 20mm 15mm; }
+  @page { size: A4; margin: 5mm 15mm 15mm; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: #000; line-height: 1.4; }
-  .page { padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: #000; line-height: 1.0; }
+  .page { padding: 0; padding-bottom: 22px; }
   .page-break { page-break-after: always; }
   table { font-size: 11pt; }
+  thead { display: table-header-group; }
+  tr, td, th, tbody { page-break-inside: avoid; break-inside: avoid; }
   @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
@@ -122,7 +124,7 @@ export function generateRaporHTML(
       box-sizing: border-box;
     }
     body {
-      font-family: 'Times New Roman', Times, serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 12pt;
       color: #000;
       line-height: 1.5;
