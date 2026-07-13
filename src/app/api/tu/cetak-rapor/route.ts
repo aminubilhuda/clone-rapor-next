@@ -10,7 +10,7 @@ const VALID_JENIS: JenisRapor[] = ['pelengkap', 'tengah_semester', 'semester', '
 function buildFooterTemplate(nama_kelas: string, nama_siswa: string, nis: string, nisn: string): string {
   const info = `${nama_kelas || '-'} | ${nama_siswa || '-'} | ${nis || '-'}${nisn ? '/' + nisn : ''}`;
   const escaped = info.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  return `<div style="font-size:8pt;font-family:Arial,Helvetica,sans-serif;width:100%;display:flex;justify-content:space-between;padding:0 15mm;border-top:1px solid #ddd;padding-top:3px;">
+  return `<div style="font-size:9pt;font-family:Arial,Helvetica,sans-serif;font-style:italic;width:100%;display:flex;justify-content:space-between;padding:0 15mm;border-top:1.5pt double #555;padding-top:3px;">
     <span>${escaped}</span>
     <span>Halaman: <span class="pageNumber"></span> / <span class="totalPages"></span></span>
   </div>`;
@@ -240,12 +240,13 @@ export async function POST(req: NextRequest) {
       const footerTengah = buildFooterTemplate(firstSiswaMid.nama_kelas, firstSiswaMid.nama_siswa, firstSiswaMid.nis || '-', firstSiswaMid.nisn || '-');
 
       const pdfArray = await page.pdf({
-        format: 'A4',
+        width: '210mm',
+        height: '330mm',
         printBackground: true,
         displayHeaderFooter: true,
         footerTemplate: footerTengah,
         headerTemplate: '<div></div>',
-        margin: { top: '5mm', bottom: '15mm', left: '15mm', right: '15mm' },
+        margin: { top: '6.2mm', bottom: '6.6mm', left: '14.5mm', right: '15.7mm' },
       });
 
       await browser.close();
@@ -500,12 +501,13 @@ export async function POST(req: NextRequest) {
       const footerSemester = buildFooterTemplate(firstSiswaSem.nama_kelas, firstSiswaSem.nama_siswa, firstSiswaSem.nis || '-', firstSiswaSem.nisn || '-');
 
       const pdfArray = await page.pdf({
-        format: 'A4',
+        width: '210mm',
+        height: '330mm',
         printBackground: true,
         displayHeaderFooter: true,
         footerTemplate: footerSemester,
         headerTemplate: '<div></div>',
-        margin: { top: '5mm', bottom: '15mm', left: '15mm', right: '15mm' },
+        margin: { top: '6.2mm', bottom: '6.6mm', left: '14.5mm', right: '15.7mm' },
       });
 
       await browser.close();
@@ -553,12 +555,13 @@ export async function POST(req: NextRequest) {
     const footerDefault = buildFooterTemplate(siswaList[0].nama_kelas, siswaList[0].nama_siswa, siswaList[0].nis || '-', siswaList[0].nisn || '-');
 
     const pdfArray = await page.pdf({
-      format: 'A4',
+      width: '210mm',
+      height: '330mm',
       printBackground: true,
       displayHeaderFooter: true,
       footerTemplate: footerDefault,
       headerTemplate: '<div></div>',
-      margin: { top: '5mm', bottom: '15mm', left: '15mm', right: '15mm' },
+      margin: { top: '6.2mm', bottom: '6.6mm', left: '14.5mm', right: '15.7mm' },
     });
 
     await browser.close();

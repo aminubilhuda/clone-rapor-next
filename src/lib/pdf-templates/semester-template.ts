@@ -90,7 +90,7 @@ export function generateSemesterRaporHTML(
         <td style="width:15%;text-align:center;padding:3px;border:1px solid #000;">${escapeHtml(e.predikat)}</td>
         <td style="width:50%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(e.keterangan)}</td>
       </tr>`).join('')
-      : `<tr><td style="width:5%;text-align:center;border:1px solid #000;">-</td><td style="width:30%;text-align:center;border:1px solid #000;">-</td><td style="width:15%;text-align:center;border:1px solid #000;">-</td><td style="width:50%;text-align:center;border:1px solid #000;">-</td></tr>`;
+      : `<tr><td style="width:5%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:30%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:15%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:50%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td></tr>`;
 
     const orgRows = siswa.organisasi.length > 0
       ? siswa.organisasi.map((o, i) => `
@@ -98,18 +98,18 @@ export function generateSemesterRaporHTML(
         <td style="width:5%;text-align:center;border:1px solid #000;">${i + 1}</td>
         <td style="width:95%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(o.nama_organisasi)}</td>
       </tr>`).join('')
-      : `<tr><td style="width:5%;text-align:center;border:1px solid #000;">-</td><td style="width:95%;text-align:center;border:1px solid #000;">-</td></tr>`;
+      : `<tr><td style="width:5%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:95%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td></tr>`;
 
     const presensiRows = siswa.presensi.map((p) => `
       <tr>
-        <td style="width:60%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(p.absen)}</td>
-        <td style="width:40%;text-align:left;padding:3px;border:1px solid #000;">${p.jumlah > 0 ? p.jumlah : '-'} Hari</td>
+        <td style="width:60%;text-align:left;padding:5px;border:1px solid #000;">${escapeHtml(p.absen)}</td>
+        <td style="width:40%;text-align:left;padding:5px;border:1px solid #000;">${p.jumlah > 0 ? p.jumlah : '-'} Hari</td>
       </tr>`).join('');
 
     const kenaikanKelas = siswa.isSemester2 ? `
     <div style="page-break-inside:avoid;">
       <table style="width:100%;border-collapse:collapse;margin-top:20px;">
-        <tr><td style="width:100%;text-align:left;font-weight:bold;">KETERANGAN KENAIKAN KELAS</td></tr>
+        <tr><td style="width:100%;text-align:left;font-weight:bold;font-size:10.5pt;">Keputusan</td></tr>
       </table>
       <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
         <tr>
@@ -160,13 +160,13 @@ export function generateSemesterRaporHTML(
           <td style="text-align:left;">${escapeHtml(tahunPelajaran.toUpperCase())}</td>
         </tr>
       </table>
-      <hr style="margin:6px 0 10px;border:1px solid #000;">
+      <div class="divider-double"></div>
 
-      <h2 style="text-align:center;font-size:18px;margin:10px 0;">LAPORAN HASIL BELAJAR</h2>
+      <h2 style="text-align:center;font-size:13.5pt;font-weight:bold;margin:10px 0;">LAPORAN HASIL BELAJAR</h2>
 
       <table style="width:100%;border-collapse:collapse;" border="1">
         <thead style="display:table-header-group;">
-          <tr style="background:#f5f3f3;">
+          <tr style="background:#E4E6EB;">
             <td style="width:5%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">No</td>
             <td style="width:25%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Mata Pelajaran</td>
             <td style="width:10%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Nilai</td>
@@ -208,11 +208,11 @@ export function generateSemesterRaporHTML(
 
       <div style="page-break-inside:avoid;">
         <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
-          <tr>
-            <td style="width:5%;text-align:center;font-weight:bold;border:1px solid #000;">No</td>
-            <td style="width:30%;text-align:center;font-weight:bold;border:1px solid #000;">Ekstrakurikuler</td>
-            <td style="width:15%;text-align:center;font-weight:bold;border:1px solid #000;">Predikat</td>
-            <td style="width:50%;text-align:center;font-weight:bold;border:1px solid #000;">Keterangan</td>
+          <tr style="background:#E4E6EB;">
+            <td style="width:5%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">No</td>
+            <td style="width:30%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Ekstrakurikuler</td>
+            <td style="width:15%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Predikat</td>
+            <td style="width:50%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Keterangan</td>
           </tr>
           ${eskulRows}
         </table>
@@ -220,9 +220,9 @@ export function generateSemesterRaporHTML(
 
       <div style="page-break-inside:avoid;">
         <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
-          <tr>
-            <td style="width:5%;text-align:center;font-weight:bold;border:1px solid #000;">No</td>
-            <td style="width:95%;text-align:center;font-weight:bold;border:1px solid #000;">Organisasi</td>
+          <tr style="background:#E4E6EB;">
+            <td style="width:5%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">No</td>
+            <td style="width:95%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Organisasi</td>
           </tr>
           ${orgRows}
         </table>
@@ -230,16 +230,16 @@ export function generateSemesterRaporHTML(
 
       <div style="page-break-inside:avoid;">
         <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
-          <tr>
-            <td style="width:60%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Absen</td>
-            <td style="width:40%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Jumlah</td>
+          <tr style="background:#E4E6EB;">
+            <td style="width:60%;text-align:left;padding:5px;border:1px solid #000;font-weight:bold;height:25px;vertical-align:middle;">Absen</td>
+            <td style="width:40%;text-align:left;padding:5px;border:1px solid #000;font-weight:bold;height:25px;vertical-align:middle;">Jumlah</td>
           </tr>
           ${presensiRows}
         </table>
       </div>
 
       <div style="page-break-inside:avoid;">
-        <h3 style="text-align:left;font-size:11pt;margin:15px 0 5px;font-weight:bold;">CATATAN WALI KELAS</h3>
+        <h3 style="text-align:left;font-size:9pt;margin:15px 0 5px;font-weight:bold;">CATATAN WALI KELAS</h3>
         <table style="width:100%;border-collapse:collapse;" border="1">
           <tr><td style="width:100%;text-align:left;padding:5px;min-height:54px;border:1px solid #000;">${siswa.catatan_wali ? escapeHtml(siswa.catatan_wali) : ''}</td></tr>
         </table>
