@@ -7,6 +7,15 @@ import { generateSemesterRaporHTML, SiswaSemesterRapor, KelompokSemester, MapelS
 
 const VALID_JENIS: JenisRapor[] = ['pelengkap', 'tengah_semester', 'semester', 'p5bk', 'buku_induk'];
 
+function buildFooterTemplate(nama_kelas: string, nama_siswa: string, nis: string, nisn: string): string {
+  const info = `${nama_kelas || '-'} | ${nama_siswa || '-'} | ${nis || '-'}${nisn ? '/' + nisn : ''}`;
+  const escaped = info.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return `<div style="font-size:8pt;font-family:Arial,Helvetica,sans-serif;width:100%;display:flex;justify-content:space-between;padding:0 15mm;border-top:1px solid #ddd;padding-top:3px;">
+    <span>${escaped}</span>
+    <span>Halaman: <span class="pageNumber"></span> / <span class="totalPages"></span></span>
+  </div>`;
+}
+
 function tglIndo(dateStr: string): string {
   if (!dateStr) return '';
   const d = new Date(dateStr);
@@ -227,13 +236,16 @@ export async function POST(req: NextRequest) {
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'load' });
 
+      const firstSiswaMid = siswaMidList[0];
+      const footerTengah = buildFooterTemplate(firstSiswaMid.nama_kelas, firstSiswaMid.nama_siswa, firstSiswaMid.nis || '-', firstSiswaMid.nisn || '-');
+
       const pdfArray = await page.pdf({
         format: 'A4',
         printBackground: true,
         displayHeaderFooter: true,
-        footerTemplate: '<div style="font-size:9pt;font-family:Times New Roman,Times,serif;text-align:center;width:100%;border-top:1px solid #ddd;padding-top:3px;">Halaman <span class="pageNumber"></span></div>',
+        footerTemplate: footerTengah,
         headerTemplate: '<div></div>',
-        margin: { top: '20mm', bottom: '25mm', left: '15mm', right: '15mm' },
+        margin: { top: '5mm', bottom: '15mm', left: '15mm', right: '15mm' },
       });
 
       await browser.close();
@@ -484,13 +496,16 @@ export async function POST(req: NextRequest) {
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'load' });
 
+      const firstSiswaSem = siswaSemList[0];
+      const footerSemester = buildFooterTemplate(firstSiswaSem.nama_kelas, firstSiswaSem.nama_siswa, firstSiswaSem.nis || '-', firstSiswaSem.nisn || '-');
+
       const pdfArray = await page.pdf({
         format: 'A4',
         printBackground: true,
         displayHeaderFooter: true,
-        footerTemplate: '<div style="font-size:9pt;font-family:Times New Roman,Times,serif;text-align:center;width:100%;border-top:1px solid #ddd;padding-top:3px;">Halaman <span class="pageNumber"></span></div>',
+        footerTemplate: footerSemester,
         headerTemplate: '<div></div>',
-        margin: { top: '20mm', bottom: '25mm', left: '15mm', right: '15mm' },
+        margin: { top: '5mm', bottom: '15mm', left: '15mm', right: '15mm' },
       });
 
       await browser.close();
@@ -535,10 +550,15 @@ export async function POST(req: NextRequest) {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'load' });
 
+    const footerDefault = buildFooterTemplate(siswaList[0].nama_kelas, siswaList[0].nama_siswa, siswaList[0].nis || '-', siswaList[0].nisn || '-');
+
     const pdfArray = await page.pdf({
       format: 'A4',
       printBackground: true,
-      margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' },
+      displayHeaderFooter: true,
+      footerTemplate: footerDefault,
+      headerTemplate: '<div></div>',
+      margin: { top: '5mm', bottom: '15mm', left: '15mm', right: '15mm' },
     });
 
     await browser.close();

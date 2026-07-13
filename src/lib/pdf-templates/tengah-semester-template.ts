@@ -70,42 +70,42 @@ export function generateTengahSemesterRaporHTML(
 
     return `
     <div class="page">
-      <table style="width:100%;border-collapse:collapse;margin-top:5px;font-size:11pt;">
+      <table style="width:100%;border-collapse:collapse;margin-top:0;font-size:9pt;">
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">Nama</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml(siswa.nama_siswa.toUpperCase())}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Nama</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(siswa.nama_siswa.toUpperCase())}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Kelas</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(siswa.nama_kelas.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Kelas</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(siswa.nama_kelas.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">NIS / NISN</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml((siswa.nis || '-') + ' / ' + (siswa.nisn || '-'))}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">NIS / NISN</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml((siswa.nis || '-') + ' / ' + (siswa.nisn || '-'))}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Fase</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(siswa.fase.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Fase</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(siswa.fase.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">Nama Sekolah</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml(sekolah.nama_sekolah.toUpperCase())}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Nama Sekolah</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(sekolah.nama_sekolah.toUpperCase())}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Semester</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(semesterLabel.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Semester</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(semesterLabel.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="width:25%;text-align:left;height:14px;">Alamat</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:37%;text-align:left;font-weight:bold;">${escapeHtml(sekolah.alamat.toUpperCase())}</td>
+          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Alamat</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(sekolah.alamat.toUpperCase())}</td>
           <td style="width:5%;"></td>
-          <td style="width:17%;text-align:left;">Tahun Pelajaran</td>
-          <td style="width:3%;text-align:center;">:</td>
-          <td style="width:17%;text-align:left;font-weight:bold;">${escapeHtml(tahunPelajaran.toUpperCase())}</td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Tahun Pelajaran</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">${escapeHtml(tahunPelajaran.toUpperCase())}</td>
         </tr>
       </table>
       <hr style="margin:6px 0 10px;border:1px solid #000;">
