@@ -108,9 +108,9 @@ export function generateTengahSemesterRaporHTML(
           <td style="text-align:left;">${escapeHtml(tahunPelajaran.toUpperCase())}</td>
         </tr>
       </table>
-      <hr style="margin:6px 0 10px;border:1px solid #000;">
+      <div class="divider-double"></div>
 
-      <h2 style="text-align:center;font-size:14pt;margin:10px 0;">LAPORAN HASIL BELAJAR TENGAH SEMESTER</h2>
+      <h2 style="text-align:center;font-size:13.5pt;font-weight:bold;margin:10px 0;">LAPORAN HASIL BELAJAR TENGAH SEMESTER</h2>
 
       <table style="width:100%;border-collapse:collapse;" border="1">
         <tr style="background:#FFFEC5;">
@@ -122,14 +122,14 @@ export function generateTengahSemesterRaporHTML(
         ${mapelRows}
       </table>
 
-      <h3 style="text-align:left;font-size:11pt;margin:15px 0 5px;font-weight:bold;">KETIDAKHADIRAN</h3>
+      <h3 style="text-align:left;font-size:9pt;margin:15px 0 5px;font-weight:bold;">KETIDAKHADIRAN</h3>
       <table style="width:50%;border-collapse:collapse;" border="1">
         <tr><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Absen</td><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Jumlah</td></tr>
         ${presensiRows}
       </table>
 
       ${catatanContent ? `
-      <h3 style="text-align:left;font-size:11pt;margin:15px 0 5px;font-weight:bold;">CATATAN AKADEMIK</h3>
+      <h3 style="text-align:left;font-size:9pt;margin:15px 0 5px;font-weight:bold;">CATATAN AKADEMIK</h3>
       <table style="width:100%;border-collapse:collapse;" border="1">
         <tr><td style="width:100%;text-align:left;padding:5px;height:35px;">${catatanContent}</td></tr>
       </table>` : ''}

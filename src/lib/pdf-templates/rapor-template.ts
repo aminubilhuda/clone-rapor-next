@@ -31,14 +31,15 @@ export function wrapHtml(content: string): string {
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: A4; margin: 5mm 15mm 15mm; }
+  @page { size: 210mm 330mm; margin: 17.5pt 44.4pt 18.6pt 41pt; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: #000; line-height: 1.0; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; color: #000; line-height: 1.1; }
   .page { padding: 0; padding-bottom: 22px; }
   .page-break { page-break-after: always; }
-  table { font-size: 11pt; }
+  table { font-size: 9pt; }
   thead { display: table-header-group; }
   tr, td, th, tbody { page-break-inside: avoid; break-inside: avoid; }
+  .divider-double { border-bottom: 1.5pt double #555; margin: 6px 0 10px; }
   @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
