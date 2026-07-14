@@ -47,8 +47,7 @@ async function getDetail(idMapel: number, idTingkat: number, idUser: number) {
   const kelasIds = kelasRows.map((k: any) => k.id_kelas);
 
   const [tpRows]: any = await pool.query(`
-    SELECT tp.id_tujuan, tp.kode, tp.tipe, tp.tujuan, tp.ringkasan,
-           tp.contoh_deskripsi_rapor, tp.munculkan_sebagai_deskripsi_rapor, tp.kktp, tp.urut,
+    SELECT tp.id_tujuan, tp.urut AS kode, tp.tujuan, tp.kktp, tp.urut,
            k.nama_kelas, k.id_kelas
     FROM tujuan_pembelajaran tp
     JOIN kelas k ON tp.id_kelas = k.id_kelas
@@ -71,10 +70,8 @@ async function getDetail(idMapel: number, idTingkat: number, idUser: number) {
     } else {
       acc.push({
         id_tujuan: row.id_tujuan,
-        kode: row.kode, tipe: row.tipe,
-        tujuan: row.tujuan, ringkasan: row.ringkasan,
-        contoh_deskripsi_rapor: row.contoh_deskripsi_rapor,
-        munculkan_sebagai_deskripsi_rapor: row.munculkan_sebagai_deskripsi_rapor,
+        kode: row.kode,
+        tujuan: row.tujuan,
         kktp: row.kktp, urut: row.urut,
         kelas: [{ id_kelas: row.id_kelas, nama_kelas: row.nama_kelas }],
       });

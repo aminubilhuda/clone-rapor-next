@@ -79,24 +79,37 @@ export default function DaftarRaporClient({
     return s.size > 0 && s.size < filteredSiswa.length;
   };
 
-  const handleCetakSingle = async (jenis: JenisRapor, idSiswa: number) => {
-    const key = `${jenis}-${idSiswa}`;
+  const getFilename = (jenis: JenisRapor, idSiswa?: number) => {
+    const label = JENIS_CONFIG.find((c) => c.key === jenis)?.label.replace(/\s+/g, '_') || jenis;
+    if (idSiswa) {
+      const siswa = filteredSiswa.find((s) => s.id_siswa === idSiswa);
+      const nama = siswa?.nama_siswa?.replace(/\s+/g, '_') || idSiswa;
+      return `${nama}_${kelasName}_${label}.pdf`;
+    }
+    return `Rapor_${kelasName}_${label}.pdf`;
+  };
+
+  const downloadPdf = async (jenis: JenisRapor, idSiswa?: number) => {
+    const ids = idSiswa ? [idSiswa] : Array.from(selected[jenis]);
+    if (ids.length === 0) return;
+    const key = idSiswa ? `${jenis}-${idSiswa}` : `batch-${jenis}`;
     setLoading(key);
     try {
       const res = await fetch('/api/tu/cetak-rapor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id_siswa_list: [idSiswa],
-          jenis,
-          tahun,
-          semester,
-        }),
+        body: JSON.stringify({ id_siswa_list: ids, jenis, tahun, semester }),
       });
       if (!res.ok) throw new Error('Gagal mencetak');
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = getFilename(jenis, idSiswa);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
       alert('Gagal mencetak rapor. Silakan coba lagi.');
@@ -105,33 +118,11 @@ export default function DaftarRaporClient({
     }
   };
 
+  const handleCetakSingle = (jenis: JenisRapor, idSiswa: number) => downloadPdf(jenis, idSiswa);
+
   const handleCetakBatch = async (jenis: JenisRapor) => {
-    const ids = Array.from(selected[jenis]);
-    if (ids.length === 0) return;
-    const key = `batch-${jenis}`;
-    setLoading(key);
-    try {
-      const res = await fetch('/api/tu/cetak-rapor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id_siswa_list: ids,
-          jenis,
-          tahun,
-          semester,
-        }),
-      });
-      if (!res.ok) throw new Error('Gagal mencetak');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      setSelected((prev) => ({ ...prev, [jenis]: new Set() }));
-    } catch (err) {
-      console.error(err);
-      alert('Gagal mencetak rapor batch. Silakan coba lagi.');
-    } finally {
-      setLoading(null);
-    }
+    await downloadPdf(jenis);
+    setSelected((prev) => ({ ...prev, [jenis]: new Set() }));
   };
 
   const hasAnyBatch = CHECKBOX_JENIS.some((j) => selected[j].size > 0);
