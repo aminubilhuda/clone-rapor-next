@@ -36,7 +36,6 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
   const [modalAdd, setModalAdd] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
-  const [modalContoh, setModalContoh] = useState(false);
   const [modalCopy, setModalCopy] = useState(false);
   const [selected, setSelected] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -48,9 +47,6 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
 
   const [editKode, setEditKode] = useState('');
   const [editTujuanVal, setEditTujuanVal] = useState('');
-  const [editRingkasan, setEditRingkasan] = useState('');
-  const [editContoh, setEditContoh] = useState('');
-  const [editMunculkan, setEditMunculkan] = useState('Tidak');
   const [editKktp, setEditKktp] = useState('70');
 
   const [copySource, setCopySource] = useState<any[]>([]);
@@ -92,9 +88,6 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
     setSelected(row);
     setEditKode(row.kode);
     setEditTujuanVal(row.tujuan);
-    setEditRingkasan(row.ringkasan || '');
-    setEditContoh(row.contoh_deskripsi_rapor || '');
-    setEditMunculkan(row.munculkan_sebagai_deskripsi_rapor || 'Tidak');
     setEditKktp(String(row.kktp || 70));
     setError('');
     setModalEdit(true);
@@ -103,11 +96,6 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
   const openHapus = (row: any) => {
     setSelected(row);
     setModalHapus(true);
-  };
-
-  const openContoh = (row: any) => {
-    setSelected(row);
-    setModalContoh(true);
   };
 
   const openCopy = async () => {
@@ -138,9 +126,6 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
     fd.set('kelas_ids', JSON.stringify(selectedKelas));
     fd.set('kode', addKode);
     fd.set('tujuan', addTujuan);
-    fd.set('ringkasan', '');
-    fd.set('contoh_deskripsi_rapor', '');
-    fd.set('munculkan_sebagai_deskripsi_rapor', 'Tidak');
     fd.set('kktp', '70');
     const result = await addTujuanMulti(fd);
     if (result.success) { setModalAdd(false); showToast('TP berhasil ditambahkan', 'success'); setTimeout(() => window.location.reload(), 800); }
@@ -156,9 +141,6 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
     fd.set('urut', selected.urut);
     fd.set('id_mapel', String(selectedData!.mapel.id_mapel));
     fd.set('tujuan', editTujuanVal);
-    fd.set('ringkasan', editRingkasan);
-    fd.set('contoh_deskripsi_rapor', editContoh);
-    fd.set('munculkan_sebagai_deskripsi_rapor', editMunculkan);
     fd.set('kktp', editKktp);
     const result = await updateTujuanMulti(fd);
     if (result.success) { setModalEdit(false); showToast('TP berhasil diperbarui', 'success'); setTimeout(() => window.location.reload(), 800); }
@@ -169,7 +151,7 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
   const handleDelete = async () => {
     if (!selected || !selectedData) return;
     setLoading(true);
-    const result = await deleteTujuanByKode(selected.kode, selectedData.mapel.id_mapel, selected.urut);
+    const result = await deleteTujuanByKode(selected.kode, selectedData.mapel.id_mapel);
     if (result.success) { setModalHapus(false); showToast('TP berhasil dihapus', 'success'); setTimeout(() => window.location.reload(), 800); }
     else { setError(result.error || 'Gagal menghapus TP'); setModalHapus(false); }
     setLoading(false);
@@ -243,34 +225,25 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-orange-100 border-b text-orange-800">
+                     <tr className="bg-orange-100 border-b text-orange-800">
                       <th className="text-left px-3 py-2.5 font-semibold w-10">No</th>
-                      <th className="text-left px-3 py-2.5 font-semibold w-24">Tipe</th>
                       <th className="text-left px-3 py-2.5 font-semibold w-16">Kode</th>
                       <th className="text-left px-3 py-2.5 font-semibold w-20">Kelas</th>
-                      <th className="text-left px-3 py-2.5 font-semibold w-24">Munculkan Sebagai Deskripsi Rapor</th>
                       <th className="text-left px-3 py-2.5 font-semibold">Deskripsi</th>
-                      <th className="text-left px-3 py-2.5 font-semibold">Ringkasan (Poin Penting)</th>
-                      <th className="text-center px-3 py-2.5 font-semibold w-24">Contoh Deskripsi Rapor</th>
                       <th className="text-center px-3 py-2.5 font-semibold w-20">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     {selectedData.tp.length === 0 ? (
-                      <tr>
-                        <td colSpan={9} className="text-center py-8 text-gray-400">
+                       <tr>
+                        <td colSpan={5} className="text-center py-8 text-gray-400">
                           Belum ada tujuan pembelajaran.
                         </td>
                       </tr>
                     ) : (
                       selectedData.tp.map((t: any, i: number) => (
-                        <tr key={t.kode || t.urut} className="border-b hover:bg-orange-50">
+                         <tr key={t.kode || t.urut} className="border-b hover:bg-orange-50">
                           <td className="px-3 py-3 align-top">{i + 1}</td>
-                          <td className="px-3 py-3 align-top">
-                            <select className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs bg-white" value={t.tipe || 'Tujuan Pembelajaran'} disabled>
-                              <option>Tujuan Pembelajaran</option>
-                            </select>
-                          </td>
                           <td className="px-3 py-3 align-top">
                             <span className="text-xs font-medium">{getDisplayKode(t.kode)}</span>
                           </td>
@@ -282,19 +255,8 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                               </span>
                             ))}
                           </td>
-                          <td className="px-3 py-3 align-top">
-                            <span className="text-xs">{t.munculkan_sebagai_deskripsi_rapor || 'Tidak'}</span>
-                          </td>
                           <td className="px-3 py-3 align-top max-w-xs">
                             <p className="text-xs line-clamp-2">{t.tujuan}</p>
-                          </td>
-                          <td className="px-3 py-3 align-top max-w-xs">
-                            <p className="text-xs line-clamp-2">{t.ringkasan || '-'}</p>
-                          </td>
-                          <td className="px-3 py-3 align-top text-center">
-                            <button onClick={() => openContoh(t)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium transition">
-                              Contoh
-                            </button>
                           </td>
                           <td className="px-3 py-3 align-top text-center">
                             <div className="flex items-center justify-center gap-1">
@@ -379,37 +341,11 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                     Kelas: {selected.kelas?.map((k: any) => k.nama_kelas).join(', ')}
                   </p>
                 </div>
-                <div className="px-6 py-4 space-y-4">
+                 <div className="px-6 py-4 space-y-4">
                   {error && <div className="bg-red-50 text-red-600 border border-red-200 rounded p-3 text-sm">{error}</div>}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tipe</label>
-                      <select className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white" value="Tujuan Pembelajaran" disabled>
-                        <option>Tujuan Pembelajaran</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Munculkan Sebagai Deskripsi Rapor</label>
-                      <select value={editMunculkan} onChange={(e) => setEditMunculkan(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="Ya">Ya</option>
-                        <option value="Tidak">Tidak</option>
-                      </select>
-                    </div>
-                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tujuan Pembelajaran</label>
                     <textarea value={editTujuanVal} onChange={(e) => setEditTujuanVal(e.target.value)} rows={4}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ringkasan (Poin Penting)</label>
-                    <textarea value={editRingkasan} onChange={(e) => setEditRingkasan(e.target.value)} rows={3}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Contoh Deskripsi Rapor</label>
-                    <textarea value={editContoh} onChange={(e) => setEditContoh(e.target.value)} rows={3}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
                   </div>
                 </div>
@@ -440,27 +376,6 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                   <button onClick={handleDelete} disabled={loading} className="px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-lg transition disabled:opacity-50">
                     {loading ? 'Menghapus...' : 'Hapus'}
                   </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Modal Contoh */}
-          {modalContoh && selected && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={(e) => { if (e.target === e.currentTarget) setModalContoh(false); }}>
-              <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4">
-                <div className="px-6 py-4 border-b">
-                  <h3 className="text-lg font-semibold">Contoh Deskripsi Rapor — {getDisplayKode(selected.kode)}</h3>
-                </div>
-                <div className="px-6 py-4">
-                  {selected.contoh_deskripsi_rapor ? (
-                    <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{selected.contoh_deskripsi_rapor}</div>
-                  ) : (
-                    <div className="text-sm text-gray-400 italic">Belum ada contoh deskripsi.</div>
-                  )}
-                </div>
-                <div className="px-6 py-4 border-t flex justify-end">
-                  <button onClick={() => setModalContoh(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition">Tutup</button>
                 </div>
               </div>
             </div>

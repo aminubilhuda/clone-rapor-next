@@ -11,7 +11,7 @@ function buildFooterTemplate(nama_kelas: string, nama_siswa: string, nis: string
   const info = `${nama_kelas || '-'} | ${nama_siswa || '-'} | ${nis || '-'}${nisn ? '/' + nisn : ''}`;
   const escaped = info.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   return `<div style="font-size:9pt;font-family:Arial,Helvetica,sans-serif;font-style:italic;width:100%;padding:0 15mm;">
-    <div style="display:flex;justify-content:space-between;border-top:1.5pt double #555;padding-top:10px;">
+    <div style="display:flex;justify-content:space-between;border-top:1.5pt double #555;padding-top:6px;">
       <span>${escaped}</span>
       <span>Halaman: <span class="pageNumber"></span> / <span class="totalPages"></span></span>
     </div>
@@ -248,7 +248,7 @@ export async function POST(req: NextRequest) {
         displayHeaderFooter: true,
         footerTemplate: footerTengah,
         headerTemplate: '<div></div>',
-        margin: { top: '6.2mm', bottom: '20mm', left: '14.5mm', right: '15.7mm' },
+        margin: { top: '6.2mm', bottom: '12mm', left: '14.5mm', right: '15.7mm' },
       });
 
       await browser.close();
@@ -509,7 +509,7 @@ export async function POST(req: NextRequest) {
         displayHeaderFooter: true,
         footerTemplate: footerSemester,
         headerTemplate: '<div></div>',
-        margin: { top: '6.2mm', bottom: '20mm', left: '14.5mm', right: '15.7mm' },
+        margin: { top: '6.2mm', bottom: '12mm', left: '14.5mm', right: '15.7mm' },
       });
 
       await browser.close();

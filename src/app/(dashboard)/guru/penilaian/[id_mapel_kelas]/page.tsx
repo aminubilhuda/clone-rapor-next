@@ -67,7 +67,6 @@ async function getPenilaianData(id_mapel_kelas: string, detail: string | undefin
       mapelKelas,
       tujuanPembelajaran: [...tujuanRows],
       siswa: [...siswaRows],
-      nilai: [...ras],
       activeDetail,
       nilaiFormatif: [...rf],
       nilaiPH: [...rph],

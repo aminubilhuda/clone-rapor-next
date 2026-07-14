@@ -48,7 +48,9 @@ export async function promoteKelas(formData: FormData) {
 
   const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
   const sekolah = sekolahRows[0];
-  const semester = sekolah?.semester || 1;
+
+  // Naik kelas = awal tahun ajaran baru (ganjil = 1), bukan semester aktif
+  const semester = 1;
 
   // Cari id_tahun_pelajaran berikutnya dari tabel, bukan asumsi +1
   const [tahunRows]: any = await pool.query(
@@ -92,7 +94,9 @@ export async function promoteAllKelas() {
 
   const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
   const sekolah = sekolahRows[0];
-  const semester = sekolah?.semester || 1;
+
+  // Naik kelas = awal tahun ajaran baru (ganjil = 1), bukan semester aktif
+  const semester = 1;
 
   const [tahunRows]: any = await pool.query(
     'SELECT id_tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran > ? ORDER BY id_tahun_pelajaran ASC LIMIT 1',
@@ -222,10 +226,10 @@ export async function promoteAllKelas() {
         semuaIdSiswaXII.push(s.id_siswa);
       }
 
-      // Batch: cek semua lulusan yang sudah ada
+      // Batch: cek semua lulusan yang sudah ada (periode penyelesaian)
       const [existingLulusanRows]: any = await pool.query(
         'SELECT id_siswa FROM lulusan WHERE id_siswa IN (?) AND tahun = ? AND semester = ?',
-        [semuaIdSiswaXII.length > 0 ? semuaIdSiswaXII : [0], tahunBaru, semester]
+        [semuaIdSiswaXII.length > 0 ? semuaIdSiswaXII : [0], sekolah.tahun, sekolah.semester]
       );
       const existingLulusanSet = new Set(existingLulusanRows.map((el: any) => el.id_siswa));
 
@@ -242,7 +246,7 @@ export async function promoteAllKelas() {
 
           await pool.query(
             'INSERT INTO lulusan (tahun, semester, id_siswa, tanggal_lulus) VALUES (?, ?, ?, CURDATE())',
-            [tahunBaru, semester, siswa.id_siswa]
+            [sekolah.tahun, sekolah.semester, siswa.id_siswa]
           );
           await pool.query(
             'UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa_kelas = ?',

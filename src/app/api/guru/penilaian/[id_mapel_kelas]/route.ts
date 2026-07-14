@@ -45,16 +45,20 @@ export async function POST(
     return NextResponse.json({ error: 'Mapel kelas not found' }, { status: 404 });
   }
   const mk = mkRows[0];
+  // Verifikasi bahwa guru ini memang pengampu mapel_kelas tersebut
+  if (mk.id_user !== session.user.id_user) {
+    return NextResponse.json({ error: 'Anda tidak berhak mengakses mapel ini' }, { status: 403 });
+  }
   const idKelas = mk.id_kelas;
   const idMapel = mk.id_mapel;
   const tahun = sekolah.tahun;
   const semester = sekolah.semester;
 
-  const tableConfig: Record<string, { pk: string; hasIdTujuan: boolean; hasNas: boolean }> = {
-    nilai_formatif: { pk: 'id_nilai_formatif', hasIdTujuan: true, hasNas: true },
-    nilai_sumatif_ph: { pk: 'id_nilai_sumatif_ph', hasIdTujuan: true, hasNas: false },
-    nilai_sumatif_ts: { pk: 'id_nilai_sumatif_ts', hasIdTujuan: false, hasNas: false },
-    nilai_sumatif_as: { pk: 'id_nilai_sumatif_as', hasIdTujuan: false, hasNas: false },
+  const tableConfig: Record<string, { pk: string; hasIdTujuan: boolean; hasNas: boolean; hasMiddle: boolean }> = {
+    nilai_formatif: { pk: 'id_nilai_formatif', hasIdTujuan: true, hasNas: true, hasMiddle: true },
+    nilai_sumatif_ph: { pk: 'id_nilai_sumatif_ph', hasIdTujuan: true, hasNas: false, hasMiddle: true },
+    nilai_sumatif_ts: { pk: 'id_nilai_sumatif_ts', hasIdTujuan: false, hasNas: false, hasMiddle: false },
+    nilai_sumatif_as: { pk: 'id_nilai_sumatif_as', hasIdTujuan: false, hasNas: false, hasMiddle: false },
   };
   const config = tableConfig[tableName];
 
@@ -63,6 +67,8 @@ export async function POST(
     await conn.beginTransaction();
 
     for (const entry of entries) {
+      if (!entry || entry.id_siswa === undefined || entry.id_siswa === null || isNaN(entry.id_siswa)) continue;
+      if (config.hasIdTujuan && (entry.id_tujuan === undefined || entry.id_tujuan === null || isNaN(entry.id_tujuan))) continue;
       if (entry.nilai === '') {
         let where = 'tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? AND id_siswa = ?';
         const params: any[] = [tahun, semester, idKelas, idMapel, entry.id_siswa];
@@ -114,6 +120,10 @@ export async function POST(
           cols.push('nas');
           vals.push(1);
         }
+        if (config.hasMiddle) {
+          cols.push('middle');
+          vals.push(1);
+        }
         await conn.execute(
           `INSERT INTO \`${tableName}\` (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`,
           vals
@@ -127,15 +137,16 @@ export async function POST(
     if (detail === 'sumatif-as' && entries.length > 0) {
       try {
         // Ambil semua data Formatif + PH + AS untuk kelas & mapel ini
-        const [fmtRows]: any = await pool.query(
+        // Pakai conn (bukan pool) karena masih dalam lingkup koneksi yang sama
+        const [fmtRows]: any = await conn.query(
           'SELECT id_siswa, ROUND(AVG(nilai), 2) AS rata FROM nilai_formatif WHERE tahun=? AND semester=? AND id_kelas=? AND id_mapel=? GROUP BY id_siswa',
           [tahun, semester, idKelas, idMapel]
         );
-        const [phRows]: any = await pool.query(
+        const [phRows]: any = await conn.query(
           'SELECT id_siswa, ROUND(AVG(nilai), 2) AS rata FROM nilai_sumatif_ph WHERE tahun=? AND semester=? AND id_kelas=? AND id_mapel=? GROUP BY id_siswa',
           [tahun, semester, idKelas, idMapel]
         );
-        const [asRows]: any = await pool.query(
+        const [asRows]: any = await conn.query(
           'SELECT id_siswa, nilai FROM nilai_sumatif_as WHERE tahun=? AND semester=? AND id_kelas=? AND id_mapel=?',
           [tahun, semester, idKelas, idMapel]
         );
@@ -152,20 +163,21 @@ export async function POST(
           const nilaiF = fmtMap.get(idSiswa) || 0;
           const nilaiPH = phMap.get(idSiswa) || 0;
           const nilaiAS = asMap.get(idSiswa) || 0;
-          const nilaiAkhir = Math.round((nilaiF * 0.35 + nilaiPH * 0.35 + nilaiAS * 0.30) * 100) / 100;
+          // Nilai Akhir = rata-rata sederhana dari (Formatif, PH, AS)
+          const nilaiAkhir = Math.round(((nilaiF + nilaiPH + nilaiAS) / 3) * 100) / 100;
 
-          const [existingNmp]: any = await pool.query(
+          const [existingNmp]: any = await conn.query(
             'SELECT id_nilai_mata_pelajaran FROM nilai_mata_pelajaran WHERE tahun=? AND semester=? AND id_kelas=? AND id_mapel=? AND id_siswa=?',
             [tahun, semester, idKelas, idMapel, idSiswa]
           );
 
           if (existingNmp.length > 0) {
-            await pool.query(
+            await conn.query(
               'UPDATE nilai_mata_pelajaran SET nilai=? WHERE id_nilai_mata_pelajaran=?',
               [nilaiAkhir, existingNmp[0].id_nilai_mata_pelajaran]
             );
           } else {
-            await pool.query(
+            await conn.query(
               'INSERT INTO nilai_mata_pelajaran (tahun, semester, id_kelas, id_mapel, id_siswa, nilai) VALUES (?,?,?,?,?,?)',
               [tahun, semester, idKelas, idMapel, idSiswa, nilaiAkhir]
             );

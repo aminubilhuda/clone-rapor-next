@@ -31,7 +31,7 @@ export function wrapHtml(content: string): string {
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: 210mm 330mm; margin: 6.2mm 15.7mm 20mm 14.5mm; }
+  @page { size: 210mm 330mm; margin: 6.2mm 15.7mm 12mm 14.5mm; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; color: #000; line-height: 1.1; }
   .page { padding: 0; padding-bottom: 10px; }

@@ -1,0 +1,115 @@
+
+> clone-rapor-next@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.11.193:3000
+- Environments: .env.local
+✓ Ready in 1308ms
+⚠ Slow filesystem detected. The benchmark took 500ms. If D:\PROJECT\nextjs\clone-rapor-next\.next/dev is a network drive, consider moving it to a local folder.
+See more: https://nextjs.org/docs/app/guides/local-development
+
+○ Compiling /tu/mapel-siswa ...
+ GET /tu/mapel-siswa?kelas=14 200 in 5.5s (next.js: 4.8s, proxy.ts: 225ms, application-code: 460ms)
+ GET /guru/tujuan-pembelajaran?id_mapel=15&id_tingkat=1 200 in 5.5s (next.js: 5.0s, proxy.ts: 221ms, application-code: 335ms)
+ POST /guru/tujuan-pembelajaran?id_mapel=15&id_tingkat=1 200 in 96ms (next.js: 13ms, proxy.ts: 26ms, application-code: 57ms)
+  └─ ƒ getGuruTugas() in 40ms src/lib/actions/guru-actions.ts
+ GET /api/sekolah-logo 200 in 930ms (next.js: 899ms, application-code: 31ms)
+ GET /api/sekolah-logo 200 in 644ms (next.js: 626ms, application-code: 18ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 1603ms (next.js: 1593ms, application-code: 11ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 2.4s (next.js: 2.4s, application-code: 7ms)
+ GET /api/auth/session 200 in 771ms (next.js: 749ms, application-code: 23ms)
+ GET /api/auth/session 200 in 20ms (next.js: 9ms, application-code: 10ms)
+ GET /guru/kelas-ku 200 in 98ms (next.js: 34ms, proxy.ts: 14ms, application-code: 50ms)
+ GET /guru/tujuan-pembelajaran 200 in 55ms (next.js: 5ms, proxy.ts: 10ms, application-code: 41ms)
+ GET /guru/kelas-ku 200 in 52ms (next.js: 5ms, proxy.ts: 8ms, application-code: 39ms)
+ GET /guru/tujuan-pembelajaran 200 in 51ms (next.js: 4ms, proxy.ts: 13ms, application-code: 34ms)
+ GET /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 120ms (next.js: 5ms, proxy.ts: 10ms, application-code: 105ms)
+ GET /api/sekolah-logo 200 in 13ms (next.js: 4ms, application-code: 9ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 15ms (next.js: 9ms, application-code: 6ms)
+ POST /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 72ms (next.js: 4ms, proxy.ts: 30ms, application-code: 37ms)
+  └─ ƒ getGuruTugas() in 29ms src/lib/actions/guru-actions.ts
+ POST /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 53ms (next.js: 5ms, proxy.ts: 19ms, application-code: 29ms)
+  └─ ƒ getKodeNext(20) in 22ms src/lib/actions/tp-actions.ts
+ GET /api/auth/session 200 in 21ms (next.js: 10ms, application-code: 11ms)
+ GET /api/auth/session 200 in 11ms (next.js: 2ms, application-code: 8ms)
+ POST /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 130ms (next.js: 4ms, proxy.ts: 13ms, application-code: 112ms)
+  └─ ƒ addTujuanMulti({}) in 39ms src/lib/actions/tp-actions.ts
+ GET /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 120ms (next.js: 6ms, proxy.ts: 11ms, application-code: 104ms)
+ GET /api/sekolah-logo 200 in 11ms (next.js: 4ms, application-code: 8ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 17ms (next.js: 11ms, application-code: 6ms)
+ POST /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 71ms (next.js: 4ms, proxy.ts: 29ms, application-code: 37ms)
+  └─ ƒ getGuruTugas() in 29ms src/lib/actions/guru-actions.ts
+ GET /api/auth/session 200 in 30ms (next.js: 13ms, application-code: 17ms)
+ GET /api/auth/session 200 in 14ms (next.js: 3ms, application-code: 10ms)
+ GET /api/auth/session 200 in 21ms (next.js: 9ms, application-code: 11ms)
+ GET /api/auth/session 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ POST /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 31ms (next.js: 5ms, proxy.ts: 8ms, application-code: 19ms)
+  └─ ƒ getKodeNext(20) in 11ms src/lib/actions/tp-actions.ts
+ POST /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 109ms (next.js: 5ms, proxy.ts: 9ms, application-code: 95ms)
+  └─ ƒ addTujuanMulti({}) in 30ms src/lib/actions/tp-actions.ts
+ GET /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 108ms (next.js: 5ms, proxy.ts: 10ms, application-code: 93ms)
+ GET /api/sekolah-logo 200 in 12ms (next.js: 4ms, application-code: 8ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 16ms (next.js: 9ms, application-code: 6ms)
+ POST /guru/tujuan-pembelajaran?id_mapel=20&id_tingkat=3 200 in 70ms (next.js: 4ms, proxy.ts: 29ms, application-code: 37ms)
+  └─ ƒ getGuruTugas() in 28ms src/lib/actions/guru-actions.ts
+ GET /guru/kelas-ku 200 in 63ms (next.js: 5ms, proxy.ts: 12ms, application-code: 45ms)
+ GET /guru/penilaian/876 200 in 591ms (next.js: 466ms, proxy.ts: 16ms, application-code: 108ms)
+ GET /api/sekolah-logo 200 in 11ms (next.js: 4ms, application-code: 8ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 15ms (next.js: 8ms, application-code: 6ms)
+ POST /guru/penilaian/876 200 in 75ms (next.js: 12ms, proxy.ts: 28ms, application-code: 35ms)
+  └─ ƒ getGuruTugas() in 26ms src/lib/actions/guru-actions.ts
+ POST /api/guru/penilaian/876 200 in 684ms (next.js: 664ms, application-code: 20ms)
+ GET /guru/penilaian/876 200 in 117ms (next.js: 10ms, proxy.ts: 13ms, application-code: 95ms)
+ GET /api/sekolah-logo 200 in 16ms (next.js: 3ms, application-code: 13ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 13ms (next.js: 7ms, application-code: 6ms)
+ POST /guru/penilaian/876 200 in 65ms (next.js: 5ms, proxy.ts: 30ms, application-code: 30ms)
+  └─ ƒ getGuruTugas() in 23ms src/lib/actions/guru-actions.ts
+ GET /api/auth/session 200 in 18ms (next.js: 8ms, application-code: 10ms)
+ GET /api/auth/session 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/auth/session 200 in 19ms (next.js: 7ms, application-code: 12ms)
+ GET /api/auth/session 200 in 11ms (next.js: 2ms, application-code: 8ms)
+ GET /api/auth/session 200 in 16ms (next.js: 6ms, application-code: 10ms)
+ GET /api/auth/session 200 in 11ms (next.js: 3ms, application-code: 8ms)
+ GET /api/auth/session 200 in 26ms (next.js: 9ms, application-code: 17ms)
+ GET /api/auth/session 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/auth/session 200 in 21ms (next.js: 8ms, application-code: 13ms)
+ GET /api/auth/session 200 in 9ms (next.js: 2ms, application-code: 7ms)
+ GET /api/auth/session 200 in 20ms (next.js: 9ms, application-code: 11ms)
+ GET /api/auth/session 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/auth/session 200 in 16ms (next.js: 7ms, application-code: 9ms)
+ GET /api/auth/session 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/auth/session 200 in 19ms (next.js: 8ms, application-code: 11ms)
+ GET /api/auth/session 200 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/auth/session 200 in 29ms (next.js: 12ms, application-code: 17ms)
+ GET /api/auth/session 200 in 13ms (next.js: 3ms, application-code: 11ms)
+ GET /guru/penilaian/876?detail=sumatif-as 200 in 134ms (next.js: 10ms, proxy.ts: 11ms, application-code: 112ms)
+ GET /api/sekolah-logo 200 in 9ms (next.js: 3ms, application-code: 6ms)
+ GET /api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png 404 in 14ms (next.js: 8ms, application-code: 6ms)
+ POST /guru/penilaian/876?detail=sumatif-as 200 in 60ms (next.js: 6ms, proxy.ts: 26ms, application-code: 28ms)
+  └─ ƒ getGuruTugas() in 20ms src/lib/actions/guru-actions.ts
+ GET /api/auth/session 200 in 17ms (next.js: 8ms, application-code: 9ms)
+ GET /api/auth/session 200 in 9ms (next.js: 2ms, application-code: 7ms)
+ GET /api/auth/session 200 in 17ms (next.js: 7ms, application-code: 10ms)
+ GET /api/auth/session 200 in 12ms (next.js: 2ms, application-code: 9ms)
+ GET /api/auth/session 200 in 28ms (next.js: 9ms, application-code: 19ms)
+ GET /api/auth/session 200 in 13ms (next.js: 3ms, application-code: 10ms)
+ GET /api/auth/session 200 in 22ms (next.js: 3ms, application-code: 19ms)
+ GET /api/auth/session 200 in 16ms (next.js: 2ms, application-code: 13ms)
+✓ Compiled in 744ms
+✓ Compiled in 152ms
+ GET /tu/mapel-siswa?kelas=14 200 in 703ms (next.js: 135ms, proxy.ts: 138ms, application-code: 430ms)
+ GET /guru/penilaian/876?detail=sumatif-as 200 in 739ms (next.js: 336ms, proxy.ts: 137ms, application-code: 266ms)
+ GET /tu/mapel-siswa?kelas=14 200 in 422ms (next.js: 16ms, proxy.ts: 257ms, application-code: 149ms)
+ GET /guru/penilaian/876?detail=sumatif-as 200 in 219ms (next.js: 28ms, proxy.ts: 98ms, application-code: 92ms)
+ GET /api/auth/session 200 in 140ms (next.js: 111ms, application-code: 28ms)
+ GET /api/auth/session 200 in 22ms (next.js: 5ms, application-code: 17ms)
+ GET /tu 200 in 114ms (next.js: 24ms, proxy.ts: 17ms, application-code: 74ms)
+✓ Compiled in 88ms
+ GET /guru/penilaian/876?detail=sumatif-as 200 in 581ms (next.js: 324ms, proxy.ts: 107ms, application-code: 150ms)
+ GET /tu 200 in 605ms (next.js: 127ms, proxy.ts: 108ms, application-code: 370ms)
+ GET /guru/penilaian/876?detail=sumatif-as 200 in 416ms (next.js: 196ms, proxy.ts: 134ms, application-code: 86ms)
+ GET /tu 200 in 444ms (next.js: 117ms, proxy.ts: 136ms, application-code: 191ms)
+ GET /guru/penilaian/876?detail=sumatif-as 200 in 453ms (next.js: 214ms, proxy.ts: 142ms, application-code: 98ms)
+ GET /tu 200 in 479ms (next.js: 126ms, proxy.ts: 142ms, application-code: 211ms)

@@ -1,0 +1,238 @@
+uid=5_0 RootWebArea "E-Rapor SMK Abdi Negara Tuban" url="http://localhost:3000/tu/laporan-pendidikan/daftar-rapor"
+  uid=5_1 ignored
+    uid=5_2 ignored
+      uid=5_3 ignored
+        uid=5_4 complementary
+          uid=5_5 ignored
+            uid=5_6 link "Logo Tata Usaha E-Rapor SMK" url="http://localhost:3000/tu"
+              uid=5_7 ignored
+                uid=5_8 image "Logo" url="http://localhost:3000/api/uploads/sekolah/logo_1783460227477.png"
+              uid=5_9 ignored
+                uid=5_10 heading "Tata Usaha" level="1"
+                  uid=5_11 StaticText "Tata Usaha"
+                    uid=5_12 InlineTextBox "Tata Usaha"
+                uid=5_13 paragraph
+                  uid=5_14 StaticText "E-Rapor SMK"
+                    uid=5_12 InlineTextBox "E-Rapor SMK"
+          uid=5_15 ignored
+            uid=5_16 ignored
+              uid=5_17 image
+            uid=5_18 ignored
+              uid=5_19 paragraph
+                uid=5_20 StaticText "ADMINISTRATOR"
+                  uid=5_12 InlineTextBox "ADMINISTRATOR"
+              uid=5_21 ignored
+                uid=5_22 ignored
+                uid=5_23 StaticText "online"
+                  uid=5_12 InlineTextBox "online"
+            uid=5_24 button "Logout"
+              uid=5_25 image
+          uid=5_26 ignored
+            uid=5_27 paragraph
+              uid=5_28 StaticText "FILTER PERIODE"
+                uid=5_12 InlineTextBox "FILTER PERIODE"
+            uid=5_29 combobox expandable haspopup="menu" value="Ganjil 2024-2025"
+              uid=5_30 MenuListPopup
+                uid=5_31 option "Data Aktif (Genap 2026-2027)" selectable value="Data Aktif (Genap 2026-2027)"
+                uid=5_32 option "Genap 2024-2025" selectable value="Genap 2024-2025"
+                uid=5_33 option "Genap 2025-2026" selectable value="Genap 2025-2026"
+                uid=5_34 option "Genap 2026-2027" selectable value="Genap 2026-2027"
+                uid=5_35 option "Genap 2027-2028" selectable value="Genap 2027-2028"
+                uid=5_36 option "Ganjil 2024-2025" selectable selected value="Ganjil 2024-2025"
+                uid=5_37 option "Ganjil 2025-2026" selectable value="Ganjil 2025-2026"
+                uid=5_38 option "Ganjil 2026-2027" selectable value="Ganjil 2026-2027"
+                uid=5_39 option "Ganjil 2027-2028" selectable value="Ganjil 2027-2028"
+          uid=5_40 navigation
+            uid=5_41 ignored
+              uid=5_42 button "MAIN"
+                uid=5_43 StaticText "MAIN"
+                  uid=5_12 InlineTextBox "MAIN"
+                uid=5_44 image
+              uid=5_45 ignored
+                uid=5_46 link "Dashboard" url="http://localhost:3000/tu"
+                  uid=5_47 image
+                  uid=5_48 ignored
+                    uid=5_49 StaticText "Dashboard"
+                      uid=5_12 InlineTextBox "Dashboard"
+            uid=5_50 ignored
+              uid=5_51 button "DATA SEKOLAH"
+                uid=5_52 StaticText "DATA SEKOLAH"
+                  uid=5_12 InlineTextBox "DATA SEKOLAH"
+                uid=5_53 image
+              uid=5_54 ignored
+                uid=5_55 link "Profile Sekolah" url="http://localhost:3000/tu/profil"
+                  uid=5_56 image
+                  uid=5_57 ignored
+                    uid=5_58 StaticText "Profile Sekolah"
+                      uid=5_12 InlineTextBox "Profile Sekolah"
+                uid=5_59 link "Pegawai" url="http://localhost:3000/tu/pegawai"
+                  uid=5_60 image
+                  uid=5_61 ignored
+                    uid=5_62 StaticText "Pegawai"
+                      uid=5_12 InlineTextBox "Pegawai"
+                uid=5_63 link "Data Siswa" url="http://localhost:3000/tu/kesiswaan"
+                  uid=5_64 image
+                  uid=5_65 ignored
+                    uid=5_66 StaticText "Data Siswa"
+                      uid=5_12 InlineTextBox "Data Siswa"
+                uid=5_67 link "Mata Pelajaran" url="http://localhost:3000/tu/mapel"
+                  uid=5_68 image
+                  uid=5_69 ignored
+                    uid=5_70 StaticText "Mata Pelajaran"
+                      uid=5_12 InlineTextBox "Mata Pelajaran"
+                uid=5_71 link "Ekstrakurikuler" url="http://localhost:3000/tu/ekstra"
+                  uid=5_72 image
+                  uid=5_73 ignored
+                    uid=5_74 StaticText "Ekstrakurikuler"
+                      uid=5_12 InlineTextBox "Ekstrakurikuler"
+                uid=5_75 link "Organisasi" url="http://localhost:3000/tu/organisasi"
+                  uid=5_76 image
+                  uid=5_77 ignored
+                    uid=5_78 StaticText "Organisasi"
+                      uid=5_12 InlineTextBox "Organisasi"
+                uid=5_79 link "Kompetensi Keahlian" url="http://localhost:3000/tu/kompetensi"
+                  uid=5_80 image
+                  uid=5_81 ignored
+                    uid=5_82 StaticText "Kompetensi Keahlian"
+                      uid=5_12 InlineTextBox "Kompetensi Keahlian"
+                uid=5_83 link "Prakerin" url="http://localhost:3000/tu/prakerin"
+                  uid=5_84 image
+                  uid=5_85 ignored
+                    uid=5_86 StaticText "Prakerin"
+                      uid=5_12 InlineTextBox "Prakerin"
+                uid=5_87 link "Deskripsi Rapor" url="http://localhost:3000/tu/deskripsi-rapor"
+                  uid=5_88 image
+                  uid=5_89 ignored
+                    uid=5_90 StaticText "Deskripsi Rapor"
+                      uid=5_12 InlineTextBox "Deskripsi Rapor"
+            uid=5_91 ignored
+              uid=5_92 button "KELAS"
+                uid=5_93 StaticText "KELAS"
+                  uid=5_12 InlineTextBox "KELAS"
+                uid=5_94 image
+              uid=5_95 ignored
+                uid=5_96 link "Kelas/Rombel" url="http://localhost:3000/tu/rombel"
+                  uid=5_97 image
+                  uid=5_98 ignored
+                    uid=5_99 StaticText "Kelas/Rombel"
+                      uid=5_12 InlineTextBox "Kelas/Rombel"
+                uid=5_100 link "Anggota Kelas" url="http://localhost:3000/tu/anggota-kelas"
+                  uid=5_101 image
+                  uid=5_102 ignored
+                    uid=5_103 StaticText "Anggota Kelas"
+                      uid=5_12 InlineTextBox "Anggota Kelas"
+                uid=5_104 link "Mapel Kelas" url="http://localhost:3000/tu/mapel-kelas"
+                  uid=5_105 image
+                  uid=5_106 ignored
+                    uid=5_107 StaticText "Mapel Kelas"
+                      uid=5_12 InlineTextBox "Mapel Kelas"
+                uid=5_108 link "Mapel Pilihan Siswa" url="http://localhost:3000/tu/mapel-siswa"
+                  uid=5_109 image
+                  uid=5_110 ignored
+                    uid=5_111 StaticText "Mapel Pilihan Siswa"
+                      uid=5_12 InlineTextBox "Mapel Pilihan Siswa"
+                uid=5_112 link "Naik Kelas" url="http://localhost:3000/tu/naik-kelas"
+                  uid=5_113 image
+                  uid=5_114 ignored
+                    uid=5_115 StaticText "Naik Kelas"
+                      uid=5_12 InlineTextBox "Naik Kelas"
+            uid=5_116 ignored
+              uid=5_117 button "LAPORAN & PENGATURAN"
+                uid=5_118 StaticText "LAPORAN & PENGATURAN"
+                  uid=5_12 InlineTextBox "LAPORAN & PENGATURAN"
+                uid=5_119 image
+              uid=5_120 ignored
+                uid=5_121 ignored
+                  uid=5_122 button "Laporan Pendidikan"
+                    uid=5_123 image
+                    uid=5_124 ignored
+                      uid=5_125 StaticText "Laporan Pendidikan"
+                        uid=5_12 InlineTextBox "Laporan Pendidikan"
+                    uid=5_126 image
+                  uid=5_127 ignored
+                    uid=5_128 link "Leger Nilai" url="http://localhost:3000/tu/laporan-pendidikan"
+                      uid=5_129 ignored
+                        uid=5_130 StaticText "Leger Nilai"
+                          uid=5_12 InlineTextBox "Leger Nilai"
+                    uid=5_131 link "Daftar Rapor" url="http://localhost:3000/tu/laporan-pendidikan/daftar-rapor"
+                      uid=5_132 ignored
+                        uid=5_133 StaticText "Daftar Rapor"
+                          uid=5_12 InlineTextBox "Daftar Rapor"
+                uid=5_134 link "P5BK" url="http://localhost:3000/tu/p5bk"
+                  uid=5_135 image
+                  uid=5_136 ignored
+                    uid=5_137 StaticText "P5BK"
+                      uid=5_12 InlineTextBox "P5BK"
+                uid=5_138 link "Piket Harian" url="http://localhost:3000/tu/piket-harian"
+                  uid=5_139 image
+                  uid=5_140 ignored
+                    uid=5_141 StaticText "Piket Harian"
+                      uid=5_12 InlineTextBox "Piket Harian"
+                uid=5_142 link "Pengaturan" url="http://localhost:3000/tu/pengaturan"
+                  uid=5_143 image
+                  uid=5_144 ignored
+                    uid=5_145 StaticText "Pengaturan"
+                      uid=5_12 InlineTextBox "Pengaturan"
+        uid=5_146 ignored
+          uid=5_147 generic
+            uid=5_148 ignored
+              uid=5_149 heading "Daftar Rapor" level="2"
+                uid=5_150 StaticText "Daftar Rapor"
+                  uid=5_12 InlineTextBox "Daftar Rapor"
+            uid=5_151 ignored
+              uid=5_152 generic
+                uid=5_153 button "A"
+                  uid=5_154 ignored
+                    uid=5_155 ignored
+                      uid=5_156 StaticText "A"
+                        uid=5_12 InlineTextBox "A"
+                  uid=5_157 image
+          uid=5_158 main
+            uid=5_159 ignored
+              uid=5_160 ignored
+                uid=5_161 heading "Daftar Rapor" level="4"
+                  uid=5_162 StaticText "Daftar Rapor"
+                    uid=5_12 InlineTextBox "Daftar Rapor"
+                uid=5_163 ignored
+                  uid=5_164 LabelText
+                    uid=5_165 StaticText "Pilih Kelas"
+                      uid=5_12 InlineTextBox "Pilih Kelas"
+                  uid=5_166 combobox expandable haspopup="menu" value="-- Pilih Kelas --"
+                    uid=5_167 MenuListPopup
+                      uid=5_168 option "-- Pilih Kelas --" selectable selected value="-- Pilih Kelas --"
+                      uid=5_169 option "X AK" selectable value="X AK"
+                      uid=5_170 option "X BD" selectable value="X BD"
+                      uid=5_171 option "X LPKKK" selectable value="X LPKKK"
+                      uid=5_172 option "X PH" selectable value="X PH"
+                      uid=5_173 option "X RPL" selectable value="X RPL"
+                      uid=5_174 option "XI AK" selectable value="XI AK"
+                      uid=5_175 option "XI BD" selectable value="XI BD"
+                      uid=5_176 option "XI LPKKK" selectable value="XI LPKKK"
+                      uid=5_177 option "XI PH" selectable value="XI PH"
+                      uid=5_178 option "XI RPL" selectable value="XI RPL"
+                      uid=5_179 option "XII AK" selectable value="XII AK"
+                      uid=5_180 option "XII BD" selectable value="XII BD"
+                      uid=5_181 option "XII LPKKK" selectable value="XII LPKKK"
+                      uid=5_182 option "XII PH" selectable value="XII PH"
+                      uid=5_183 option "XII RPL" selectable value="XII RPL"
+                uid=5_184 ignored
+                  uid=5_185 paragraph
+                    uid=5_186 StaticText "Pilih kelas untuk melihat daftar rapor."
+                      uid=5_12 InlineTextBox "Pilih kelas untuk melihat daftar rapor."
+      uid=5_187 generic
+      uid=5_188 generic
+        uid=5_189 generic
+          uid=5_190 generic
+            uid=5_191 ignored
+              uid=5_192 ignored
+                uid=5_193 generic
+                  uid=5_194 ignored
+                    uid=5_195 button "Open Next.js Dev Tools" expandable haspopup="menu"
+                      uid=5_196 image
+                        uid=5_197 ignored
+                        uid=5_198 ignored
+                        uid=5_199 ignored
+                        uid=5_200 ignored
+                        uid=5_201 ignored
+      uid=5_202 generic
+        uid=5_203 alert atomic live="assertive" relevant="additions text"
