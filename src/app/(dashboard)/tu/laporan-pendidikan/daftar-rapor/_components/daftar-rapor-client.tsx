@@ -103,13 +103,13 @@ export default function DaftarRaporClient({
       if (!res.ok) throw new Error('Gagal mencetak');
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = getFilename(jenis, idSiswa);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      if (idSiswa) {
+        // Single student: open preview in new tab
+        window.open(url, '_blank');
+      } else {
+        // Batch: open preview in new tab
+        window.open(url, '_blank');
+      }
     } catch (err) {
       console.error(err);
       alert('Gagal mencetak rapor. Silakan coba lagi.');
@@ -353,3 +353,5 @@ export default function DaftarRaporClient({
     </div>
   );
 }
+
+
