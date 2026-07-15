@@ -127,7 +127,7 @@ export function generateSemesterRaporHTML(
     <div class="page">
       <table style="width:100%;border-collapse:collapse;margin-top:0;font-size:9pt;">
         <tr>
-          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Nama</td>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Nama</td>
           <td style="text-align:center;width:1%;">:</td>
           <td style="text-align:left;">${escapeHtml(siswa.nama_siswa.toUpperCase())}</td>
           <td style="width:5%;"></td>
@@ -136,7 +136,7 @@ export function generateSemesterRaporHTML(
           <td style="text-align:left;">${escapeHtml(siswa.nama_kelas.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">NIS / NISN</td>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">NIS / NISN</td>
           <td style="text-align:center;width:1%;">:</td>
           <td style="text-align:left;">${escapeHtml((siswa.nis || '-') + ' / ' + (siswa.nisn || '-'))}</td>
           <td style="width:5%;"></td>
@@ -145,7 +145,7 @@ export function generateSemesterRaporHTML(
           <td style="text-align:left;">${escapeHtml(siswa.fase.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Nama Sekolah</td>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Nama Sekolah</td>
           <td style="text-align:center;width:1%;">:</td>
           <td style="text-align:left;">${escapeHtml(sekolah.nama_sekolah.toUpperCase())}</td>
           <td style="width:5%;"></td>
@@ -154,7 +154,7 @@ export function generateSemesterRaporHTML(
           <td style="text-align:left;">${escapeHtml(semesterLabel.toUpperCase())}</td>
         </tr>
         <tr>
-          <td style="text-align:left;height:14px;white-space:nowrap;padding-right:4px;">Alamat</td>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Alamat</td>
           <td style="text-align:center;width:1%;">:</td>
           <td style="text-align:left;">${escapeHtml(sekolah.alamat.toUpperCase())}</td>
           <td style="width:5%;"></td>
@@ -299,3 +299,4 @@ export function generateSemesterRaporHTML(
 
   return wrapHtml(siswaPages);
 }
+
