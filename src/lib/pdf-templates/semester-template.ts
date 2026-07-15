@@ -67,11 +67,11 @@ export function generateSemesterRaporHTML(
         const nilaiStyle = m.nilai === 0 || m.nilai < 75 ? 'color:red;' : 'color:black;';
         return `<tr>
           <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${i + 1}</td>
-          <td style="width:25%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td>
+          <td style="width:25%;text-align:left;height:48px;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td>
           <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}" rowspan="2">${nilaiDisplay}</td>
-          <td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td>
+          <td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td>
         </tr>
-        <tr><td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
+        <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
       });
       return kelompokHeader + subjectRows.join('');
     });
@@ -79,19 +79,19 @@ export function generateSemesterRaporHTML(
     const prakerinRows = siswa.prakerin.map((p, i) => `
       <tr>
         <td style="width:5%;text-align:center;border:1px solid #000;">${i + 1}</td>
-        <td style="width:20%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(p.mitra)}</td>
-        <td style="width:15%;text-align:center;padding:3px;border:1px solid #000;">${escapeHtml(p.lokasi)}</td>
-        <td style="width:10%;text-align:center;padding:3px;border:1px solid #000;">${escapeHtml(p.durasi)}</td>
-        <td style="width:50%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(p.keterangan)}</td>
+        <td style="width:20%;text-align:left;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(p.mitra)}</td>
+        <td style="width:15%;text-align:center;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(p.lokasi)}</td>
+        <td style="width:10%;text-align:center;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(p.durasi)}</td>
+        <td style="width:50%;text-align:left;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(p.keterangan)}</td>
       </tr>`).join('');
 
     const eskulRows = siswa.eskul.length > 0
       ? siswa.eskul.map((e, i) => `
       <tr>
         <td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">${i + 1}</td>
-        <td style="width:30%;text-align:center;padding:3px;border:1px solid #000;">${escapeHtml(e.nama_eskul)}</td>
-        <td style="width:15%;text-align:center;padding:3px;border:1px solid #000;">${escapeHtml(e.predikat)}</td>
-        <td style="width:50%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(e.keterangan)}</td>
+        <td style="width:30%;text-align:center;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(e.nama_eskul)}</td>
+        <td style="width:15%;text-align:center;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(e.predikat)}</td>
+        <td style="width:50%;text-align:left;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(e.keterangan)}</td>
       </tr>`).join('')
       : `<tr><td style="width:5%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:30%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:15%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:50%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td></tr>`;
 
@@ -99,14 +99,14 @@ export function generateSemesterRaporHTML(
       ? siswa.organisasi.map((o, i) => `
       <tr>
         <td style="width:5%;text-align:center;border:1px solid #000;">${i + 1}</td>
-        <td style="width:95%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(o.nama_organisasi)}</td>
+        <td style="width:95%;text-align:left;height:20px;padding:3px;border:1px solid #000;">${escapeHtml(o.nama_organisasi)}</td>
       </tr>`).join('')
       : `<tr><td style="width:5%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:95%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td></tr>`;
 
     const presensiRows = siswa.presensi.map((p) => `
       <tr>
-        <td style="width:60%;text-align:left;padding:5px;border:1px solid #000;">${escapeHtml(p.absen)}</td>
-        <td style="width:40%;text-align:left;padding:5px;border:1px solid #000;">${p.jumlah > 0 ? p.jumlah : '-'} Hari</td>
+        <td style="width:60%;text-align:left;height:20px;padding:5px;border:1px solid #000;">${escapeHtml(p.absen)}</td>
+        <td style="width:40%;text-align:left;height:20px;padding:5px;border:1px solid #000;">${p.jumlah > 0 ? p.jumlah : '-'} Hari</td>
       </tr>`).join('');
 
     const kenaikanKelas = siswa.isSemester2 ? `
@@ -179,7 +179,7 @@ export function generateSemesterRaporHTML(
         ${mapelRows}
       </table>
 
-      ${siswa.prakerin.length > 0 ? `
+      
       <div style="page-break-inside:avoid;">
         <table style="width:100%;border-collapse:collapse;margin-top:20px;">
           <tr><td style="width:100%;text-align:left;font-weight:bold;">PRAKTIK KERJA INDUSTRI</td></tr>
@@ -192,9 +192,9 @@ export function generateSemesterRaporHTML(
             <td style="width:10%;text-align:center;font-weight:bold;border:1px solid #000;">Lamanya (Bulan)</td>
             <td style="width:50%;text-align:center;font-weight:bold;border:1px solid #000;">Keterangan</td>
           </tr>
-          ${prakerinRows}
+          ${prakerinRows.length > 0 ? prakerinRows : `<tr><td style="width:5%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:20%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:15%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:10%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:50%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td></tr>`}
         </table>
-      </div>` : ''}
+      </div>
 
       <div style="page-break-inside:avoid;">
         <table style="width:100%;border-collapse:collapse;margin-top:20px;">
@@ -244,7 +244,7 @@ export function generateSemesterRaporHTML(
       <div style="page-break-inside:avoid;">
         <h3 style="text-align:left;font-size:9pt;margin:15px 0 5px;font-weight:bold;">CATATAN WALI KELAS</h3>
         <table style="width:100%;border-collapse:collapse;" border="1">
-          <tr><td style="width:100%;text-align:left;padding:5px;min-height:54px;border:1px solid #000;">${siswa.catatan_wali ? escapeHtml(siswa.catatan_wali) : ''}</td></tr>
+          <tr><td style="width:100%;text-align:left;padding:10px 5px;height:70px;border:1px solid #000;">${siswa.catatan_wali ? escapeHtml(siswa.catatan_wali) : ''}</td></tr>
         </table>
       </div>
 
@@ -253,7 +253,7 @@ export function generateSemesterRaporHTML(
           <tr><td style="text-align:center;font-weight:bold;">Tanggapan Orang Tua/Wali Murid</td></tr>
         </table>
         <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
-          <tr><td style="width:100%;text-align:left;height:35px;padding:5px;border:1px solid #000;">${siswa.tanggapan_ortu ? escapeHtml(siswa.tanggapan_ortu) : ''}</td></tr>
+          <tr><td style="width:100%;text-align:left;height:50px;padding:5px;border:1px solid #000;">${siswa.tanggapan_ortu ? escapeHtml(siswa.tanggapan_ortu) : ''}</td></tr>
         </table>
       </div>
 
