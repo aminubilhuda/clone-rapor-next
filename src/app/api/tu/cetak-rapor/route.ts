@@ -233,6 +233,7 @@ export async function POST(req: NextRequest) {
       const browser = await puppeteer.default.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
       });
 
       const page = await browser.newPage();
@@ -494,6 +495,7 @@ export async function POST(req: NextRequest) {
       const browser = await puppeteer.default.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
       });
 
       const page = await browser.newPage();
@@ -546,10 +548,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Puppeteer tidak tersedia' }, { status: 500 });
     }
 
-    const browser = await puppeteer.default.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+      const browser = await puppeteer.default.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      });
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'load' });

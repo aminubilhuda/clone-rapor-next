@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import * as XLSX from 'xlsx';
 
 interface LegerRow {
   id: number;
@@ -57,6 +58,7 @@ export default function LegerClient({
         id_siswa: r.id_siswa,
         nama_siswa: r.nama_siswa,
         nis: r.nis,
+        nisn: r.nisn,
       }));
   }, [filteredData]);
 
@@ -116,24 +118,60 @@ export default function LegerClient({
     });
   }, [students, nilaiKelasLookup, selectedKelas]);
 
+  function handleExportExcel() {
+    if (!selectedKelas || !mapels.length) return;
+
+    const sorted = [...students].sort((a, b) =>
+      a.nama_siswa.localeCompare(b.nama_siswa)
+    );
+
+    const header = ['No', 'Nama Siswa', 'NIS', 'NISN', ...mapels.map((m) => m.nama_mapel), 'Rata-rata'];
+    const rows = sorted.map((s, i) => [
+      i + 1,
+      s.nama_siswa,
+      s.nis,
+      s.nisn,
+      ...mapels.map((m) => nilaiLookup[`${s.id_siswa}_${m.id_mapel}`] || ''),
+      nilaiKelasLookup[`${Number(selectedKelas)}_${s.id_siswa}`]
+        ? parseFloat(nilaiKelasLookup[`${Number(selectedKelas)}_${s.id_siswa}`]).toFixed(2)
+        : '',
+    ]);
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+    ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 15 }, { wch: 15 }, ...mapels.map(() => ({ wch: 10 })), { wch: 12 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Leger');
+    XLSX.writeFile(wb, `Leger_Nilai_${selectedKelasName.replace(/\s+/g, '_')}.xlsx`);
+  }
+
   return (
     <div>
-      <div className="mb-5">
-        <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">
-          Pilih Kelas
-        </label>
-        <select
-          value={selectedKelas}
-          onChange={(e) => setSelectedKelas(e.target.value)}
-          className="w-full max-w-xs bg-white border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm text-[#1A1A2E] focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/40 transition-all premium-shadow"
-        >
-          <option value="">-- Pilih Kelas --</option>
-          {refKelas.map((k) => (
-            <option key={k.id_kelas} value={k.id_kelas}>
-              {k.nama_kelas}
-            </option>
-          ))}
-        </select>
+      <div className="mb-5 flex flex-wrap items-end gap-4">
+        <div>
+          <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">
+            Pilih Kelas
+          </label>
+          <select
+            value={selectedKelas}
+            onChange={(e) => setSelectedKelas(e.target.value)}
+            className="w-full max-w-xs bg-white border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm text-[#1A1A2E] focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/40 transition-all premium-shadow"
+          >
+            <option value="">-- Pilih Kelas --</option>
+            {refKelas.map((k) => (
+              <option key={k.id_kelas} value={k.id_kelas}>
+                {k.nama_kelas}
+              </option>
+            ))}
+          </select>
+        </div>
+        {selectedKelas && students.length > 0 && (
+          <button
+            onClick={handleExportExcel}
+            className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
+          >
+            Export Excel
+          </button>
+        )}
       </div>
 
       {!selectedKelas ? (
