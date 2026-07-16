@@ -32,8 +32,9 @@ export default async function DaftarKumpulanNilaiPage({ searchParams }: { search
       FROM siswa s
       JOIN siswa_kelas sk ON s.id_siswa = sk.id_siswa AND sk.deleted_at IS NULL
       WHERE s.deleted_at IS NULL AND sk.id_kelas = ?
+        AND sk.tahun = ? AND sk.semester = ?
       ORDER BY s.nama_siswa
-    `, [id_kelas]);
+    `, [id_kelas, sekolah.tahun, sekolah.semester]);
     siswa = siswaRows;
 
     if (siswa.length > 0) {
