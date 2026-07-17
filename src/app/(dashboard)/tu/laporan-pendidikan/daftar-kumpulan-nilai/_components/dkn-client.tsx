@@ -25,7 +25,7 @@ function computeData(siswa: SiswaItem[], mapels: MapelItem[], grades: GradeItem[
       return { seq: sem.seq, vals, total: nums.reduce((a, b) => a + b, 0), avg: nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0 };
     });
     const nrrVals = mapels.map((_, mi) => {
-      const nums = semRows.map((r) => Number(r.vals[mi])).filter((n) => !isNaN(n));
+      const nums = semRows.map((r) => r.vals[mi]).filter((v) => v !== '').map(Number);
       return nums.length ? (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2) : '';
     });
     const nrrNums = nrrVals.filter((v) => v !== '').map(Number);

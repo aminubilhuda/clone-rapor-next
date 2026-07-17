@@ -4,6 +4,65 @@ import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
+export async function getInfoPromosi() {
+  const session = await auth();
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
+    return null;
+  }
+
+  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
+  const sekolah = sekolahRows[0];
+
+  const [tahunRows]: any = await pool.query(
+    'SELECT id_tahun_pelajaran, tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran > ? ORDER BY id_tahun_pelajaran ASC LIMIT 1',
+    [sekolah?.tahun || 0]
+  );
+  if (tahunRows.length === 0) return null;
+  const tahunBaru = tahunRows[0];
+
+  const [semesterRows]: any = await pool.query(
+    'SELECT id_semester, semester FROM semester WHERE id_semester = 1 LIMIT 1'
+  );
+  const semester = semesterRows[0];
+
+  const [tingkatRows]: any = await pool.query(`
+    SELECT t.id_tingkat, t.tabjad, t.akhir,
+      COUNT(DISTINCT sk.id_siswa) AS jumlah_siswa,
+      COUNT(DISTINCT sk.id_kelas) AS jumlah_kelas
+    FROM siswa_kelas sk
+    JOIN kelas k ON sk.id_kelas = k.id_kelas
+    JOIN tingkat t ON k.id_tingkat = t.id_tingkat
+    WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL
+    GROUP BY t.id_tingkat, t.tabjad, t.akhir
+    ORDER BY t.id_tingkat ASC
+  `, [sekolah.tahun, sekolah.semester]);
+
+  const rincian: { dari: string; ke: string; jumlah_siswa: number; jumlah_kelas: number; isLulus: boolean }[] = [];
+  let totalNaik = 0;
+  let totalLulus = 0;
+
+  const allTingkat: any[] = await pool.query('SELECT id_tingkat, tabjad, akhir FROM tingkat ORDER BY id_tingkat ASC').then((r: any) => r[0]);
+
+  for (const t of tingkatRows) {
+    if (t.akhir === 1) {
+      totalLulus += t.jumlah_siswa;
+      rincian.push({ dari: t.tabjad, ke: 'LULUS', jumlah_siswa: t.jumlah_siswa, jumlah_kelas: t.jumlah_kelas, isLulus: true });
+    } else {
+      const nextTingkat = allTingkat.find((x: any) => x.id_tingkat === t.id_tingkat + 1);
+      totalNaik += t.jumlah_siswa;
+      rincian.push({ dari: t.tabjad, ke: nextTingkat?.tabjad || '?', jumlah_siswa: t.jumlah_siswa, jumlah_kelas: t.jumlah_kelas, isLulus: false });
+    }
+  }
+
+  return {
+    tahunBaru: tahunBaru.tahun_pelajaran,
+    semester: semester?.semester || 'Ganjil',
+    rincian,
+    totalNaik,
+    totalLulus,
+  };
+}
+
 export async function updateNaikKelas(formData: FormData) {
   const session = await auth();
   if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
@@ -247,6 +306,10 @@ export async function promoteAllKelas() {
           await pool.query(
             'INSERT INTO lulusan (tahun, semester, id_siswa, tanggal_lulus) VALUES (?, ?, ?, CURDATE())',
             [sekolah.tahun, sekolah.semester, siswa.id_siswa]
+          );
+          await pool.query(
+            'UPDATE siswa SET aktif = 0 WHERE id_siswa = ?',
+            [siswa.id_siswa]
           );
           await pool.query(
             'UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa_kelas = ?',

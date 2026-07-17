@@ -144,3 +144,84 @@ export async function copyMapelKelasFromPreviousYear() {
     return { success: false, error: e.message || 'Gagal menyalin mapel kelas' } as const;
   }
 }
+
+export async function copyMapelKelasFromSameYear() {
+  const session = await auth();
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
+    return { success: false, error: 'Unauthorized' } as const;
+  }
+
+  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
+  const sekolah = sekolahRows[0];
+  const tahun = sekolah?.tahun;
+  const semesterAktif = sekolah?.semester;
+
+  if (!tahun || !semesterAktif || semesterAktif !== 2) {
+    return { success: false, error: 'Fitur ini hanya tersedia di semester 2 (Genap).' } as const;
+  }
+
+  const semesterSumber = 1;
+
+  try {
+    const [rows]: any = await pool.query(`
+      SELECT mk.id_kelas, mk.id_mapel, mk.id_user, k.nama_kelas, m.nama_mapel,
+        COALESCE(u.nama, '-') AS nama_guru
+      FROM mapel_kelas mk
+      JOIN kelas k ON mk.id_kelas = k.id_kelas
+      JOIN mapel m ON mk.id_mapel = m.id_mapel
+      LEFT JOIN users u ON mk.id_user = u.id_user
+      WHERE mk.tahun = ? AND mk.semester = ?
+      ORDER BY k.nama_kelas, m.nama_mapel
+    `, [tahun, semesterSumber]);
+
+    if (rows.length === 0) {
+      return { success: false, error: `Tidak ada data mapel kelas di semester 1 tahun ini.` } as const;
+    }
+
+    const kelasMap = new Map<number, { nama_kelas: string; total: number; disalin: number; diSkip: number }>();
+
+    let totalDisalin = 0;
+    let totalSkip = 0;
+
+    for (const row of rows) {
+      const idKelas = row.id_kelas;
+
+      const [existing]: any = await pool.query(
+        'SELECT id_mapel_kelas FROM mapel_kelas WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? LIMIT 1',
+        [tahun, semesterAktif, idKelas, row.id_mapel]
+      );
+
+      if (!kelasMap.has(idKelas)) {
+        kelasMap.set(idKelas, { nama_kelas: row.nama_kelas, total: 0, disalin: 0, diSkip: 0 });
+      }
+
+      const entry = kelasMap.get(idKelas)!;
+      entry.total++;
+
+      if (existing.length > 0) {
+        entry.diSkip++;
+        totalSkip++;
+      } else {
+        await pool.query(
+          'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES (?, ?, ?, ?, ?)',
+          [tahun, semesterAktif, idKelas, row.id_mapel, row.id_user]
+        );
+        entry.disalin++;
+        totalDisalin++;
+      }
+    }
+
+    const hasil = Array.from(kelasMap.values()).map((h) => ({
+      kelas: h.nama_kelas,
+      mapel: h.total,
+      disalin: h.disalin,
+      skip: h.diSkip,
+      status: `${h.disalin} mapel disalin` + (h.diSkip > 0 ? `, ${h.diSkip} sudah ada` : ''),
+    }));
+
+    revalidatePath('/tu/mapel-kelas');
+    return { success: true, totalDisalin, totalSkip, hasil } as const;
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Gagal menyalin mapel kelas' } as const;
+  }
+}

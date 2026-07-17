@@ -2,87 +2,54 @@ import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { redirect } from 'next/navigation';
+import { getSiswaList, getSiswaCount } from '@/lib/actions/siswa-actions';
 import SiswaClient from './_components/siswa-client';
-
-async function getSiswa() {
-  try {
-    const sekolah = await getSekolahWithFilter();
-
-    const [siswa]: any = await pool.query(`
-      SELECT
-        s.id_siswa, s.nama_siswa, s.nis, s.nisn, s.terima_kelas,
-        s.tempat_lahir, s.tanggal_lahir, s.kelamin, s.agama, s.jurusan,
-        jk.jenis_kelamin, a.agama,
-        kk.kompetensi_keahlian,
-        COALESCE(k.nama_kelas, 'Belum Bergabung') as kelas_display
-      FROM siswa s
-      JOIN jenis_kelamin jk ON s.kelamin = jk.id_jenis_kelamin
-      JOIN agama a ON s.agama = a.id_agama
-      JOIN kompetensi_keahlian kk ON s.jurusan = kk.id_kompetensi_keahlian
-      LEFT JOIN (
-        SELECT id_siswa, id_kelas FROM siswa_kelas
-        WHERE tahun = ? AND semester = ?
-        GROUP BY id_siswa
-      ) sk ON s.id_siswa = sk.id_siswa
-      LEFT JOIN kelas k ON sk.id_kelas = k.id_kelas
-      WHERE s.deleted_at IS NULL AND s.aktif = 1
-      GROUP BY s.id_siswa
-      ORDER BY s.id_siswa ASC
-    `, [sekolah.tahun, sekolah.semester]);
-
-    return siswa.map((s: any) => {
-      let tglFormatted = '';
-      const tgl = s.tanggal_lahir;
-      if (tgl) {
-        try {
-          const d = typeof tgl === 'string' ? new Date(tgl + 'T00:00:00') : new Date(tgl);
-          if (!isNaN(d.getTime())) {
-            const hari = String(d.getDate()).padStart(2, '0');
-            const bulan = [
-              'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-              'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
-            ][d.getMonth()];
-            const tahun = d.getFullYear();
-            tglFormatted = `${hari} ${bulan} ${tahun}`;
-          }
-        } catch {}
-      }
-      return {
-        ...s,
-        tempat_tanggal_lahir: tglFormatted ? `${s.tempat_lahir}, ${tglFormatted}` : s.tempat_lahir,
-      };
-    });
-  } catch (error) {
-    console.error('Siswa fetch error:', error);
-    return [];
-  }
-}
 
 async function getReferensi() {
   try {
     const [kelamin]: any = await pool.query('SELECT * FROM jenis_kelamin');
     const [agama]: any = await pool.query('SELECT * FROM agama');
     const [jurusan]: any = await pool.query('SELECT * FROM kompetensi_keahlian');
-    return { kelamin, agama, jurusan };
+    const [tingkat]: any = await pool.query('SELECT * FROM tingkat WHERE deleted_at IS NULL');
+    return { kelamin, agama, jurusan, tingkat };
   } catch (error) {
     console.error('Referensi fetch error:', error);
-    return { kelamin: [], agama: [], jurusan: [] };
+    return { kelamin: [], agama: [], jurusan: [], tingkat: [] };
   }
 }
 
-export default async function KesiswaanPage() {
+export default async function KesiswaanPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}) {
   const session = await auth();
   if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
 
-  const [siswa, ref] = await Promise.all([getSiswa(), getReferensi()]);
+  const params = await searchParams;
+  const search = params.search ?? '';
+  const page = Math.max(0, parseInt(params.page ?? '0', 10) || 0);
+  const perPage = Math.min(100, Math.max(1, parseInt(params.perPage ?? '10', 10) || 10));
+
+  const sekolah = await getSekolahWithFilter();
+  const [siswa, total, ref] = await Promise.all([
+    getSiswaList(search, page, perPage, sekolah.tahun, sekolah.semester),
+    getSiswaCount(search, sekolah.tahun, sekolah.semester),
+    getReferensi(),
+  ]);
 
   return (
     <div>
       <SiswaClient
         siswa={siswa}
+        total={total}
+        page={page}
+        perPage={perPage}
+        search={search}
         refKelamin={ref.kelamin}
         refAgama={ref.agama}
         refJurusan={ref.jurusan}
+        refTingkat={ref.tingkat}
       />
     </div>
   );

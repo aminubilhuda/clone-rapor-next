@@ -19,6 +19,7 @@ interface Student {
   id_siswa: number;
   nama_siswa: string;
   nisn: string;
+  nama_agama: string;
   enrollments: Set<number>;
 }
 
@@ -227,6 +228,7 @@ export default function MapelSiswaGrid({
             <tr className="bg-[#DC2626] text-white">
               <th rowSpan={2} scope="col" className="text-center px-3 py-2 font-semibold w-12 sticky left-0 bg-[#DC2626] z-10 align-middle">NO</th>
               <th rowSpan={2} scope="col" className="text-left px-3 py-2 font-semibold min-w-44 sticky left-12 bg-[#DC2626] z-10 align-middle">Nama Siswa</th>
+              <th rowSpan={2} scope="col" className="text-left px-3 py-2 font-semibold min-w-24 sticky left-[14rem] bg-[#DC2626] z-10 align-middle">Agama</th>
               {subjects.map((mapel) => (
                 <th key={mapel.id_mapel} scope="col" className="text-center px-2 py-2 font-semibold min-w-16 max-w-20 align-middle">
                   <span className="text-[11px] leading-tight">{mapel.nama_mapel}</span>
@@ -267,6 +269,7 @@ export default function MapelSiswaGrid({
               >
                 <td className="text-center px-3 py-2 text-[#6B7280] text-xs sticky left-0 bg-inherit z-[1]">{i + 1}</td>
                 <td className="px-3 py-2 font-medium text-[#1A1A2E] sticky left-12 bg-inherit z-[1]">{siswa.nama_siswa}</td>
+                <td className="px-3 py-2 text-[#6B7280] text-xs sticky left-[14rem] bg-inherit z-[1]">{siswa.nama_agama}</td>
                 {subjects.map((mapel) => {
                   const key = getCellKey(siswa.id_siswa, mapel.id_mapel);
                   const loading = loadingCells.has(key) || loadingColumns.has(mapel.id_mapel);

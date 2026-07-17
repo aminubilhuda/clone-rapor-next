@@ -42,9 +42,10 @@ async function getSubjects(kelasId: number, tahun: number, semester: number) {
 async function getStudents(kelasId: number, tahun: number, semester: number) {
   try {
     const [rows]: any = await pool.query(`
-      SELECT s.id_siswa, s.nama_siswa, s.nisn
+      SELECT s.id_siswa, s.nama_siswa, s.nisn, a.agama AS nama_agama
       FROM siswa_kelas sk
       JOIN siswa s ON sk.id_siswa = s.id_siswa
+      JOIN agama a ON s.agama = a.id_agama
       WHERE sk.id_kelas = ? AND sk.tahun = ? AND sk.semester = ? AND sk.status = 1 AND s.deleted_at IS NULL
       ORDER BY s.nama_siswa ASC
     `, [kelasId, tahun, semester]);
@@ -101,6 +102,7 @@ export default async function MapelSiswaPage({
       id_siswa: s.id_siswa,
       nama_siswa: s.nama_siswa,
       nisn: s.nisn,
+      nama_agama: s.nama_agama,
       enrollments: enrollmentMap[s.id_siswa] || new Set(),
     }));
   }

@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateSiswa, deleteSiswa } from '@/lib/actions/siswa-actions';
+import { updateSiswa, deleteSiswa, importSiswa } from '@/lib/actions/siswa-actions';
 import ModalSiswa from './modal-siswa';
 import ModalHapus from './modal-hapus';
+import ModalImportSiswa from './modal-import-siswa';
 
 const COLUMNS = [
   { key: 'id_siswa', label: 'ID' },
@@ -22,32 +24,43 @@ const COLUMNS = [
 
 interface SiswaClientProps {
   siswa: any[];
+  total: number;
+  page: number;
+  perPage: number;
+  search: string;
   refKelamin: any[];
   refAgama: any[];
   refJurusan: any[];
+  refTingkat: any[];
 }
 
-export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }: SiswaClientProps) {
+export default function SiswaClient({ siswa, total, page, perPage, search, refKelamin, refAgama, refJurusan, refTingkat }: SiswaClientProps) {
   const { showToast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
-  const [perPage, setPerPage] = useState(10);
-
-  const filtered = siswa.filter((row) =>
-    COLUMNS.filter((c) => c.key !== '_aksi').some((col) =>
-      String(row[col.key] ?? '').toLowerCase().includes(search.toLowerCase())
-    )
-  );
-
-  const actualPerPage = perPage === 0 ? filtered.length : perPage;
-  const totalPages = Math.max(1, Math.ceil(filtered.length / actualPerPage));
-  const safePage = Math.min(page, totalPages - 1);
-  const paginatedData = filtered.slice(safePage * actualPerPage, (safePage + 1) * actualPerPage);
-
+  const [searchInput, setSearchInput] = useState(search);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
+  const [modalImport, setModalImport] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
+
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+
+  const navigate = useCallback((overrides: Record<string, string>) => {
+    const sp = new URLSearchParams(searchParams.toString());
+    for (const [k, v] of Object.entries(overrides)) {
+      if (v) sp.set(k, v); else sp.delete(k);
+    }
+    router.push(`/tu/kesiswaan?${sp.toString()}`);
+  }, [router, searchParams]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (searchInput !== search) navigate({ search: searchInput, page: '0' });
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput, search, navigate]);
 
   const openTambah = () => { setSelected(null); setModalEdit(true); };
   const openEdit = (row: any) => { setSelected(row); setModalEdit(true); };
@@ -59,6 +72,7 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
     if (result.success) {
       showToast('Data siswa berhasil disimpan!', 'success');
       closeModals();
+      router.refresh();
     } else {
       showToast(result.error || 'Gagal menyimpan data!', 'error');
     }
@@ -70,6 +84,7 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
     if (result.success) {
       showToast('Data siswa berhasil dihapus!', 'success');
       closeModals();
+      router.refresh();
     } else {
       showToast(result.error || 'Gagal menghapus data!', 'error');
     }
@@ -80,31 +95,38 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
       <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
         <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between">
           <h5 className="font-semibold text-[#1A1A2E]">Daftar Siswa</h5>
-          <button onClick={openTambah} className="bg-[#DC2626] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
-            + Tambah Siswa
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setModalImport(true)} className="bg-white text-[#DC2626] border border-[#DC2626]/30 px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#DC2626]/5 active:scale-[0.98] transition-all flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              Import Excel
+            </button>
+            <button onClick={openTambah} className="bg-[#DC2626] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
+              + Tambah Siswa
+            </button>
+          </div>
         </div>
         <div className="p-4">
           <div className="mb-4 flex items-center gap-4 flex-wrap">
             <input
               type="text"
               placeholder="Cari data..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="w-full md:w-64 bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all"
             />
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Tampil:</span>
               <select
                 value={perPage}
-                onChange={(e) => { setPerPage(Number(e.target.value)); setPage(0); }}
+                onChange={(e) => navigate({ perPage: e.target.value, page: '0' })}
                 className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all"
               >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
                 <option value={50}>50</option>
                 <option value={100}>100</option>
-                <option value={0}>All</option>
               </select>
             </div>
           </div>
@@ -120,14 +142,14 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
                 </tr>
               </thead>
               <tbody>
-                {paginatedData.length === 0 ? (
+                {siswa.length === 0 ? (
                   <tr>
                     <td colSpan={COLUMNS.length} className="text-center py-16 text-[#6B7280]">
                       Tidak ada data
                     </td>
                   </tr>
                 ) : (
-                  paginatedData.map((row, i) => (
+                  siswa.map((row: any, i: number) => (
                     <tr key={row.id_siswa ?? i} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                       {COLUMNS.map((col) => {
                         if (col.key === '_aksi') {
@@ -161,14 +183,14 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
             </table>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-[#6B7280]">
-            <span>Total: {filtered.length} data</span>
+            <span>Total: {total} data</span>
             {totalPages > 1 && (
               <div className="flex items-center gap-1">
-                <button onClick={() => setPage(0)} disabled={safePage === 0} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&laquo;</button>
-                <button onClick={() => setPage(safePage - 1)} disabled={safePage === 0} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&lsaquo;</button>
-                <span className="px-3 text-gray-600">{safePage + 1} / {totalPages}</span>
-                <button onClick={() => setPage(safePage + 1)} disabled={safePage >= totalPages - 1} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&rsaquo;</button>
-                <button onClick={() => setPage(totalPages - 1)} disabled={safePage >= totalPages - 1} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&raquo;</button>
+                <button onClick={() => navigate({ page: '0' })} disabled={page === 0} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&laquo;</button>
+                <button onClick={() => navigate({ page: String(page - 1) })} disabled={page === 0} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&lsaquo;</button>
+                <span className="px-3 text-gray-600">{page + 1} / {totalPages}</span>
+                <button onClick={() => navigate({ page: String(page + 1) })} disabled={page >= totalPages - 1} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&rsaquo;</button>
+                <button onClick={() => navigate({ page: String(totalPages - 1) })} disabled={page >= totalPages - 1} className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed">&raquo;</button>
               </div>
             )}
           </div>
@@ -190,6 +212,16 @@ export default function SiswaClient({ siswa, refKelamin, refAgama, refJurusan }:
         onClose={closeModals}
         siswa={selected}
         onConfirm={handleDelete}
+      />
+
+      <ModalImportSiswa
+        open={modalImport}
+        onClose={() => setModalImport(false)}
+        refKelamin={refKelamin}
+        refAgama={refAgama}
+        refJurusan={refJurusan}
+        refTingkat={refTingkat}
+        onImport={importSiswa}
       />
     </>
   );
