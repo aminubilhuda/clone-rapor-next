@@ -55,7 +55,7 @@ export default async function RootLayout({
         <link rel="icon" href="/api/favicon" />
         <link rel="shortcut icon" href="/api/favicon" />
       </head>
-      <body className={`${outfit.className} min-h-full flex flex-col`}>
+      <body className={`${outfit.className} h-full overflow-hidden`}>
         <SessionProvider session={session}>
           <ToastProvider>
             {children}

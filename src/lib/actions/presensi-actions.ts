@@ -22,14 +22,19 @@ export async function getKelasList() {
 
   const sekolah = await getSekolahWithFilter();
   const [rows]: any = await pool.query(
-    `SELECT k.id_kelas, k.nama_kelas, COUNT(sk.id_siswa) AS jumlah
+    `SELECT k.id_kelas, k.nama_kelas, COUNT(sk.id_siswa) AS jumlah,
+       EXISTS(
+         SELECT 1 FROM presensi p
+         WHERE p.id_kelas = k.id_kelas AND p.tanggal = CURDATE()
+           AND p.tahun = ? AND p.semester = ? AND p.deleted_at IS NULL
+       ) AS sudah_absen
      FROM siswa_kelas sk
      JOIN kelas k ON sk.id_kelas = k.id_kelas
      JOIN siswa s ON sk.id_siswa = s.id_siswa
      WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL AND s.aktif = 1
      GROUP BY k.id_kelas, k.nama_kelas
      ORDER BY k.nama_kelas ASC`,
-    [sekolah.tahun, sekolah.semester]
+    [sekolah.tahun, sekolah.semester, sekolah.tahun, sekolah.semester]
   );
   return rows;
 }
@@ -79,34 +84,33 @@ export async function savePresensiHarian(
   }
 
   const sekolah = await getSekolahWithFilter();
-  const tanggal = new Date().toISOString().slice(0, 10);
-  const bulan = String(new Date().getMonth() + 1).padStart(2, '0');
 
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
+
+    const [[dateRow]]: any = await conn.query('SELECT CURDATE() AS tanggal, DATE_FORMAT(CURDATE(), "%m") AS bulan');
+    const tanggal = dateRow.tanggal;
+    const bulan = dateRow.bulan;
 
     await conn.query(
       `DELETE FROM presensi WHERE tanggal = ? AND id_kelas = ? AND tahun = ? AND semester = ?`,
       [tanggal, idKelas, sekolah.tahun, sekolah.semester]
     );
 
-    const tidakHadir = absensi.filter((a) => a.id_absen !== 1);
-    if (tidakHadir.length > 0) {
-      const values = tidakHadir.map((a) => [
-        sekolah.tahun, sekolah.semester, bulan, tanggal,
-        idKelas, a.id_siswa, a.id_absen, 1,
-      ]);
-      await conn.query(
-        `INSERT INTO presensi (tahun, semester, bulan, tanggal, id_kelas, id_siswa, id_absen, jumlah)
-         VALUES ?`,
-        [values]
-      );
-    }
+    const values = absensi.map((a) => [
+      sekolah.tahun, sekolah.semester, bulan, tanggal,
+      idKelas, a.id_siswa, a.id_absen, 1,
+    ]);
+    await conn.query(
+      `INSERT INTO presensi (tahun, semester, bulan, tanggal, id_kelas, id_siswa, id_absen, jumlah)
+       VALUES ?`,
+      [values]
+    );
 
     await conn.commit();
     revalidatePath('/guru/absensi-piket');
-    return { success: true, count: tidakHadir.length } as const;
+    return { success: true, count: absensi.length } as const;
   } catch (e: any) {
     await conn.rollback();
     return { success: false, error: e.message || 'Gagal menyimpan absensi' } as const;

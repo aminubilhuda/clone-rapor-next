@@ -302,3 +302,27 @@ export async function deleteSiswa(id: number) {
     return { success: false, error: e.message || 'Gagal menghapus data' } as const;
   }
 }
+
+export async function nonaktifkanSiswa(id: number) {
+  const session = await auth();
+  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
+    return { success: false, error: 'Unauthorized' } as const;
+  }
+
+  try {
+    await pool.query('UPDATE siswa SET aktif = 0 WHERE id_siswa = ?', [id]);
+    await pool.query(
+      'UPDATE siswa_kelas SET deleted_at = NOW(), status = 2 WHERE id_siswa = ? AND deleted_at IS NULL',
+      [id]
+    );
+    await pool.query(
+      'UPDATE mapel_siswa SET deleted_at = NOW() WHERE id_siswa = ? AND deleted_at IS NULL',
+      [id]
+    );
+    revalidatePath('/tu/kesiswaan');
+    revalidatePath('/tu/mapel-siswa');
+    return { success: true } as const;
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Gagal menonaktifkan siswa' } as const;
+  }
+}

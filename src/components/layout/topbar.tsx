@@ -24,6 +24,7 @@ const pageTitles: Record<string, string> = {
   '/tu/p5bk': 'P5BK',
   '/tu/piket-harian': 'Piket Harian',
   '/tu/pengaturan': 'Pengaturan',
+  '/guru/absensi-piket': 'Absensi Piket',
 };
 
 export default function Topbar() {
