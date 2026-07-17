@@ -4,6 +4,83 @@ import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
+// Mapel agama: hanya enroll siswa dengan agama tertentu
+const PA_ISLAM_ID = 1;
+const PA_KRISTEN_ID = 2;
+
+async function autoEnrollSiswa(
+  tahun: number,
+  semester: number,
+  kelasDisalin: { id_kelas: number; id_mapel: number }[]
+) {
+  // Group mapel by kelas
+  const mapelByKelas = new Map<number, number[]>();
+  for (const item of kelasDisalin) {
+    if (!mapelByKelas.has(item.id_kelas)) mapelByKelas.set(item.id_kelas, []);
+    mapelByKelas.get(item.id_kelas)!.push(item.id_mapel);
+  }
+
+  // Get id_tingkat per kelas
+  const idKelasList = [...mapelByKelas.keys()];
+  if (idKelasList.length === 0) return 0;
+
+  const [kelasRows]: any = await pool.query(
+    'SELECT id_kelas, id_tingkat FROM kelas WHERE id_kelas IN (?)',
+    [idKelasList]
+  );
+  const tingkatByKelas = new Map<number, number>();
+  for (const k of kelasRows) {
+    tingkatByKelas.set(k.id_kelas, k.id_tingkat);
+  }
+
+  let totalEnrolled = 0;
+
+  for (const [idKelas, mapelIds] of mapelByKelas) {
+    const idTingkat = tingkatByKelas.get(idKelas);
+    if (!idTingkat) continue;
+
+    // Get all active students in this class with their agama
+    const [siswaRows]: any = await pool.query(
+      `SELECT sk.id_siswa, s.agama
+       FROM siswa_kelas sk
+       JOIN siswa s ON sk.id_siswa = s.id_siswa
+       WHERE sk.id_kelas = ? AND sk.tahun = ? AND sk.semester = ?
+         AND sk.status = 1 AND sk.deleted_at IS NULL AND s.deleted_at IS NULL AND s.aktif = 1`,
+      [idKelas, tahun, semester]
+    );
+
+    if (siswaRows.length === 0) continue;
+
+    // Get existing enrollments for this class to batch-check
+    const [existingRows]: any = await pool.query(
+      'SELECT id_siswa, id_mapel FROM mapel_siswa WHERE tahun = ? AND semester = ? AND id_kelas IN (?) AND deleted_at IS NULL',
+      [tahun, semester, idKelasList]
+    );
+    const existingSet = new Set(
+      existingRows.map((e: any) => `${e.id_siswa}_${e.id_mapel}`)
+    );
+
+    for (const siswa of siswaRows) {
+      for (const idMapel of mapelIds) {
+        // Skip if already enrolled
+        if (existingSet.has(`${siswa.id_siswa}_${idMapel}`)) continue;
+
+        // Filter agama untuk mapel agama
+        if (idMapel === PA_ISLAM_ID && siswa.agama !== 1) continue;
+        if (idMapel === PA_KRISTEN_ID && siswa.agama !== 2 && siswa.agama !== 3) continue;
+
+        await pool.query(
+          'INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif) VALUES (?, ?, ?, ?, ?, ?, 1)',
+          [tahun, semester, idTingkat, idKelas, idMapel, siswa.id_siswa]
+        );
+        totalEnrolled++;
+      }
+    }
+  }
+
+  return totalEnrolled;
+}
+
 export async function updateMapelKelas(formData: FormData) {
   const session = await auth();
   if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
@@ -99,6 +176,7 @@ export async function copyMapelKelasFromPreviousYear() {
 
     let totalDisalin = 0;
     let totalSkip = 0;
+    const insertedMapel: { id_kelas: number; id_mapel: number }[] = [];
 
     for (const row of rows) {
       const idKelas = row.id_kelas;
@@ -126,8 +204,12 @@ export async function copyMapelKelasFromPreviousYear() {
         );
         entry.disalin++;
         totalDisalin++;
+        insertedMapel.push({ id_kelas: idKelas, id_mapel: row.id_mapel });
       }
     }
+
+    // Auto-enroll siswa untuk mapel yang baru disalin
+    const totalEnrolled = await autoEnrollSiswa(tahunBaru, semester, insertedMapel);
 
     // Format hasil
     const hasil = Array.from(kelasMap.values()).map((h) => ({
@@ -139,7 +221,7 @@ export async function copyMapelKelasFromPreviousYear() {
     }));
 
     revalidatePath('/tu/mapel-kelas');
-    return { success: true, totalDisalin, totalSkip, hasil } as const;
+    return { success: true, totalDisalin, totalSkip, totalEnrolled, hasil } as const;
   } catch (e: any) {
     return { success: false, error: e.message || 'Gagal menyalin mapel kelas' } as const;
   }
@@ -182,6 +264,7 @@ export async function copyMapelKelasFromSameYear() {
 
     let totalDisalin = 0;
     let totalSkip = 0;
+    const insertedMapel: { id_kelas: number; id_mapel: number }[] = [];
 
     for (const row of rows) {
       const idKelas = row.id_kelas;
@@ -208,8 +291,11 @@ export async function copyMapelKelasFromSameYear() {
         );
         entry.disalin++;
         totalDisalin++;
+        insertedMapel.push({ id_kelas: idKelas, id_mapel: row.id_mapel });
       }
     }
+
+    const totalEnrolled = await autoEnrollSiswa(tahun, semesterAktif, insertedMapel);
 
     const hasil = Array.from(kelasMap.values()).map((h) => ({
       kelas: h.nama_kelas,
@@ -220,7 +306,7 @@ export async function copyMapelKelasFromSameYear() {
     }));
 
     revalidatePath('/tu/mapel-kelas');
-    return { success: true, totalDisalin, totalSkip, hasil } as const;
+    return { success: true, totalDisalin, totalSkip, totalEnrolled, hasil } as const;
   } catch (e: any) {
     return { success: false, error: e.message || 'Gagal menyalin mapel kelas' } as const;
   }

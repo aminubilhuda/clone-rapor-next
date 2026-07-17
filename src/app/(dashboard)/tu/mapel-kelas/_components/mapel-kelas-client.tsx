@@ -110,7 +110,7 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
 
     const ok = await confirmAlert(
       'Salin Mapel dari Tahun Lalu?',
-      `Data ${jumlahMapel} mapel kelas akan disalin ke tahun pelajaran baru.\n\nMapel yang sudah ada di tahun baru akan dilewati.\nLanjutkan?`
+      `Data ${jumlahMapel} mapel kelas akan disalin ke tahun pelajaran baru.\n\n• Semua siswa akan otomatis di-enroll\n• Mapel agama hanya untuk siswa yang sesuai\n• Mapel/siswa yang sudah ada akan dilewati\n\nLanjutkan?`
     );
     if (!ok) return;
 
@@ -120,7 +120,7 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
 
     if (result.success) {
       setCopyResults(result.hasil);
-      showToast(`${result.totalDisalin} mapel berhasil disalin!${result.totalSkip > 0 ? ` (${result.totalSkip} sudah ada)` : ''}`, 'success');
+      showToast(`${result.totalDisalin} mapel disalin, ${result.totalEnrolled} siswa di-enroll!${result.totalSkip > 0 ? ` (${result.totalSkip} mapel sudah ada)` : ''}`, 'success');
     } else {
       showToast(result.error || 'Gagal menyalin mapel!', 'error');
     }
@@ -131,7 +131,7 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
 
     const ok = await confirmAlert(
       'Salin dari Semester 1?',
-      `Salin ${jumlahMapel} mapel kelas dari semester 1 ke semester 2 tahun ini.\n\nMapel yang sudah ada di semester 2 akan dilewati.\nLanjutkan?`
+      `Salin ${jumlahMapel} mapel kelas dari semester 1 ke semester 2 tahun ini.\n\n• Semua siswa akan otomatis di-enroll\n• Mapel agama hanya untuk siswa yang sesuai\n• Mapel/siswa yang sudah ada akan dilewati\n\nLanjutkan?`
     );
     if (!ok) return;
 
@@ -141,7 +141,7 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
 
     if (result.success) {
       setCopyResults(result.hasil);
-      showToast(`${result.totalDisalin} mapel berhasil disalin dari semester 1!${result.totalSkip > 0 ? ` (${result.totalSkip} sudah ada)` : ''}`, 'success');
+      showToast(`${result.totalDisalin} mapel disalin, ${result.totalEnrolled} siswa di-enroll!${result.totalSkip > 0 ? ` (${result.totalSkip} mapel sudah ada)` : ''}`, 'success');
     } else {
       showToast(result.error || 'Gagal menyalin mapel!', 'error');
     }
