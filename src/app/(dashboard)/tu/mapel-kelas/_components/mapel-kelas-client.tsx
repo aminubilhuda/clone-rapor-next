@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Select from 'react-select';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateMapelKelas, deleteMapelKelas, copyMapelKelasFromPreviousYear } from '@/lib/actions/mapel-kelas-actions';
+import { updateMapelKelas, deleteMapelKelas, copyMapelKelasFromPreviousYear, copyMapelKelasFromSameYear } from '@/lib/actions/mapel-kelas-actions';
 import { confirmAlert } from '@/lib/swal';
 import ModalMapelKelas from './modal-mapel-kelas';
 import ModalHapus from './modal-hapus-mapel-kelas';
@@ -56,6 +56,7 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
   const [modalHapus, setModalHapus] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
   const [copying, setCopying] = useState(false);
+  const [copyingSameYear, setCopyingSameYear] = useState(false);
   const [copyResults, setCopyResults] = useState<any[] | null>(null);
 
   const openTambah = () => { setSelected(null); setModalEdit(true); };
@@ -125,6 +126,27 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
     }
   };
 
+  const handleCopySameYear = async () => {
+    const jumlahMapel = data.length;
+
+    const ok = await confirmAlert(
+      'Salin dari Semester 1?',
+      `Salin ${jumlahMapel} mapel kelas dari semester 1 ke semester 2 tahun ini.\n\nMapel yang sudah ada di semester 2 akan dilewati.\nLanjutkan?`
+    );
+    if (!ok) return;
+
+    setCopyingSameYear(true);
+    const result = await copyMapelKelasFromSameYear();
+    setCopyingSameYear(false);
+
+    if (result.success) {
+      setCopyResults(result.hasil);
+      showToast(`${result.totalDisalin} mapel berhasil disalin dari semester 1!${result.totalSkip > 0 ? ` (${result.totalSkip} sudah ada)` : ''}`, 'success');
+    } else {
+      showToast(result.error || 'Gagal menyalin mapel!', 'error');
+    }
+  };
+
   return (
     <>
       <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
@@ -135,39 +157,63 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
         </div>
         <div className="p-4">
 
-          {/* Panel Salin dari Tahun Lalu */}
+          {/* Panel Salin */}
           {!copyResults && (
             <div className="border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-xl p-5 mb-6">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <h6 className="font-semibold text-emerald-800">Salin Mapel dari Tahun Sebelumnya</h6>
+                  <h6 className="font-semibold text-emerald-800">Salin Mapel</h6>
                   <p className="text-sm text-emerald-600 mt-0.5">
-                    Salin semua mata pelajaran beserta guru pengampu dari tahun pelajaran sebelumnya.
-                    Mapel yang sudah ada di tahun baru akan dilewati.
+                    Salin mata pelajaran beserta guru pengampu dari semester 1 atau tahun sebelumnya.
+                    Mapel yang sudah ada akan dilewati.
                   </p>
                 </div>
-                <button
-                  onClick={handleCopyPrevious}
-                  disabled={copying}
-                  className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2 flex-shrink-0"
-                >
-                  {copying ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      Menyalin...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                      Salin dari Tahun Lalu
-                    </>
-                  )}
-                </button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={handleCopySameYear}
+                    disabled={copyingSameYear}
+                    className="bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {copyingSameYear ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Menyalin...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        Dari Semester 1
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleCopyPrevious}
+                    disabled={copying}
+                    className="bg-white border border-emerald-300 text-emerald-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-emerald-50 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {copying ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Menyalin...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Dari Tahun Lalu
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           )}

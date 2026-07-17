@@ -1,10 +1,9 @@
 'use client';
 
-import { confirmAlert } from '@/lib/swal';
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateNaikKelas, promoteKelas, promoteAllKelas } from '@/lib/actions/naik-kelas-actions';
+import { updateNaikKelas, promoteKelas, promoteAllKelas, getInfoPromosi } from '@/lib/actions/naik-kelas-actions';
 
 interface Props {
   data: any[];
@@ -20,6 +19,9 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
   const [promoting, setPromoting] = useState(false);
   const [promotingAll, setPromotingAll] = useState(false);
   const [promoteResults, setPromoteResults] = useState<any[] | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [infoPromosi, setInfoPromosi] = useState<any>(null);
+  const [loadingInfo, setLoadingInfo] = useState(false);
   const [individualFilter, setIndividualFilter] = useState('');
 
   const filteredData = sourceKelasId
@@ -47,10 +49,20 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
 
   const canPromote = sourceKelasId && destTingkatId && destKelasId && !promoting && filteredData.length > 0;
 
+  useEffect(() => {
+    if (showConfirm && !infoPromosi) {
+      setLoadingInfo(true);
+      getInfoPromosi().then((data) => {
+        setInfoPromosi(data);
+        setLoadingInfo(false);
+      });
+    }
+  }, [showConfirm, infoPromosi]);
+
   const handlePromote = async () => {
     if (!canPromote) return;
     const destKelas = refKelas.find((k: any) => String(k.id_kelas) === destKelasId);
-    const ok = await confirmAlert('Promosikan Siswa', `Promosikan ${filteredData.length} siswa dari ${sourceKelas?.nama_kelas} ke ${destKelas?.nama_kelas}?`);
+    const ok = window.confirm(`Promosikan ${filteredData.length} siswa dari ${sourceKelas?.nama_kelas} ke ${destKelas?.nama_kelas}?`);
     if (!ok) return;
 
     setPromoting(true);
@@ -70,20 +82,11 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
   };
 
   const handlePromoteAll = async () => {
-    const totalNaik = data.filter((d: any) => {
-      const kelas = refKelas.find((k: any) => k.id_kelas === d.id_kelas);
-      return kelas && refTingkat.some((t: any) => t.id_tingkat === kelas.id_tingkat && t.akhir === 0);
-    }).length;
-    const totalLulus = data.filter((d: any) => {
-      return refTingkat.some((t: any) => t.id_tingkat === d.id_tingkat && t.akhir === 1);
-    }).length;
+    setShowConfirm(true);
+  };
 
-    const ok = await confirmAlert(
-      'Naikkan Semua Kelas?',
-      `• ${totalNaik} siswa akan dinaikkan ke tingkat berikutnya (X→XI, XI→XII)\n• ${totalLulus} siswa kelas XII akan dipindahkan ke lulusan\n\nProses ini tidak bisa dibatalkan. Lanjutkan?`
-    );
-    if (!ok) return;
-
+  const confirmPromoteAll = async () => {
+    setShowConfirm(false);
     setPromotingAll(true);
     const result = await promoteAllKelas();
     setPromotingAll(false);
@@ -198,6 +201,100 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
                 <button onClick={() => setPromoteResults(null)}
                   className="px-4 py-2 text-sm font-medium text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
                   Tutup
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Confirm Promote All Modal */}
+        {showConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={(e) => { if (e.target === e.currentTarget) setShowConfirm(false); }}>
+            <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-lg mx-4 animate-modal-in border border-[rgba(0,0,0,0.04)]">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
+                <h3 className="text-lg font-semibold text-[#1A1A2E]">Naikkan Semua Kelas</h3>
+                <button onClick={() => setShowConfirm(false)} className="text-gray-400 hover:text-gray-600 transition">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="px-6 py-5">
+                {loadingInfo ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-6 h-6 border-2 border-[#DC2626]/20 border-t-[#DC2626] rounded-full animate-spin" />
+                  </div>
+                ) : infoPromosi ? (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs text-[#6B7280] uppercase tracking-wider font-medium mb-1">Tahun Pelajaran Tujuan</p>
+                      <div className="bg-[#F8F9FB] rounded-xl px-4 py-2.5 text-sm font-semibold text-[#1A1A2E]">
+                        {infoPromosi.tahunBaru} / {infoPromosi.semester}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-[#6B7280] uppercase tracking-wider font-medium mb-1">Kenaikan Kelas</p>
+                      <div className="bg-[#F0FDF4] rounded-xl px-4 py-3 space-y-2">
+                        {infoPromosi.rincian.filter((r: any) => !r.isLulus).map((r: any, i: number) => (
+                          <div key={i} className="flex items-center justify-between text-sm">
+                            <span className="text-[#1A1A2E]">
+                              <span className="font-semibold">{r.dari}</span>
+                              <svg className="w-4 h-4 inline mx-1.5 text-[#16A34A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                              </svg>
+                              <span className="font-semibold">{r.ke}</span>
+                            </span>
+                            <span className="text-[#6B7280]">{r.jumlah_siswa} siswa dari {r.jumlah_kelas} kelas</span>
+                          </div>
+                        ))}
+                        <div className="border-t border-[#16A34A]/10 pt-2 flex items-center justify-between text-sm font-semibold">
+                          <span className="text-[#1A1A2E]">Total Dinaikkan</span>
+                          <span className="text-[#16A34A]">{infoPromosi.totalNaik} siswa</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {infoPromosi.totalLulus > 0 && (
+                      <div>
+                        <p className="text-xs text-[#6B7280] uppercase tracking-wider font-medium mb-1">Kelulusan</p>
+                        <div className="bg-[#FEF2F2] rounded-xl px-4 py-3 space-y-2">
+                          {infoPromosi.rincian.filter((r: any) => r.isLulus).map((r: any, i: number) => (
+                            <div key={i} className="flex items-center justify-between text-sm">
+                              <span className="text-[#1A1A2E]">
+                                <span className="font-semibold">Kelas {r.dari}</span>
+                              </span>
+                              <span className="text-[#6B7280]">{r.jumlah_siswa} siswa dari {r.jumlah_kelas} kelas</span>
+                            </div>
+                          ))}
+                          <div className="border-t border-[#DC2626]/10 pt-2 flex items-center justify-between text-sm">
+                            <span className="text-[#1A1A2E] text-xs">Dipindahkan ke lulusan & ditandai tidak aktif</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="bg-[#FEF9C3] rounded-xl px-4 py-3 flex items-start gap-2.5">
+                      <svg className="w-4 h-4 text-[#CA8A04] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <p className="text-xs text-[#92400E]">Proses ini tidak bisa dibatalkan.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-sm text-[#6B7280]">Gagal memuat info promosi.</div>
+                )}
+              </div>
+              <div className="flex justify-end gap-3 px-6 py-4 border-t border-[rgba(0,0,0,0.04)]">
+                <button onClick={() => setShowConfirm(false)}
+                  className="px-4 py-2 text-sm font-medium text-[#6B7280] bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl hover:bg-gray-100 active:scale-[0.98] transition-all">
+                  Batal
+                </button>
+                <button onClick={confirmPromoteAll}
+                  disabled={!infoPromosi || loadingInfo}
+                  className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                  Ya, Proses
                 </button>
               </div>
             </div>
