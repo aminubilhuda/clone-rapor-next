@@ -24,6 +24,8 @@ export default function PengaturanClient({ sekolah, semester, tahunPel, pembagia
   const [saving, setSaving] = useState(false)
   const [adding, setAdding] = useState(false)
   const [tahunInput, setTahunInput] = useState('')
+  const [updating, setUpdating] = useState(false)
+  const [updateLog, setUpdateLog] = useState<string[]>([])
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -68,6 +70,39 @@ export default function PengaturanClient({ sekolah, semester, tahunPel, pembagia
       showToast('Tahun pelajaran berhasil dihapus!', 'success')
     } else {
       showToast(result.error || 'Gagal menghapus tahun pelajaran!', 'error')
+    }
+  }
+
+  const startUpdate = async () => {
+    if (updating) return
+    const ok = await confirmAlert(
+      'Update Aplikasi?',
+      'Aplikasi akan menarik kode terbaru, build, dan restart. Halaman akan terputus sesaat saat restart.'
+    )
+    if (!ok) return
+
+    setUpdating(true)
+    setUpdateLog([])
+
+    const es = new EventSource('/api/admin/update')
+    es.onmessage = (e) => {
+      try {
+        const d = JSON.parse(e.data)
+        if (d.done) {
+          es.close()
+          setUpdateLog((l) => [...l, '✅ Update selesai. Silakan muat ulang halaman (F5).'])
+          setUpdating(false)
+        } else if (d.line) {
+          setUpdateLog((l) => [...l, d.line])
+        }
+      } catch {
+        // ponytail: abaikan chunk non-JSON
+      }
+    }
+    es.onerror = () => {
+      es.close()
+      setUpdateLog((l) => [...l, '🔄 Koneksi terputus (app restart). Silakan muat ulang halaman (F5).'])
+      setUpdating(false)
     }
   }
 
@@ -184,6 +219,30 @@ export default function PengaturanClient({ sekolah, semester, tahunPel, pembagia
               })}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Update Aplikasi */}
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
+          <h3 className="font-semibold text-[#1A1A2E]">Update Aplikasi</h3>
+        </div>
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-[#1A1A2E]/70">
+            Tarik kode terbaru dari repository, install dependency, build, jalankan migrasi database, dan restart aplikasi secara otomatis.
+          </p>
+          <button
+            onClick={startUpdate}
+            disabled={updating}
+            className="bg-[#DC2626] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] disabled:opacity-50 transition-all"
+          >
+            {updating ? 'Memperbarui...' : 'Update Aplikasi'}
+          </button>
+          {updateLog.length > 0 && (
+            <pre className="max-h-60 overflow-y-auto font-mono text-xs bg-black/90 text-green-300 p-3 rounded whitespace-pre-wrap">
+              {updateLog.join('\n')}
+            </pre>
+          )}
         </div>
       </div>
     </div>
