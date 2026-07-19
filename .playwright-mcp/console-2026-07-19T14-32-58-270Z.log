@@ -1,0 +1,11 @@
+[      78ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:31211/login:0
+[     112ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:31211/api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png:0
+[     149ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:31211/login:0
+[    8055ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:31211/api/auth/providers:0
+[    8055ms] [ERROR] H: There was a problem with the server configuration. Check the server logs for more information.. Read more at https://errors.authjs.dev#autherror
+    at W (http://localhost:31211/_next/static/chunks/4921-fc4a410931aab57b.js:1:2555)
+    at async es (http://localhost:31211/_next/static/chunks/4921-fc4a410931aab57b.js:1:4428)
+    at async u (http://localhost:31211/_next/static/chunks/app/(auth)/login/page-400d107689036160.js:1:876) @ http://localhost:31211/_next/static/chunks/4921-fc4a410931aab57b.js:0
+[    8212ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:31211/login:0
+[    8236ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:31211/api/uploads/sekolah/20505005-SMK%20ABDI%20LOGO_1.png:0
+[    8270ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:31211/login:0
