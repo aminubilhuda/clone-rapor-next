@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { pool } from '@/lib/db';
+import { SEKOLAH_ID } from '@/lib/constants';
 
 const DEFAULT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#DC2626"/><text x="16" y="22" text-anchor="middle" font-size="18" font-weight="bold" fill="white" font-family="Arial">E</text></svg>`;
+const SEKOLAH_DIR = resolve(join(process.cwd(), 'public', 'uploads', 'sekolah'));
 
 export async function GET() {
   try {
     const [rows]: any = await pool.query(
-      'SELECT logo FROM sekolah WHERE id_sekolah = 1 AND deleted_at IS NULL'
+      'SELECT logo FROM sekolah WHERE id_sekolah = ? AND deleted_at IS NULL',
+      [SEKOLAH_ID]
     );
 
     if (rows.length === 0 || !rows[0].logo) {
@@ -21,7 +24,12 @@ export async function GET() {
     }
 
     try {
-      const logoPath = join(process.cwd(), 'public', 'uploads', 'sekolah', rows[0].logo);
+      const logoPath = resolve(join(process.cwd(), 'public', 'uploads', 'sekolah', rows[0].logo));
+      if (!logoPath.startsWith(SEKOLAH_DIR)) {
+        return new NextResponse(DEFAULT_SVG, {
+          headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400' },
+        });
+      }
       const data = await readFile(logoPath);
 
       const ext = rows[0].logo.split('.').pop()?.toLowerCase();

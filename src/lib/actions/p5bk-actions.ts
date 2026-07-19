@@ -1,7 +1,8 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 function generateKode() {
@@ -9,10 +10,8 @@ function generateKode() {
 }
 
 export async function updateP5BK(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_proyek_kelas') as string;
   const idKelas = formData.get('id_kelas') as string;
@@ -22,8 +21,7 @@ export async function updateP5BK(formData: FormData) {
   const deskripsiSingkat = formData.get('deskripsi_singkat') as string;
   const subElemenIdsRaw = formData.get('sub_elemen_ids') as string;
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+  const sekolah = await getSekolahWithFilter();
   const tahun = sekolah?.tahun || 1;
   const semester = sekolah?.semester || 1;
 
@@ -61,12 +59,16 @@ export async function updateP5BK(formData: FormData) {
           subMap.set(sub.id_sub_elemen, { id_dimensi: sub.id_dimensi, id_elemen: sub.id_elemen });
         }
 
+        const newInserts: any[][] = [];
         for (const idSub of subElemenIds) {
           const info = subMap.get(idSub);
           if (!info) continue;
+          newInserts.push([proyekId, info.id_dimensi, info.id_elemen, idSub]);
+        }
+        if (newInserts.length > 0) {
           await pool.query(
-            'INSERT INTO proyek_subelemen (id_proyek_kelas, id_dimensi, id_elemen, id_sub_elemen) VALUES (?, ?, ?, ?)',
-            [proyekId, info.id_dimensi, info.id_elemen, idSub]
+            'INSERT INTO proyek_subelemen (id_proyek_kelas, id_dimensi, id_elemen, id_sub_elemen) VALUES ?',
+            [newInserts]
           );
         }
       }
@@ -75,15 +77,13 @@ export async function updateP5BK(formData: FormData) {
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function getSubelemenByProyek(idProyek: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     const [rows]: any = await pool.query(
@@ -92,15 +92,13 @@ export async function getSubelemenByProyek(idProyek: number) {
     );
     return { success: true, data: rows.map((r: any) => r.id_sub_elemen) } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal mengambil data' } as const;
+    return { success: false, error: 'Gagal mengambil data' } as const;
   }
 }
 
 export async function getDataNilaiP5BK(idProyek: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     // Get project info
@@ -160,15 +158,13 @@ export async function getDataNilaiP5BK(idProyek: number) {
       },
     } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal mengambil data nilai' } as const;
+    return { success: false, error: 'Gagal mengambil data nilai' } as const;
   }
 }
 
 export async function saveNilaiP5BK(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idProyek = Number(formData.get('id_proyek_kelas'));
   const subElemenIds: number[] = JSON.parse(formData.get('sub_elemen_ids') as string || '[]');
@@ -208,6 +204,9 @@ export async function saveNilaiP5BK(formData: FormData) {
       existingMap.set(`${r.id_siswa}_${r.id_sub_elemen}`, r.id_nilai_proyek);
     }
 
+    const updates: { nilai: number; tahun: number; semester: number; id: number }[] = [];
+    const inserts: any[][] = [];
+
     for (const idSiswa of siswaIds) {
       for (const idSubElemen of subElemenIds) {
         const nilaiRaw = formData.get(`nilai_${idSiswa}_${idSubElemen}`) as string;
@@ -218,38 +217,46 @@ export async function saveNilaiP5BK(formData: FormData) {
 
         const key = `${idSiswa}_${idSubElemen}`;
         if (existingMap.has(key)) {
-          await pool.query(
-            'UPDATE nilai_proyek SET nilai = ?, tahun = ?, semester = ? WHERE id_nilai_proyek = ?',
-            [nilai, tahun, semester, existingMap.get(key)]
-          );
+          updates.push({ nilai, tahun, semester, id: existingMap.get(key)! });
         } else {
-          await pool.query(
-            `INSERT INTO nilai_proyek (tahun, semester, proyek, id_kelas, id_mapel, id_dimensi, id_elemen, id_sub_elemen, id_siswa, nilai)
-             VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, ?)`,
-            [tahun, semester, idProyek, id_kelas, info.id_dimensi, info.id_elemen, idSubElemen, idSiswa, nilai]
-          );
+          inserts.push([tahun, semester, idProyek, id_kelas, 0, info.id_dimensi, info.id_elemen, idSubElemen, idSiswa, nilai]);
         }
       }
+    }
+
+    if (updates.length > 0) {
+      const cases = updates.map(() => `WHEN id_nilai_proyek = ? THEN ?`).join(' ');
+      const caseParams = updates.flatMap((u) => [u.id, u.nilai]);
+      const ids = updates.map((u) => u.id);
+      await pool.query(
+        `UPDATE nilai_proyek SET nilai = CASE ${cases} END, tahun = ?, semester = ? WHERE id_nilai_proyek IN (?)`,
+        [...caseParams, tahun, semester, ids]
+      );
+    }
+
+    if (inserts.length > 0) {
+      await pool.query(
+        `INSERT INTO nilai_proyek (tahun, semester, proyek, id_kelas, id_mapel, id_dimensi, id_elemen, id_sub_elemen, id_siswa, nilai) VALUES ?`,
+        [inserts]
+      );
     }
 
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan nilai' } as const;
+    return { success: false, error: 'Gagal menyimpan nilai' } as const;
   }
 }
 
 export async function deleteP5BK(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM proyek_kelas WHERE id_proyek_kelas = ?', [id]);
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

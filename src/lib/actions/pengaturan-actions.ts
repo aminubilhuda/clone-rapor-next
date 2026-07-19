@@ -1,14 +1,13 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { requireTuAdmin } from '@/lib/actions/auth-guard'
 import { pool } from '@/lib/db'
+import { SEKOLAH_ID } from '@/lib/constants'
 import { revalidatePath } from 'next/cache'
 
 export async function savePengaturan(formData: FormData) {
-  const session = await auth()
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const
-  }
+  const authResult = await requireTuAdmin()
+  if (authResult.error) return { success: false, error: authResult.error } as const
 
   const tanggal_rapor = formData.get('tanggal_rapor') as string
   const tanggal_mid = formData.get('tanggal_mid') as string
@@ -18,8 +17,8 @@ export async function savePengaturan(formData: FormData) {
 
   try {
     await pool.query(
-      'UPDATE sekolah SET lokasi = ?, tahun = ?, semester = ? WHERE id_sekolah = 1',
-      [lokasi, tahun, semester]
+      'UPDATE sekolah SET lokasi = ?, tahun = ?, semester = ? WHERE id_sekolah = ?',
+      [lokasi, tahun, semester, SEKOLAH_ID]
     )
 
     const [existing]: any = await pool.query(
@@ -42,36 +41,32 @@ export async function savePengaturan(formData: FormData) {
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan pengaturan' } as const
+    return { success: false, error: 'Gagal menyimpan pengaturan' } as const
   }
 }
 
 export async function addTahunPelajaran(nama: string) {
-  const session = await auth()
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const
-  }
+  const authResult = await requireTuAdmin()
+  if (authResult.error) return { success: false, error: authResult.error } as const
 
   try {
     await pool.query('INSERT INTO tahun_pelajaran (tahun_pelajaran) VALUES (?)', [nama])
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menambah tahun pelajaran' } as const
+    return { success: false, error: 'Gagal menambah tahun pelajaran' } as const
   }
 }
 
 export async function deleteTahunPelajaran(id: number) {
-  const session = await auth()
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const
-  }
+  const authResult = await requireTuAdmin()
+  if (authResult.error) return { success: false, error: authResult.error } as const
 
   try {
     await pool.query('DELETE FROM tahun_pelajaran WHERE id_tahun_pelajaran = ?', [id])
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus tahun pelajaran' } as const
+    return { success: false, error: 'Gagal menghapus tahun pelajaran' } as const
   }
 }

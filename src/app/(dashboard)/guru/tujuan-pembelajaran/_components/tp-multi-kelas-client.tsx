@@ -31,6 +31,16 @@ interface Props {
   } | null;
 }
 
+function KktpInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">KKTP (Kriteria Ketuntasan Tahap Pengetahuan)</label>
+      <input type="number" min={0} max={100} value={value} onChange={(e) => onChange(e.target.value)}
+        className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+    </div>
+  );
+}
+
 export default function TPMultiKelasClient({ options, selectedMapel, selectedTingkat, selectedData }: Props) {
   const { showToast } = useToast();
   const [modalAdd, setModalAdd] = useState(false);
@@ -43,11 +53,12 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
 
   const [addKode, setAddKode] = useState('');
   const [addTujuan, setAddTujuan] = useState('');
+  const [addKktp, setAddKktp] = useState('80');
   const [addKelas, setAddKelas] = useState<Record<number, boolean>>({});
 
   const [editKode, setEditKode] = useState('');
   const [editTujuanVal, setEditTujuanVal] = useState('');
-  const [editKktp, setEditKktp] = useState('70');
+  const [editKktp, setEditKktp] = useState('80');
 
   const [copySource, setCopySource] = useState<any[]>([]);
   const [copyChecked, setCopyChecked] = useState<Record<string, boolean>>({});
@@ -72,6 +83,7 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
   const openAdd = async () => {
     if (!selectedData) return;
     setAddTujuan('');
+    setAddKktp('80');
     setAddKelas(Object.fromEntries(selectedData.kelasList.map(k => [k.id_kelas, true])));
     setError('');
     const result = await getKodeNext(selectedData.mapel.id_mapel);
@@ -88,7 +100,7 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
     setSelected(row);
     setEditKode(row.kode);
     setEditTujuanVal(row.tujuan);
-    setEditKktp(String(row.kktp || 70));
+    setEditKktp(String(row.kktp || 80));
     setError('');
     setModalEdit(true);
   };
@@ -126,7 +138,7 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
     fd.set('kelas_ids', JSON.stringify(selectedKelas));
     fd.set('kode', addKode);
     fd.set('tujuan', addTujuan);
-    fd.set('kktp', '70');
+    fd.set('kktp', addKktp);
     const result = await addTujuanMulti(fd);
     if (result.success) { setModalAdd(false); showToast('TP berhasil ditambahkan', 'success'); setTimeout(() => window.location.reload(), 800); }
     else { setError(result.error || 'Gagal menambah TP'); }
@@ -228,9 +240,10 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                      <tr className="bg-orange-100 border-b text-orange-800">
                       <th className="text-left px-3 py-2.5 font-semibold w-10">No</th>
                       <th className="text-left px-3 py-2.5 font-semibold w-16">Kode</th>
-                      <th className="text-left px-3 py-2.5 font-semibold w-20">Kelas</th>
-                      <th className="text-left px-3 py-2.5 font-semibold">Deskripsi</th>
-                      <th className="text-center px-3 py-2.5 font-semibold w-20">Aksi</th>
+                       <th className="text-left px-3 py-2.5 font-semibold w-20">Kelas</th>
+                       <th className="text-left px-3 py-2.5 font-semibold">Deskripsi</th>
+                       <th className="text-center px-3 py-2.5 font-semibold w-16">KKTP</th>
+                       <th className="text-center px-3 py-2.5 font-semibold w-20">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -255,10 +268,13 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                               </span>
                             ))}
                           </td>
-                          <td className="px-3 py-3 align-top max-w-xs">
-                            <p className="text-xs line-clamp-2">{t.tujuan}</p>
-                          </td>
-                          <td className="px-3 py-3 align-top text-center">
+                           <td className="px-3 py-3 align-top max-w-xs">
+                             <p className="text-xs line-clamp-2">{t.tujuan}</p>
+                           </td>
+                           <td className="px-3 py-3 align-top text-center">
+                             <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold">{t.kktp ?? '-'}</span>
+                           </td>
+                           <td className="px-3 py-3 align-top text-center">
                             <div className="flex items-center justify-center gap-1">
                               <button onClick={() => openEdit(t)} className="text-blue-600 hover:text-blue-800 transition" title="Edit">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,6 +317,7 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       placeholder="Tuliskan tujuan pembelajaran..." />
                   </div>
+                  <KktpInput value={addKktp} onChange={setAddKktp} />
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-sm font-medium text-gray-700">Kelas</label>
@@ -348,6 +365,7 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                     <textarea value={editTujuanVal} onChange={(e) => setEditTujuanVal(e.target.value)} rows={4}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
                   </div>
+                  <KktpInput value={editKktp} onChange={setEditKktp} />
                 </div>
                 <div className="px-6 py-4 border-t flex justify-end gap-3">
                   <button onClick={() => setModalEdit(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition">Batal</button>

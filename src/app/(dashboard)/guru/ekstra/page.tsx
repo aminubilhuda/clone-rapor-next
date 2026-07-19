@@ -74,36 +74,36 @@ export default async function EkstraPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Ekstrakurikuler</h4>
+      <h4 className="text-xl font-semibold mb-6 text-[#1A1A2E]">Ekstrakurikuler</h4>
 
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg font-semibold">
-          Daftar Ekstrakurikuler yang Dibina
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
+          <h3 className="font-semibold text-[#1A1A2E]">Daftar Ekstrakurikuler yang Dibina</h3>
         </div>
-        <div className="p-5">
+        <div className="p-4">
           {data.rows.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-[#6B7280]">
               Anda belum memiliki ekstrakurikuler yang dibina.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">No</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Ekstrakurikuler</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Aksi</th>
+                  <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">No</th>
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Ekstrakurikuler</th>
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.rows.map((e: any, i: number) => (
-                    <tr key={e.id_eskul} className="border-b hover:bg-gray-50">
+                    <tr key={e.id_eskul} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                       <td className="px-4 py-3">{i + 1}</td>
-                      <td className="px-4 py-3 font-medium">{e.nama_eskul}</td>
+                      <td className="px-4 py-3 font-medium text-[#1A1A2E]">{e.nama_eskul}</td>
                       <td className="px-4 py-3">
                         <a
                           href={`/guru/ekstra?id_eskul=${e.id_eskul}`}
-                          className="bg-blue-100 text-blue-700 px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-200 transition"
+                          className="bg-[#F8F9FB] text-[#1A1A2E] px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.08)] transition-all active:scale-[0.98]"
                         >
                           Lihat Peserta
                         </a>

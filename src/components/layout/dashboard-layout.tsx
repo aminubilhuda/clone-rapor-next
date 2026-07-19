@@ -1,5 +1,3 @@
-'use client';
-
 import Topbar from './topbar';
 
 interface DashboardLayoutProps {

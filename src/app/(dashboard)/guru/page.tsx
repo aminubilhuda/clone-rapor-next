@@ -1,5 +1,6 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { redirect } from 'next/navigation';
 
 async function getGuruDashboard() {
@@ -9,8 +10,7 @@ async function getGuruDashboard() {
   const idUser = session.user.id_user;
 
   try {
-    const [sekolahRows]: any = await pool.query('SELECT * FROM sekolah WHERE id_sekolah = 1');
-    const sekolah = sekolahRows[0];
+    const sekolah = await getSekolahWithFilter();
 
     const [userRows]: any = await pool.query('SELECT * FROM users WHERE id_user = ?', [idUser]);
     const user = userRows[0];
@@ -71,10 +71,10 @@ export default async function GuruDashboardPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Dashboard Guru</h4>
+      <h4 className="text-xl font-semibold mb-6 text-[#1A1A2E]">Dashboard Guru</h4>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] p-4">
           <div className="flex items-center justify-between">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,14 +82,14 @@ export default async function GuruDashboardPage() {
               </svg>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-gray-800">{stats.jumlahKelasAmpuh}</div>
-              <div className="text-sm text-gray-500 mt-1">Kelas Ampuh Ku</div>
+              <div className="text-2xl font-bold text-[#1A1A2E]">{stats.jumlahKelasAmpuh}</div>
+              <div className="text-sm text-[#6B7280] mt-1">Kelas Ampuh Ku</div>
             </div>
           </div>
         </div>
 
         {stats.jumlahWali > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] p-4">
             <div className="flex items-center justify-between">
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-600">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,8 +97,8 @@ export default async function GuruDashboardPage() {
                 </svg>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-gray-800">{stats.jumlahAnggotaKelas}</div>
-                <div className="text-sm text-gray-500 mt-1">Anggota Kelas Ku ({stats.namaKelas})</div>
+                <div className="text-2xl font-bold text-[#1A1A2E]">{stats.jumlahAnggotaKelas}</div>
+                <div className="text-sm text-[#6B7280] mt-1">Anggota Kelas Ku ({stats.namaKelas})</div>
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default async function GuruDashboardPage() {
       </div>
 
       {/* Welcome Card */}
-      <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] p-6">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
             <span className="text-2xl font-bold text-emerald-600">
@@ -114,33 +114,33 @@ export default async function GuruDashboardPage() {
             </span>
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">
+            <h3 className="text-lg font-semibold text-[#1A1A2E]">
               Selamat datang, {user?.nama || 'Guru'}!
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#6B7280]">
               Tahun Pelajaran {stats.tahunPelajaran} - Semester {stats.semester}
             </p>
           </div>
         </div>
 
-        <div className="border-t border-gray-100 pt-4 mt-4">
-          <p className="text-gray-600">
+        <div className="border-t border-[rgba(0,0,0,0.04)] pt-4 mt-4">
+          <p className="text-[#6B7280]">
             Gunakan menu di samping untuk mengakses fitur-fitur penilaian, tujuan pembelajaran, dan cetak rapor.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-            <a href="/guru/kelas-ku" className="block p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-              <span className="text-sm font-medium text-blue-700">Penilaian Angka</span>
+            <a href="/guru/kelas-ku" className="block p-3 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.04)] transition">
+              <span className="text-sm font-medium text-[#1A1A2E]">Penilaian Angka</span>
             </a>
-            <a href="/guru/tujuan-pembelajaran" className="block p-3 bg-green-50 rounded-lg hover:bg-green-100 transition">
-              <span className="text-sm font-medium text-green-700">Tujuan Pembelajaran</span>
+            <a href="/guru/tujuan-pembelajaran" className="block p-3 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.04)] transition">
+              <span className="text-sm font-medium text-[#1A1A2E]">Tujuan Pembelajaran</span>
             </a>
             {stats.jumlahWali > 0 && (
               <>
-                <a href="/guru/catatan-rapor" className="block p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-                  <span className="text-sm font-medium text-purple-700">Cetak Rapor</span>
+                <a href="/guru/catatan-rapor" className="block p-3 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.04)] transition">
+                  <span className="text-sm font-medium text-[#1A1A2E]">Cetak Rapor</span>
                 </a>
-                <a href="/guru/lager-nilai-kelas" className="block p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition">
-                  <span className="text-sm font-medium text-orange-700">Leger Nilai</span>
+                <a href="/guru/lager-nilai-kelas" className="block p-3 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.04)] transition">
+                  <span className="text-sm font-medium text-[#1A1A2E]">Leger Nilai</span>
                 </a>
               </>
             )}

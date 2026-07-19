@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
+import { JABATAN } from '@/lib/constants';
 
 // Simple in-memory rate limiter for login attempts
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
@@ -50,8 +51,8 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/login' || pathname.startsWith('/api/auth')) {
     if (pathname === '/login' && session?.user) {
       const jabatan = session.user.jabatan;
-      if (jabatan === 2) return NextResponse.redirect(new URL('/tu', request.url));
-      if (jabatan === 3) return NextResponse.redirect(new URL('/guru', request.url));
+      if (jabatan === JABATAN.TU_ADMIN) return NextResponse.redirect(new URL('/tu', request.url));
+      if (jabatan === JABATAN.GURU) return NextResponse.redirect(new URL('/guru', request.url));
     }
     return NextResponse.next();
   }
@@ -62,10 +63,10 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    if (pathname.startsWith('/tu') && session.user.jabatan !== 1 && session.user.jabatan !== 2) {
+    if (pathname.startsWith('/tu') && session.user.jabatan !== JABATAN.SUPER_ADMIN && session.user.jabatan !== JABATAN.TU_ADMIN) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
-    if (pathname.startsWith('/guru') && session.user.jabatan !== 3) {
+    if (pathname.startsWith('/guru') && session.user.jabatan !== JABATAN.GURU) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

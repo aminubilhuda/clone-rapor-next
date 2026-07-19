@@ -12,10 +12,12 @@ export async function POST(req: NextRequest) {
   const action = formData.get('action') as string;
 
   const redirectTo = (formData.get('redirect') as string) || '/tu';
+  // Prevent open redirect — only allow relative paths
+  const safeRedirect = redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/tu';
 
   if (action === 'clear') {
     await clearViewFilter();
-    return NextResponse.redirect(new URL(redirectTo, req.url));
+    return NextResponse.redirect(new URL(safeRedirect, req.url));
   }
 
   const tahun = formData.get('tahun') as string;
@@ -25,6 +27,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing tahun or semester' }, { status: 400 });
   }
 
-  await setViewFilter(tahun, semester);
-  return NextResponse.redirect(new URL(redirectTo, req.url));
+  const result = await setViewFilter(tahun, semester);
+  if (!result.success) {
+    return NextResponse.json({ error: result.error }, { status: 400 });
+  }
+  return NextResponse.redirect(new URL(safeRedirect, req.url));
 }

@@ -1,14 +1,13 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function updatePrakerin(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_prakerin') as string;
   const mitra = formData.get('mitra') as string;
@@ -18,8 +17,7 @@ export async function updatePrakerin(formData: FormData) {
   const instruktur = formData.get('instruktur') as string;
   const idUser = formData.get('id_user') as string;
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+  const sekolah = await getSekolahWithFilter();
   const tahun = sekolah?.tahun || 1;
   const semester = sekolah?.semester || 1;
 
@@ -41,22 +39,20 @@ export async function updatePrakerin(formData: FormData) {
     revalidatePath('/tu/prakerin');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function deletePrakerin(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM prakerin WHERE id_prakerin = ?', [id]);
     revalidatePath('/tu/prakerin');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
 
@@ -67,13 +63,10 @@ export async function importPrakerin(rows: {
   tanggal_akhir?: string | null;
   instruktur?: string;
 }[]) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+  const sekolah = await getSekolahWithFilter();
   const tahun = sekolah?.tahun || 1;
   const semester = sekolah?.semester || 1;
 
@@ -110,7 +103,7 @@ export async function importPrakerin(rows: {
       }
       count++;
     } catch (e: any) {
-      errors.push(`Baris ${i + 1} (${r.mitra}): ${e.message}`);
+      errors.push(`Baris ${i + 1} (${r.mitra}): Gagal menyimpan data`);
     }
   }
 

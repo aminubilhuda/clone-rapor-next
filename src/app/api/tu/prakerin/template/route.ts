@@ -1,6 +1,10 @@
 import * as XLSX from 'xlsx';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 
 export async function GET() {
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return new Response('Unauthorized', { status: 401 });
+
   const wb = XLSX.utils.book_new();
 
   const data = [

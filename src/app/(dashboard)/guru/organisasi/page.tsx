@@ -1,5 +1,6 @@
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { redirect } from 'next/navigation';
 import OrganisasiGuruClient from './_components/organisasi-guru-client';
 
@@ -8,6 +9,7 @@ export default async function OrganisasiGuruPage() {
   if (!session?.user || session.user.jabatan !== 3) redirect('/login');
 
   const idUser = session.user.id_user;
+  const sekolah = await getSekolahWithFilter();
 
   const [orgRows]: any = await pool.query(
     `SELECT o.id_organisasi, o.nama_organisasi, o.kode
@@ -37,9 +39,9 @@ export default async function OrganisasiGuruPage() {
      JOIN siswa s ON so.id_siswa = s.id_siswa
      LEFT JOIN siswa_kelas sk ON s.id_siswa = sk.id_siswa AND sk.tahun = so.tahun AND sk.semester = so.semester AND sk.deleted_at IS NULL
      LEFT JOIN kelas k ON sk.id_kelas = k.id_kelas
-     WHERE so.id_organisasi IN (${placeholders}) AND so.deleted_at IS NULL AND s.deleted_at IS NULL
+     WHERE so.id_organisasi IN (${placeholders}) AND so.tahun = ? AND so.semester = ? AND so.deleted_at IS NULL AND s.deleted_at IS NULL
      ORDER BY so.id_organisasi, s.nama_siswa ASC`,
-    orgIds
+    [...orgIds, sekolah.tahun, sekolah.semester]
   );
 
   return (

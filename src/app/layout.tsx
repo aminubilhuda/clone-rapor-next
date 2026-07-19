@@ -1,18 +1,18 @@
-import type { Metadata } from 'next';
-import { Outfit } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast-provider';
+import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register';
 import { pool } from '@/lib/db';
-
-const outfit = Outfit({ subsets: ['latin'] });
+import { SEKOLAH_ID } from '@/lib/constants';
 
 async function getLogoFilename(): Promise<string | null> {
   try {
     const [rows]: any = await pool.query(
-      'SELECT logo FROM sekolah WHERE id_sekolah = 1 AND deleted_at IS NULL'
+      'SELECT logo FROM sekolah WHERE id_sekolah = ? AND deleted_at IS NULL',
+      [SEKOLAH_ID]
     );
     if (rows.length > 0 && rows[0].logo) {
       return rows[0].logo;
@@ -22,6 +22,10 @@ async function getLogoFilename(): Promise<string | null> {
   }
   return null;
 }
+
+export const viewport: Viewport = {
+  themeColor: '#0f172a',
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const logo = await getLogoFilename();
@@ -34,6 +38,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'E-Rapor SMK Abdi Negara Tuban',
     description: 'Sistem Informasi Rapor SMK Abdi Negara Tuban',
+    manifest: '/manifest.json',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: 'E-Rapor',
+    },
     icons: {
       icon: faviconUrl,
       shortcut: faviconUrl,
@@ -54,13 +64,16 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href="/api/favicon" />
         <link rel="shortcut icon" href="/api/favicon" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
-      <body className={`${outfit.className} h-full overflow-hidden`}>
+      <body className="h-full overflow-hidden">
         <SessionProvider session={session}>
           <ToastProvider>
             {children}
           </ToastProvider>
         </SessionProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

@@ -1,14 +1,13 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { getSekolahAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function updateMapelSiswa(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_mapel_siswa') as string;
   const idKelas = formData.get('id_kelas') as string;
@@ -16,8 +15,7 @@ export async function updateMapelSiswa(formData: FormData) {
   const idSiswa = formData.get('id_siswa') as string;
   const aktif = formData.get('aktif') as string;
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+  const sekolah = await getSekolahAktif();
   const tahun = sekolah?.tahun || 1;
   const semester = sekolah?.semester || 1;
 
@@ -41,23 +39,21 @@ export async function updateMapelSiswa(formData: FormData) {
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function toggleMapelSiswa(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idSiswa = formData.get('id_siswa') as string;
   const idMapel = formData.get('id_mapel') as string;
   const idKelas = formData.get('id_kelas') as string;
   const diikuti = formData.get('diikuti') === 'true';
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const { tahun, semester } = sekolahRows[0];
+  const sekolah = await getSekolahAktif();
+  const { tahun, semester } = { tahun: sekolah?.tahun || 1, semester: sekolah?.semester || 1 };
 
   const [kelasRows]: any = await pool.query('SELECT id_tingkat FROM kelas WHERE id_kelas = ?', [idKelas]);
   const idTingkat = kelasRows[0]?.id_tingkat;
@@ -87,22 +83,20 @@ export async function toggleMapelSiswa(formData: FormData) {
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function toggleMapelSiswaBatch(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idKelas = parseInt(formData.get('id_kelas') as string);
   const idMapel = parseInt(formData.get('id_mapel') as string);
   const entries: { id_siswa: number; diikuti: boolean }[] = JSON.parse(formData.get('entries') as string);
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const { tahun, semester } = sekolahRows[0];
+  const sekolah = await getSekolahAktif();
+  const { tahun, semester } = { tahun: sekolah?.tahun || 1, semester: sekolah?.semester || 1 };
 
   const [kelasRows]: any = await pool.query('SELECT id_tingkat FROM kelas WHERE id_kelas = ?', [idKelas]);
   const idTingkat = kelasRows[0]?.id_tingkat;
@@ -132,21 +126,19 @@ export async function toggleMapelSiswaBatch(formData: FormData) {
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function deleteMapelSiswa(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM mapel_siswa WHERE id_mapel_siswa = ?', [id]);
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

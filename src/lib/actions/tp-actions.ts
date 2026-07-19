@@ -1,13 +1,14 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function getKodeNext(idMapel: number) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) return { success: false, error: authResult.error || 'Unauthorized' } as const;
+  const { user } = authResult;
 
   try {
     const [mRows]: any = await pool.query(
@@ -19,7 +20,7 @@ export async function getKodeNext(idMapel: number) {
     const sekolah = await getSekolahWithFilter();
     const [rows]: any = await pool.query(
       'SELECT COUNT(*) AS cnt FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?',
-      [sekolah.tahun, sekolah.semester, idMapel, session.user.id_user]
+      [sekolah.tahun, sekolah.semester, idMapel, user.id_user]
     );
     const count = rows[0]?.cnt || 0;
     const num = Math.floor(count / 10) + 1;
@@ -28,21 +29,22 @@ export async function getKodeNext(idMapel: number) {
 
     return { success: true, kode: `${singkatan}-${random}-${display}` } as const;
   } catch (e: any) {
-    return { success: false, error: e.message } as const;
+    return { success: false, error: 'Gagal mengambil data' } as const;
   }
 }
 
 export async function addTujuanMulti(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) {
-    return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) {
+    return { success: false, error: authResult.error || 'Unauthorized' } as const;
   }
+  const { user } = authResult;
 
   const idMapel = Number(formData.get('id_mapel'));
   const kelasIds: number[] = JSON.parse(formData.get('kelas_ids') as string);
   const kode = (formData.get('kode') as string)?.trim();
   const tujuan = (formData.get('tujuan') as string)?.trim();
-  const kktp = Number(formData.get('kktp')) || 70;
+  const kktp = Number(formData.get('kktp')) || 80;
 
   if (!tujuan) return { success: false, error: 'Tujuan pembelajaran wajib diisi' } as const;
   if (!kelasIds.length) return { success: false, error: 'Pilih minimal satu kelas' } as const;
@@ -50,47 +52,59 @@ export async function addTujuanMulti(formData: FormData) {
 
   try {
     const sekolah = await getSekolahWithFilter();
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
 
-    // Batch: ambil semua id_tingkat sekaligus
-    const [kelasRows]: any = await pool.query(
-      'SELECT id_kelas, id_tingkat FROM kelas WHERE id_kelas IN (?)',
-      [kelasIds]
-    );
-    const tingkatByKelas = new Map<number, number>();
-    for (const row of kelasRows) {
-      tingkatByKelas.set(row.id_kelas, row.id_tingkat);
-    }
-
-    // kode disimpan di kolom urut (group key antar kelas)
-    for (const idKelas of kelasIds) {
-      const idTingkat = tingkatByKelas.get(idKelas);
-      if (!idTingkat) continue;
-
-      await pool.query(
-        `INSERT INTO tujuan_pembelajaran
-         (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, tujuan, kktp, middle_formatif, middle_ph, formatif_as)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)`,
-        [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, session.user.id_user, kode, tujuan, kktp]
+      // Batch: ambil semua id_tingkat sekaligus
+      const [kelasRows]: any = await conn.query(
+        'SELECT id_kelas, id_tingkat FROM kelas WHERE id_kelas IN (?)',
+        [kelasIds]
       );
+      const tingkatByKelas = new Map<number, number>();
+      for (const row of kelasRows) {
+        tingkatByKelas.set(row.id_kelas, row.id_tingkat);
+      }
+
+      // kode disimpan di kolom urut (group key antar kelas)
+      for (const idKelas of kelasIds) {
+        const idTingkat = tingkatByKelas.get(idKelas);
+        if (!idTingkat) continue;
+
+        await conn.query(
+          `INSERT INTO tujuan_pembelajaran
+           (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, tujuan, kktp, middle_formatif, middle_ph, formatif_as)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)`,
+          [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, user.id_user, kode, tujuan, kktp]
+        );
+      }
+
+      await conn.commit();
+    } catch (e) {
+      await conn.rollback();
+      throw e;
+    } finally {
+      conn.release();
     }
 
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menambah TP' } as const;
+    return { success: false, error: 'Gagal menambah TP' } as const;
   }
 }
 
 export async function updateTujuanMulti(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) {
-    return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) {
+    return { success: false, error: authResult.error || 'Unauthorized' } as const;
   }
+  const { user } = authResult;
 
   const kode = (formData.get('kode') as string)?.trim();
   const idMapel = Number(formData.get('id_mapel'));
   const tujuan = (formData.get('tujuan') as string)?.trim();
-  const kktp = Number(formData.get('kktp')) || 70;
+  const kktp = Number(formData.get('kktp')) || 80;
 
   if (!tujuan) return { success: false, error: 'Tujuan pembelajaran wajib diisi' } as const;
 
@@ -101,21 +115,22 @@ export async function updateTujuanMulti(formData: FormData) {
       `UPDATE tujuan_pembelajaran
        SET tujuan = ?, kktp = ?
        WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ? AND urut = ?`,
-      [tujuan, kktp, sekolah.tahun, sekolah.semester, idMapel, session.user.id_user, kode]
+      [tujuan, kktp, sekolah.tahun, sekolah.semester, idMapel, user.id_user, kode]
     );
 
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal mengupdate TP' } as const;
+    return { success: false, error: 'Gagal mengupdate TP' } as const;
   }
 }
 
 export async function updateTujuanSingle(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) {
-    return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) {
+    return { success: false, error: authResult.error || 'Unauthorized' } as const;
   }
+  const { user } = authResult;
 
   const idTujuan = Number(formData.get('id_tujuan'));
   const tujuan = (formData.get('tujuan') as string)?.trim();
@@ -126,38 +141,40 @@ export async function updateTujuanSingle(formData: FormData) {
     await pool.query(
       `UPDATE tujuan_pembelajaran
        SET tujuan = ?
-       WHERE id_tujuan = ?`,
-      [tujuan, idTujuan]
+       WHERE id_tujuan = ? AND id_user = ?`,
+      [tujuan, idTujuan, authResult.user.id_user]
     );
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal mengupdate TP' } as const;
+    return { success: false, error: 'Gagal mengupdate TP' } as const;
   }
 }
 
 export async function deleteTujuanByKode(kode: string, idMapel: number) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) {
-    return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) {
+    return { success: false, error: authResult.error || 'Unauthorized' } as const;
   }
+  const { user } = authResult;
 
   try {
     const sekolah = await getSekolahWithFilter();
     await pool.query(
       `DELETE FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ? AND urut = ?`,
-      [sekolah.tahun, sekolah.semester, idMapel, session.user.id_user, kode]
+      [sekolah.tahun, sekolah.semester, idMapel, user.id_user, kode]
     );
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus TP' } as const;
+    return { success: false, error: 'Gagal menghapus TP' } as const;
   }
 }
 
 export async function getTpFromPreviousYear(idMapel: number) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) return { success: false, error: authResult.error || 'Unauthorized' } as const;
+  const { user } = authResult;
 
   try {
     const sekolah = await getSekolahWithFilter();
@@ -174,20 +191,21 @@ export async function getTpFromPreviousYear(idMapel: number) {
        WHERE tp.tahun = ? AND tp.semester = ? AND tp.id_mapel = ? AND tp.id_user = ? AND tp.urut != ''
        GROUP BY tp.urut, tp.tujuan, tp.kktp
        ORDER BY tp.urut ASC`,
-      [prevTahun, prevSemester, idMapel, session.user.id_user]
+      [prevTahun, prevSemester, idMapel, user.id_user]
     );
 
     return { success: true, tp: rows, prevTahun, prevSemester } as const;
   } catch (e: any) {
-    return { success: false, error: e.message } as const;
+    return { success: false, error: 'Gagal mengambil data' } as const;
   }
 }
 
 export async function copyTujuan(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) {
-    return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) {
+    return { success: false, error: authResult.error || 'Unauthorized' } as const;
   }
+  const { user } = authResult;
 
   const idMapel = Number(formData.get('id_mapel'));
   const kodes: string[] = JSON.parse(formData.get('kodes') as string);
@@ -206,7 +224,7 @@ export async function copyTujuan(formData: FormData) {
     const [srcRows]: any = await pool.query(
       `SELECT * FROM tujuan_pembelajaran
        WHERE tahun = ? AND semester = ? AND id_mapel = ? AND urut IN (?) AND id_user = ?`,
-      [prevTahun, prevSemester, idMapel, kodes, session.user.id_user]
+      [prevTahun, prevSemester, idMapel, kodes, user.id_user]
     );
     if (srcRows.length === 0) return { success: false, error: 'TP sumber tidak ditemukan' } as const;
 
@@ -225,26 +243,38 @@ export async function copyTujuan(formData: FormData) {
       tingkatByKelas.set(row.id_kelas, row.id_tingkat);
     }
 
-    for (const kode of kodes) {
-      const src = srcByKode.get(kode);
-      if (!src) continue;
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
 
-      for (const idKelas of kelasIds) {
-        const idTingkat = tingkatByKelas.get(idKelas);
-        if (!idTingkat) continue;
+      for (const kode of kodes) {
+        const src = srcByKode.get(kode);
+        if (!src) continue;
 
-        await pool.query(
-          `INSERT INTO tujuan_pembelajaran
-           (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, tujuan, kktp, middle_formatif, middle_ph, formatif_as)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)`,
-          [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, session.user.id_user, kode, src.tujuan, src.kktp]
-        );
+        for (const idKelas of kelasIds) {
+          const idTingkat = tingkatByKelas.get(idKelas);
+          if (!idTingkat) continue;
+
+          await conn.query(
+            `INSERT INTO tujuan_pembelajaran
+             (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, tujuan, kktp, middle_formatif, middle_ph, formatif_as)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)`,
+            [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, user.id_user, kode, src.tujuan, src.kktp]
+          );
+        }
       }
+
+      await conn.commit();
+    } catch (e) {
+      await conn.rollback();
+      throw e;
+    } finally {
+      conn.release();
     }
 
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal copy TP' } as const;
+    return { success: false, error: 'Gagal copy TP' } as const;
   }
 }

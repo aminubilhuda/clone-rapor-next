@@ -1,14 +1,12 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 export async function updateOrganisasi(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_organisasi') as string;
   const nama = formData.get('nama_organisasi') as string;
@@ -24,30 +22,26 @@ export async function updateOrganisasi(formData: FormData) {
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function deleteOrganisasi(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM organisasi WHERE id_organisasi = ?', [id]);
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
 
 export async function updatePembinaOrganisasi(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idOrganisasi = formData.get('id_organisasi') as string;
   const idUser = formData.get('id_user') as string;
@@ -78,15 +72,13 @@ export async function updatePembinaOrganisasi(formData: FormData) {
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function addSiswaOrganisasi(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idOrganisasi = formData.get('id_organisasi') as string;
   const idSiswa = formData.get('id_siswa') as string;
@@ -110,21 +102,19 @@ export async function addSiswaOrganisasi(formData: FormData) {
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menambah anggota' } as const;
+    return { success: false, error: 'Gagal menambah anggota' } as const;
   }
 }
 
 export async function removeSiswaOrganisasi(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM siswa_organisasi WHERE id_siswa_organisasi = ?', [id]);
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus anggota' } as const;
+    return { success: false, error: 'Gagal menghapus anggota' } as const;
   }
 }

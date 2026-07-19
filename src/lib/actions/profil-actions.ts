@@ -1,7 +1,8 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { SEKOLAH_ID } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 import { writeFile, unlink } from 'fs/promises';
 import { join } from 'path';
@@ -34,10 +35,8 @@ async function saveFile(file: File, currentFilename: string | null): Promise<str
 }
 
 export async function updateProfil(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const fields = [
     'npsn', 'nama_sekolah', 'alamat', 'desa', 'kecamatan',
@@ -48,7 +47,8 @@ export async function updateProfil(formData: FormData) {
   try {
     // Get current logo filenames
     const [current]: any = await pool.query(
-      'SELECT logo, logo_prov FROM sekolah WHERE id_sekolah = 1'
+      'SELECT logo, logo_prov FROM sekolah WHERE id_sekolah = ?',
+      [SEKOLAH_ID]
     );
     const currentLogo = current[0]?.logo || null;
     const currentLogoProv = current[0]?.logo_prov || null;
@@ -69,17 +69,17 @@ export async function updateProfil(formData: FormData) {
 
     // Update text fields
     const setClauses = fields.map((f) => `\`${f}\` = ?`).join(', ');
-    const values = fields.map((f) => formData.get(f) as string);
+    const values: any[] = fields.map((f) => formData.get(f) as string);
 
     // Add logo fields
     const updateQuery = `UPDATE sekolah SET ${setClauses}, logo = ?, logo_prov = ? WHERE id_sekolah = ?`;
-    values.push(logoFilename || '', logoProvFilename || '', '1');
+    values.push(logoFilename || '', logoProvFilename || '', SEKOLAH_ID);
 
     await pool.query(updateQuery, values);
 
     revalidatePath('/tu/profil');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }

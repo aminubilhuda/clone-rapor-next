@@ -1,7 +1,8 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 // Mapel agama: hanya enroll siswa dengan agama tertentu
@@ -35,6 +36,17 @@ async function autoEnrollSiswa(
 
   let totalEnrolled = 0;
 
+  // Batch: fetch all existing enrollments for all target classes
+  const [existingRows]: any = await pool.query(
+    'SELECT id_siswa, id_mapel FROM mapel_siswa WHERE tahun = ? AND semester = ? AND id_kelas IN (?) AND deleted_at IS NULL',
+    [tahun, semester, idKelasList]
+  );
+  const existingSet = new Set(
+    existingRows.map((e: any) => `${e.id_siswa}_${e.id_mapel}`)
+  );
+
+  const newInserts: any[][] = [];
+
   for (const [idKelas, mapelIds] of mapelByKelas) {
     const idTingkat = tingkatByKelas.get(idKelas);
     if (!idTingkat) continue;
@@ -51,49 +63,39 @@ async function autoEnrollSiswa(
 
     if (siswaRows.length === 0) continue;
 
-    // Get existing enrollments for this class to batch-check
-    const [existingRows]: any = await pool.query(
-      'SELECT id_siswa, id_mapel FROM mapel_siswa WHERE tahun = ? AND semester = ? AND id_kelas IN (?) AND deleted_at IS NULL',
-      [tahun, semester, idKelasList]
-    );
-    const existingSet = new Set(
-      existingRows.map((e: any) => `${e.id_siswa}_${e.id_mapel}`)
-    );
-
     for (const siswa of siswaRows) {
       for (const idMapel of mapelIds) {
-        // Skip if already enrolled
         if (existingSet.has(`${siswa.id_siswa}_${idMapel}`)) continue;
 
-        // Filter agama untuk mapel agama
         if (idMapel === PA_ISLAM_ID && siswa.agama !== 1) continue;
         if (idMapel === PA_KRISTEN_ID && siswa.agama !== 2 && siswa.agama !== 3) continue;
 
-        await pool.query(
-          'INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif) VALUES (?, ?, ?, ?, ?, ?, 1)',
-          [tahun, semester, idTingkat, idKelas, idMapel, siswa.id_siswa]
-        );
+        newInserts.push([tahun, semester, idTingkat, idKelas, idMapel, siswa.id_siswa, 1]);
         totalEnrolled++;
       }
     }
+  }
+
+  if (newInserts.length > 0) {
+    await pool.query(
+      'INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif) VALUES ?',
+      [newInserts]
+    );
   }
 
   return totalEnrolled;
 }
 
 export async function updateMapelKelas(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_mapel_kelas') as string;
   const idKelas = formData.get('id_kelas') as string;
   const idMapel = formData.get('id_mapel') as string;
   const idUser = formData.get('id_user') as string;
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+  const sekolah = await getSekolahWithFilter();
   const tahun = sekolah?.tahun || 1;
   const semester = sekolah?.semester || 1;
 
@@ -114,33 +116,28 @@ export async function updateMapelKelas(formData: FormData) {
     revalidatePath('/tu/mapel-kelas');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function deleteMapelKelas(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM mapel_kelas WHERE id_mapel_kelas = ?', [id]);
     revalidatePath('/tu/mapel-kelas');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
 
 export async function copyMapelKelasFromPreviousYear() {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+  const sekolah = await getSekolahWithFilter();
   const semester = sekolah?.semester || 1;
 
   // Cari tahun pelajaran sebelumnya
@@ -178,14 +175,17 @@ export async function copyMapelKelasFromPreviousYear() {
     let totalSkip = 0;
     const insertedMapel: { id_kelas: number; id_mapel: number }[] = [];
 
+    // Batch: fetch all existing mapel_kelas for target period
+    const [existingAllRows]: any = await pool.query(
+      'SELECT id_kelas, id_mapel FROM mapel_kelas WHERE tahun = ? AND semester = ?',
+      [tahunBaru, semester]
+    );
+    const existingAllSet = new Set(existingAllRows.map((e: any) => `${e.id_kelas}_${e.id_mapel}`));
+
+    const newInserts: any[][] = [];
+
     for (const row of rows) {
       const idKelas = row.id_kelas;
-
-      // Cek apakah sudah ada di tahun baru
-      const [existing]: any = await pool.query(
-        'SELECT id_mapel_kelas FROM mapel_kelas WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? LIMIT 1',
-        [tahunBaru, semester, idKelas, row.id_mapel]
-      );
 
       if (!kelasMap.has(idKelas)) {
         kelasMap.set(idKelas, { nama_kelas: row.nama_kelas, total: 0, disalin: 0, diSkip: 0 });
@@ -194,18 +194,22 @@ export async function copyMapelKelasFromPreviousYear() {
       const entry = kelasMap.get(idKelas)!;
       entry.total++;
 
-      if (existing.length > 0) {
+      if (existingAllSet.has(`${idKelas}_${row.id_mapel}`)) {
         entry.diSkip++;
         totalSkip++;
       } else {
-        await pool.query(
-          'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES (?, ?, ?, ?, ?)',
-          [tahunBaru, semester, idKelas, row.id_mapel, row.id_user]
-        );
+        newInserts.push([tahunBaru, semester, idKelas, row.id_mapel, row.id_user]);
         entry.disalin++;
         totalDisalin++;
         insertedMapel.push({ id_kelas: idKelas, id_mapel: row.id_mapel });
       }
+    }
+
+    if (newInserts.length > 0) {
+      await pool.query(
+        'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES ?',
+        [newInserts]
+      );
     }
 
     // Auto-enroll siswa untuk mapel yang baru disalin
@@ -223,18 +227,15 @@ export async function copyMapelKelasFromPreviousYear() {
     revalidatePath('/tu/mapel-kelas');
     return { success: true, totalDisalin, totalSkip, totalEnrolled, hasil } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyalin mapel kelas' } as const;
+    return { success: false, error: 'Gagal menyalin mapel kelas' } as const;
   }
 }
 
 export async function copyMapelKelasFromSameYear() {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
-  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah WHERE id_sekolah = 1');
-  const sekolah = sekolahRows[0];
+  const sekolah = await getSekolahWithFilter();
   const tahun = sekolah?.tahun;
   const semesterAktif = sekolah?.semester;
 
@@ -266,13 +267,17 @@ export async function copyMapelKelasFromSameYear() {
     let totalSkip = 0;
     const insertedMapel: { id_kelas: number; id_mapel: number }[] = [];
 
+    // Batch: fetch all existing mapel_kelas for target period
+    const [existingAllRows]: any = await pool.query(
+      'SELECT id_kelas, id_mapel FROM mapel_kelas WHERE tahun = ? AND semester = ?',
+      [tahun, semesterAktif]
+    );
+    const existingAllSet = new Set(existingAllRows.map((e: any) => `${e.id_kelas}_${e.id_mapel}`));
+
+    const newInserts: any[][] = [];
+
     for (const row of rows) {
       const idKelas = row.id_kelas;
-
-      const [existing]: any = await pool.query(
-        'SELECT id_mapel_kelas FROM mapel_kelas WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? LIMIT 1',
-        [tahun, semesterAktif, idKelas, row.id_mapel]
-      );
 
       if (!kelasMap.has(idKelas)) {
         kelasMap.set(idKelas, { nama_kelas: row.nama_kelas, total: 0, disalin: 0, diSkip: 0 });
@@ -281,18 +286,22 @@ export async function copyMapelKelasFromSameYear() {
       const entry = kelasMap.get(idKelas)!;
       entry.total++;
 
-      if (existing.length > 0) {
+      if (existingAllSet.has(`${idKelas}_${row.id_mapel}`)) {
         entry.diSkip++;
         totalSkip++;
       } else {
-        await pool.query(
-          'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES (?, ?, ?, ?, ?)',
-          [tahun, semesterAktif, idKelas, row.id_mapel, row.id_user]
-        );
+        newInserts.push([tahun, semesterAktif, idKelas, row.id_mapel, row.id_user]);
         entry.disalin++;
         totalDisalin++;
         insertedMapel.push({ id_kelas: idKelas, id_mapel: row.id_mapel });
       }
+    }
+
+    if (newInserts.length > 0) {
+      await pool.query(
+        'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES ?',
+        [newInserts]
+      );
     }
 
     const totalEnrolled = await autoEnrollSiswa(tahun, semesterAktif, insertedMapel);
@@ -308,6 +317,6 @@ export async function copyMapelKelasFromSameYear() {
     revalidatePath('/tu/mapel-kelas');
     return { success: true, totalDisalin, totalSkip, totalEnrolled, hasil } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyalin mapel kelas' } as const;
+    return { success: false, error: 'Gagal menyalin mapel kelas' } as const;
   }
 }
