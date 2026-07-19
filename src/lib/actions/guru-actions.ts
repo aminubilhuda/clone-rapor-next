@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 
@@ -19,17 +19,14 @@ export interface GuruTugas {
 }
 
 export async function getGuruTugas(): Promise<GuruTugas | null> {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) {
-    return null;
-  }
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) return null;
 
-  const idUser = session.user.id_user;
+  const idUser = authResult.user.id_user;
   const sekolah = await getSekolahWithFilter();
   const { tahun, semester } = sekolah;
 
   try {
-    // 7 query yang pakai tahun+semester dijalankan paralel
     const [
       [waliRows],
       [ekstraRows],
@@ -81,7 +78,6 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
       ),
     ]);
 
-    // piket_harian tidak pakai tahun/semester, jalankan sendiri
     const [piketRows]: any = await pool.query(
       `SELECT 1 FROM piket_harian WHERE id_user = ? LIMIT 1`,
       [idUser]

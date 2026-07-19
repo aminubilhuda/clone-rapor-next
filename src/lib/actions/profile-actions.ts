@@ -104,6 +104,6 @@ export async function updateUserProfile(formData: FormData) {
     if (e.code === 'ER_DUP_ENTRY') {
       return { success: false, error: 'Username sudah digunakan' } as const;
     }
-    return { success: false, error: e.message || 'Gagal menyimpan profil' } as const;
+    return { success: false, error: 'Gagal menyimpan profil' } as const;
   }
 }

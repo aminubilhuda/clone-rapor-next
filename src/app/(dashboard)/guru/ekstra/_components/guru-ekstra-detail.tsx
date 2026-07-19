@@ -21,50 +21,50 @@ export default function GuruEkstraDetail({ eskul, siswa, siswaEkstra, tahun, sem
   return (
     <>
       <div className="flex items-center gap-3 mb-4">
-        <a href="/guru/ekstra" className="text-blue-600 hover:underline text-sm">&larr; Kembali ke daftar</a>
+        <a href="/guru/ekstra" className="text-[#DC2626] hover:underline text-sm">&larr; Kembali ke daftar</a>
       </div>
 
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg font-semibold flex items-center justify-between">
-          <span>{eskul.nama_eskul}</span>
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between">
+          <h3 className="font-semibold text-[#1A1A2E]">{eskul.nama_eskul}</h3>
           <div className="flex gap-2">
             <button
               onClick={() => setModalAnggota(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded text-xs font-medium transition"
+              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white px-4 py-1.5 rounded-xl text-xs font-medium transition-all active:scale-[0.98]"
             >
               Kelola Anggota
             </button>
             <button
               onClick={() => setModalNilai(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded text-xs font-medium transition"
+              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white px-4 py-1.5 rounded-xl text-xs font-medium transition-all active:scale-[0.98]"
             >
               Nilai
             </button>
           </div>
         </div>
-        <div className="p-5">
+        <div className="p-4">
           {anggota.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-[#6B7280]">
               Belum ada siswa yang terdaftar di eskul ini.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">No</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">NISN</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Nama Siswa</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Predikat</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Keterangan</th>
+                  <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">No</th>
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">NISN</th>
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Nama Siswa</th>
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Predikat</th>
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Keterangan</th>
                   </tr>
                 </thead>
                 <tbody>
                   {anggota.map((s: any, i: number) => (
-                    <tr key={s.id_siswa_eskul} className="border-b hover:bg-gray-50">
+                    <tr key={s.id_siswa_eskul} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                       <td className="px-4 py-3">{i + 1}</td>
                       <td className="px-4 py-3">{s.nisn}</td>
-                      <td className="px-4 py-3 font-medium">{s.nama_siswa}</td>
+                      <td className="px-4 py-3 font-medium text-[#1A1A2E]">{s.nama_siswa}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
                           s.predikat === 'Sangat Baik' ? 'bg-green-100 text-green-700' :
@@ -73,7 +73,7 @@ export default function GuruEkstraDetail({ eskul, siswa, siswaEkstra, tahun, sem
                           'bg-red-100 text-red-700'
                         }`}>{s.predikat}</span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500 max-w-xs truncate">{s.keterangan}</td>
+                      <td className="px-4 py-3 text-[#6B7280] max-w-xs truncate">{s.keterangan}</td>
                     </tr>
                   ))}
                 </tbody>

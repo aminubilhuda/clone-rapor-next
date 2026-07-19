@@ -1,86 +1,102 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function cekPiketHariIni() {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) return false;
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) return false;
 
-  const [rows]: any = await pool.query(
-    `SELECT 1 FROM piket_harian WHERE id_user = ? AND id_harian = WEEKDAY(NOW()) + 1 LIMIT 1`,
-    [session.user.id_user]
-  );
-  return rows.length > 0;
+  try {
+    const [rows]: any = await pool.query(
+      `SELECT 1 FROM piket_harian WHERE id_user = ? AND id_harian = WEEKDAY(NOW()) + 1 LIMIT 1`,
+      [authResult.user.id_user]
+    );
+    return rows.length > 0;
+  } catch {
+    return false;
+  }
 }
 
 export async function getKelasList() {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) return [];
+  const authResult = await requireGuru();
+  if (authResult.error) return [];
 
-  const sekolah = await getSekolahWithFilter();
-  const [rows]: any = await pool.query(
-    `SELECT k.id_kelas, k.nama_kelas, COUNT(sk.id_siswa) AS jumlah,
-       EXISTS(
-         SELECT 1 FROM presensi p
-         WHERE p.id_kelas = k.id_kelas AND p.tanggal = CURDATE()
-           AND p.tahun = ? AND p.semester = ? AND p.deleted_at IS NULL
-       ) AS sudah_absen
-     FROM siswa_kelas sk
-     JOIN kelas k ON sk.id_kelas = k.id_kelas
-     JOIN siswa s ON sk.id_siswa = s.id_siswa
-     WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL AND s.aktif = 1
-     GROUP BY k.id_kelas, k.nama_kelas
-     ORDER BY k.nama_kelas ASC`,
-    [sekolah.tahun, sekolah.semester, sekolah.tahun, sekolah.semester]
-  );
-  return rows;
+  try {
+    const sekolah = await getSekolahWithFilter();
+    const [rows]: any = await pool.query(
+      `SELECT k.id_kelas, k.nama_kelas, COUNT(sk.id_siswa) AS jumlah,
+          EXISTS(
+            SELECT 1 FROM presensi p
+            WHERE p.id_kelas = k.id_kelas AND p.tanggal = CURDATE()
+              AND p.tahun = ? AND p.semester = ? AND p.deleted_at IS NULL
+          ) AS sudah_absen
+        FROM siswa_kelas sk
+        JOIN kelas k ON sk.id_kelas = k.id_kelas
+        JOIN siswa s ON sk.id_siswa = s.id_siswa
+        WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL AND s.aktif = 1
+        GROUP BY k.id_kelas, k.nama_kelas
+        ORDER BY k.nama_kelas ASC`,
+      [sekolah.tahun, sekolah.semester, sekolah.tahun, sekolah.semester]
+    );
+    return rows;
+  } catch {
+    return [];
+  }
 }
 
 export async function getSiswaKelas(idKelas: number) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) return [];
+  const authResult = await requireGuru();
+  if (authResult.error) return [];
 
-  const sekolah = await getSekolahWithFilter();
-  const [rows]: any = await pool.query(
-    `SELECT s.id_siswa, s.nama_siswa
-     FROM siswa s
-     JOIN siswa_kelas sk ON s.id_siswa = sk.id_siswa
-     WHERE sk.id_kelas = ? AND sk.tahun = ? AND sk.semester = ?
-       AND sk.deleted_at IS NULL AND s.deleted_at IS NULL AND s.aktif = 1
-     ORDER BY s.nama_siswa ASC`,
-    [idKelas, sekolah.tahun, sekolah.semester]
-  );
-  return rows;
+  try {
+    const sekolah = await getSekolahWithFilter();
+    const [rows]: any = await pool.query(
+      `SELECT s.id_siswa, s.nama_siswa
+        FROM siswa s
+        JOIN siswa_kelas sk ON s.id_siswa = sk.id_siswa
+        WHERE sk.id_kelas = ? AND sk.tahun = ? AND sk.semester = ?
+          AND sk.deleted_at IS NULL AND s.deleted_at IS NULL AND s.aktif = 1
+        ORDER BY s.nama_siswa ASC`,
+      [idKelas, sekolah.tahun, sekolah.semester]
+    );
+    return rows;
+  } catch {
+    return [];
+  }
 }
 
 export async function cekAbsensiHariIni(idKelas: number) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) return { sudahAbsen: false };
+  const authResult = await requireGuru();
+  if (authResult.error) return { sudahAbsen: false };
 
-  const sekolah = await getSekolahWithFilter();
-  const [rows]: any = await pool.query(
-    `SELECT p.id_siswa, s.nama_siswa, a.absen, a.sort
-     FROM presensi p
-     JOIN siswa s ON p.id_siswa = s.id_siswa
-     JOIN absen a ON p.id_absen = a.id_absen
-     WHERE p.tanggal = CURDATE() AND p.id_kelas = ? AND p.tahun = ? AND p.semester = ?
-       AND p.deleted_at IS NULL
-     ORDER BY s.nama_siswa ASC, a.sort ASC`,
-    [idKelas, sekolah.tahun, sekolah.semester]
-  );
-  return { sudahAbsen: rows.length > 0, data: rows };
+  try {
+    const sekolah = await getSekolahWithFilter();
+    const [rows]: any = await pool.query(
+      `SELECT p.id_siswa, s.nama_siswa, a.absen, a.sort
+        FROM presensi p
+        JOIN siswa s ON p.id_siswa = s.id_siswa
+        JOIN absen a ON p.id_absen = a.id_absen
+        WHERE p.tanggal = CURDATE() AND p.id_kelas = ? AND p.tahun = ? AND p.semester = ?
+          AND p.deleted_at IS NULL
+        ORDER BY s.nama_siswa ASC, a.sort ASC`,
+      [idKelas, sekolah.tahun, sekolah.semester]
+    );
+    return { sudahAbsen: rows.length > 0, data: rows };
+  } catch {
+    return { sudahAbsen: false, data: [] };
+  }
 }
 
 export async function savePresensiHarian(
   idKelas: number,
   absensi: { id_siswa: number; id_absen: number }[]
 ) {
-  const session = await auth();
-  if (!session?.user || session.user.jabatan !== 3) {
-    return { success: false, error: 'Unauthorized' } as const;
+  const authResult = await requireGuru();
+  if (authResult.error) {
+    return { success: false, error: authResult.error } as const;
   }
 
   const sekolah = await getSekolahWithFilter();
@@ -113,7 +129,7 @@ export async function savePresensiHarian(
     return { success: true, count: absensi.length } as const;
   } catch (e: any) {
     await conn.rollback();
-    return { success: false, error: e.message || 'Gagal menyimpan absensi' } as const;
+    return { success: false, error: 'Gagal menyimpan absensi' } as const;
   } finally {
     conn.release();
   }

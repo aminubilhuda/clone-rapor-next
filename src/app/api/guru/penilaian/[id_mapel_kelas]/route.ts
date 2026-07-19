@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
+import { SEKOLAH_ID } from '@/lib/constants';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface Entry {
@@ -34,7 +35,7 @@ export async function POST(
   }
 
   // Get sekolah & mapel_kelas info
-  const [sekolahRows]: any = await pool.query('SELECT * FROM sekolah WHERE id_sekolah = 1');
+  const [sekolahRows]: any = await pool.query('SELECT * FROM sekolah WHERE id_sekolah = ?', [SEKOLAH_ID]);
   const sekolah = sekolahRows[0];
 
   const [mkRows]: any = await pool.query(
@@ -134,7 +135,7 @@ export async function POST(
     await conn.commit();
 
     // Jika save dari tab Sumatif AS, hitung dan simpan nilaiAkhir ke nilai_mata_pelajaran
-    if (detail === 'sumatif-as' && entries.length > 0) {
+    if (detail === 'sumatif-as') {
       try {
         // Ambil semua data Formatif + PH + AS untuk kelas & mapel ini
         // Pakai conn (bukan pool) karena masih dalam lingkup koneksi yang sama
@@ -193,7 +194,7 @@ export async function POST(
   } catch (err: any) {
     await conn.rollback();
     console.error('Save penilaian error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Gagal menyimpan data' }, { status: 500 });
   } finally {
     conn.release();
   }

@@ -1,15 +1,13 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
 export async function updatePegawai(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_user') as string;
   const nama = formData.get('nama') as string;
@@ -25,20 +23,23 @@ export async function updatePegawai(formData: FormData) {
   const idTugasTambahan = formData.get('id_tugas_tambahan') as string;
 
   try {
-    // Hash password if provided
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
     if (id) {
-      // Update
-      await pool.query(
-        `UPDATE users SET
-          nama = ?, nip = ?, nuptk = ?, kontak = ?,
-          username = ?, jabatan = ?, kelamin = ?,
-          agama = ?, id_kepegawaian = ?, id_tugas_tambahan = ?,
-          password = ?
-        WHERE id_user = ?`,
-        [nama, nip, nuptk || '', kontak, username, jabatan, kelamin, agama, idKepegawaian, idTugasTambahan, hashedPassword || '', id]
-      );
+      const fields = [
+        'nama = ?', 'nip = ?', 'nuptk = ?', 'kontak = ?',
+        'username = ?', 'jabatan = ?', 'kelamin = ?',
+        'agama = ?', 'id_kepegawaian = ?', 'id_tugas_tambahan = ?',
+      ];
+      const values: any[] = [nama, nip, nuptk || '', kontak, username, jabatan, kelamin, agama, idKepegawaian, idTugasTambahan];
+
+      if (hashedPassword) {
+        fields.push('password = ?');
+        values.push(hashedPassword);
+      }
+
+      values.push(id);
+      await pool.query(`UPDATE users SET ${fields.join(', ')} WHERE id_user = ?`, values);
     } else {
       // Insert
       await pool.query(
@@ -51,21 +52,19 @@ export async function updatePegawai(formData: FormData) {
     revalidatePath('/tu/pegawai');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function deletePegawai(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('UPDATE users SET deleted_at = NOW() WHERE id_user = ?', [id]);
     revalidatePath('/tu/pegawai');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

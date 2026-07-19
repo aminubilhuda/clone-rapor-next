@@ -2,6 +2,7 @@
 
 import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { SEKOLAH_ID } from '@/lib/constants';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 
 export interface SekolahInfo {
@@ -18,7 +19,8 @@ export async function getSekolahInfo(): Promise<SekolahInfo | null> {
 
   try {
     const [sekolahRows]: any = await pool.query(
-      'SELECT nama_sekolah, alamat, logo FROM sekolah WHERE id_sekolah = 1'
+      'SELECT nama_sekolah, alamat, logo FROM sekolah WHERE id_sekolah = ?',
+      [SEKOLAH_ID]
     );
     const s = sekolahRows[0];
     if (!s) return null;
@@ -44,6 +46,9 @@ export async function getSekolahInfo(): Promise<SekolahInfo | null> {
 }
 
 export async function getSiswaRapor(tahun: number, semester: number, id_kelas: number) {
+  const session = await auth();
+  if (!session?.user) return [];
+
   try {
     const [rows]: any = await pool.query(`
       SELECT sk.id_siswa_kelas, sk.id_kelas, s.id_siswa, s.nama_siswa, s.nis, s.nisn,

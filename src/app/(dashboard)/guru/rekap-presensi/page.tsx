@@ -48,13 +48,6 @@ export default async function RekapPresensiGuruPage() {
     [sekolah.tahun, sekolah.semester, sekolah.tahun, sekolah.semester, idKelas]
   );
 
-  const [totalHarian]: any = await pool.query(
-    `SELECT COUNT(*) AS total FROM presensi
-     WHERE tahun = ? AND semester = ? AND id_kelas = ? AND deleted_at IS NULL
-     GROUP BY tanggal`,
-    [sekolah.tahun, sekolah.semester, idKelas]
-  );
-
   return (
     <div>
       <RekapPresensiGuruClient data={rekapRows} namaKelas={namaKelas} />

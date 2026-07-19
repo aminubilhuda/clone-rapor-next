@@ -1,0 +1,13 @@
+
+> clone-rapor-next@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.2.9 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.11.193:3000
+- Environments: .env.local
+✓ Ready in 436ms
+ ○ (pwa) PWA support is disabled.
+
+ GET /login 200 in 3.5s (next.js: 3.2s, proxy.ts: 14ms, application-code: 323ms)
+ GET /api/admin/update 401 in 1569ms (next.js: 1542ms, application-code: 27ms)

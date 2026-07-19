@@ -1,14 +1,13 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin, requireGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { SEKOLAH_ID, JABATAN } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
 export async function updateEkstra(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_eskul') as string;
   const namaEskul = formData.get('nama_eskul') as string;
@@ -18,36 +17,32 @@ export async function updateEkstra(formData: FormData) {
     if (id) {
       await pool.query('UPDATE eskul SET nama_eskul = ?, kode = ? WHERE id_eskul = ?', [namaEskul, kode, id]);
     } else {
-      await pool.query('INSERT INTO eskul (nama_eskul, kode, id_sekolah) VALUES (?, ?, 1)', [namaEskul, kode]);
+      await pool.query('INSERT INTO eskul (nama_eskul, kode, id_sekolah) VALUES (?, ?, ?)', [namaEskul, kode, SEKOLAH_ID]);
     }
 
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function deleteEkstra(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM eskul WHERE id_eskul = ?', [id]);
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
 
 export async function updatePembinaEkstra(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idEskul = formData.get('id_eskul') as string;
   const idUser = formData.get('id_user') as string;
@@ -78,19 +73,17 @@ export async function updatePembinaEkstra(formData: FormData) {
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 function canManageEskul(jabatan: number | undefined) {
-  return jabatan === 1 || jabatan === 2 || jabatan === 3;
+  return jabatan === JABATAN.SUPER_ADMIN || jabatan === JABATAN.TU_ADMIN || jabatan === JABATAN.GURU;
 }
 
 export async function addSiswaEkstra(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || !canManageEskul(session.user.jabatan)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireGuru();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idEskul = formData.get('id_eskul') as string;
   const idSiswa = formData.get('id_siswa') as string;
@@ -116,30 +109,26 @@ export async function addSiswaEkstra(formData: FormData) {
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menambah anggota' } as const;
+    return { success: false, error: 'Gagal menambah anggota' } as const;
   }
 }
 
 export async function removeSiswaEkstra(idSiswaEkstra: number) {
-  const session = await auth();
-  if (!session?.user || !canManageEskul(session.user.jabatan)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireGuru();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM siswa_eskul WHERE id_siswa_eskul = ?', [idSiswaEkstra]);
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus anggota' } as const;
+    return { success: false, error: 'Gagal menghapus anggota' } as const;
   }
 }
 
 export async function updateSiswaEkstra(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || !canManageEskul(session.user.jabatan)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireGuru();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_siswa_eskul') as string;
   const predikat = formData.get('predikat') as string || '';
@@ -153,17 +142,16 @@ export async function updateSiswaEkstra(formData: FormData) {
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal mengupdate anggota' } as const;
+    return { success: false, error: 'Gagal mengupdate anggota' } as const;
   }
 }
 
 export async function bulkUpdateSiswaEkstra(items: { id_siswa_eskul: number; predikat: string; keterangan: string }[]) {
-  const session = await auth();
-  if (!session?.user || !canManageEskul(session.user.jabatan)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireGuru();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
+    // ponytail: per-row UPDATE required — each item has unique predikat/keterangan
     for (const item of items) {
       await pool.query(
         'UPDATE siswa_eskul SET predikat = ?, keterangan = ? WHERE id_siswa_eskul = ?',
@@ -173,6 +161,6 @@ export async function bulkUpdateSiswaEkstra(items: { id_siswa_eskul: number; pre
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan nilai' } as const;
+    return { success: false, error: 'Gagal menyimpan nilai' } as const;
   }
 }

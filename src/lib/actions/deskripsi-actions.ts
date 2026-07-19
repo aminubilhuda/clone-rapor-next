@@ -1,14 +1,12 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 export async function updateDeskripsi(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_deskripsi') as string;
   const kriteria = formData.get('kriteria') as string;
@@ -32,21 +30,19 @@ export async function updateDeskripsi(formData: FormData) {
     revalidatePath('/tu/deskripsi-rapor');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
 export async function deleteDeskripsi(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
     await pool.query('DELETE FROM deskripsi_rapor WHERE id_deskripsi = ?', [id]);
     revalidatePath('/tu/deskripsi-rapor');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

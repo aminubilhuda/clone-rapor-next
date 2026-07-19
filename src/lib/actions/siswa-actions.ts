@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
@@ -16,6 +16,9 @@ async function resolveTingkat(terimaKelas: string | null): Promise<number | null
 }
 
 export async function getSiswaList(search: string, page: number, perPage: number, tahun: number, semester: number) {
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return [];
+
   const offset = page * perPage;
   const like = `%${search}%`;
   const cols = ['s.nama_siswa', 's.nis', 's.nisn', 'jk.jenis_kelamin', 'a.agama', 'kk.kompetensi_keahlian', 'COALESCE(k.nama_kelas, \'Belum Bergabung\')'];
@@ -69,6 +72,9 @@ export async function getSiswaList(search: string, page: number, perPage: number
 }
 
 export async function getSiswaCount(search: string, tahun: number, semester: number) {
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return 0;
+
   const like = `%${search}%`;
   const cols = ['s.nama_siswa', 's.nis', 's.nisn', 'jk.jenis_kelamin', 'a.agama', 'kk.kompetensi_keahlian', 'COALESCE(k.nama_kelas, \'Belum Bergabung\')'];
   const where = cols.map((c) => `${c} LIKE ?`).join(' OR ');
@@ -93,10 +99,8 @@ export async function getSiswaCount(search: string, tahun: number, semester: num
 }
 
 export async function updateSiswa(formData: FormData) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_siswa') as string;
   const namaSiswa = formData.get('nama_siswa') as string;
@@ -112,7 +116,7 @@ export async function updateSiswa(formData: FormData) {
   const terimaKelas = formData.get('terima_kelas') as string;
   const username = formData.get('username') as string;
   const password = formData.get('password') as string;
-  const hashedPassword = password ? await bcrypt.hash(password, 10) : '';
+  const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
   try {
     if (!id) {
@@ -128,27 +132,35 @@ export async function updateSiswa(formData: FormData) {
         if (dup.nisn === nisn) return { success: false, error: `NISN "${nisn}" sudah digunakan siswa lain` } as const;
       }
 
+      if (!hashedPassword) return { success: false, error: 'Password wajib diisi untuk siswa baru' } as const;
+
       await pool.query(
         `INSERT INTO siswa (nama_siswa, nis, nisn, tempat_lahir, tanggal_lahir, kelamin, agama, kontak_siswa, alamat, jurusan, terima_kelas, username, password, aktif, terima_tingkat)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
         [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, hashedPassword, await resolveTingkat(terimaKelas)]
       );
     } else {
-      await pool.query(
-        `UPDATE siswa SET
-          nama_siswa = ?, nis = ?, nisn = ?, tempat_lahir = ?,
-          tanggal_lahir = ?, kelamin = ?, agama = ?,
-          kontak_siswa = ?, alamat = ?, jurusan = ?,
-          terima_kelas = ?, username = ?, password = ?
-        WHERE id_siswa = ?`,
-        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, hashedPassword, id]
-      );
+      const fields = [
+        'nama_siswa = ?', 'nis = ?', 'nisn = ?', 'tempat_lahir = ?',
+        'tanggal_lahir = ?', 'kelamin = ?', 'agama = ?',
+        'kontak_siswa = ?', 'alamat = ?', 'jurusan = ?',
+        'terima_kelas = ?', 'username = ?',
+      ];
+      const values: any[] = [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username];
+
+      if (hashedPassword) {
+        fields.push('password = ?');
+        values.push(hashedPassword);
+      }
+
+      values.push(id);
+      await pool.query(`UPDATE siswa SET ${fields.join(', ')} WHERE id_siswa = ?`, values);
     }
 
     revalidatePath('/tu/kesiswaan');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
@@ -169,10 +181,8 @@ export async function importSiswa(rows: {
   username?: string;
   password?: string;
 }[]) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
   // Batch: ambil semua NIS + NISN yang sudah ada → Map ke id_siswa
   const [existingRows]: any = await pool.query(
@@ -278,7 +288,7 @@ export async function importSiswa(rows: {
         inserted++;
       }
     } catch (e: any) {
-      errors.push(`Baris ${i + 1} (${r.nama_siswa}): ${e.message}`);
+      errors.push(`Baris ${i + 1} (${r.nama_siswa}): Gagal menyimpan data`);
     }
   }
 
@@ -287,42 +297,50 @@ export async function importSiswa(rows: {
 }
 
 export async function deleteSiswa(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
+  const conn = await pool.getConnection();
   try {
-    await pool.query('UPDATE siswa SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
-    await pool.query('UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
-    await pool.query('UPDATE mapel_siswa SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
+    await conn.beginTransaction();
+    await conn.query('UPDATE siswa SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
+    await conn.query('UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
+    await conn.query('UPDATE mapel_siswa SET deleted_at = NOW() WHERE id_siswa = ?', [id]);
+    await conn.commit();
     revalidatePath('/tu/kesiswaan');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menghapus data' } as const;
+    await conn.rollback();
+    return { success: false, error: 'Gagal menghapus data' } as const;
+  } finally {
+    conn.release();
   }
 }
 
 export async function nonaktifkanSiswa(id: number) {
-  const session = await auth();
-  if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) {
-    return { success: false, error: 'Unauthorized' } as const;
-  }
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
 
+  const conn = await pool.getConnection();
   try {
-    await pool.query('UPDATE siswa SET aktif = 0 WHERE id_siswa = ?', [id]);
-    await pool.query(
+    await conn.beginTransaction();
+    await conn.query('UPDATE siswa SET aktif = 0 WHERE id_siswa = ?', [id]);
+    await conn.query(
       'UPDATE siswa_kelas SET deleted_at = NOW(), status = 2 WHERE id_siswa = ? AND deleted_at IS NULL',
       [id]
     );
-    await pool.query(
+    await conn.query(
       'UPDATE mapel_siswa SET deleted_at = NOW() WHERE id_siswa = ? AND deleted_at IS NULL',
       [id]
     );
+    await conn.commit();
     revalidatePath('/tu/kesiswaan');
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: e.message || 'Gagal menonaktifkan siswa' } as const;
+    await conn.rollback();
+    return { success: false, error: 'Gagal menonaktifkan siswa' } as const;
+  } finally {
+    conn.release();
   }
 }

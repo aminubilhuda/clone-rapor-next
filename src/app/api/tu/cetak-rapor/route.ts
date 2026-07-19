@@ -1,9 +1,12 @@
 import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
+import { SEKOLAH_ID } from '@/lib/constants';
+import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateRaporHTML, JenisRapor, SiswaInfo, SekolahInfo } from '@/lib/pdf-templates/rapor-template';
 import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, MapelNilai, PresensiData } from '@/lib/pdf-templates/tengah-semester-template';
 import { generateSemesterRaporHTML, SiswaSemesterRapor, KelompokSemester, MapelSemester, PrakerinItem, EskulItem, OrganisasiItem } from '@/lib/pdf-templates/semester-template';
+import { renderRaporPdf } from '@/lib/pdf-templates/render-pdf';
 
 const VALID_JENIS: JenisRapor[] = ['pelengkap', 'tengah_semester', 'semester', 'p5bk', 'buku_induk'];
 
@@ -43,6 +46,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });
   }
 
+  // Honor TU historical-view cookie; fall back to active period.
+  const sekolahView = await getSekolahWithFilter();
+  const viewTahun = Number(sekolahView?.tahun);
+  const viewSemester = Number(sekolahView?.semester);
+  const useTahun = Number.isInteger(viewTahun) && viewTahun > 0 ? viewTahun : Number(tahun);
+  const useSemester = Number.isInteger(viewSemester) && viewSemester > 0 ? viewSemester : Number(semester);
+  if (!Number.isInteger(useTahun) || useTahun < 1 || (useSemester !== 1 && useSemester !== 2)) {
+    return NextResponse.json({ error: 'Periode tidak valid' }, { status: 400 });
+  }
+
   try {
     const placeholders = id_siswa_list.map(() => '?').join(',');
     const [siswaRows]: any = await pool.query(`
@@ -53,30 +66,31 @@ export async function POST(req: NextRequest) {
       WHERE sk.tahun = ? AND sk.semester = ? AND s.id_siswa IN (${placeholders})
         AND sk.deleted_at IS NULL AND s.deleted_at IS NULL
       ORDER BY s.nama_siswa ASC
-    `, [tahun, semester, ...id_siswa_list]);
+    `, [useTahun, useSemester, ...id_siswa_list]);
 
     if (siswaRows.length === 0) {
       return NextResponse.json({ error: 'Siswa tidak ditemukan' }, { status: 404 });
     }
 
     const [sekolahRows]: any = await pool.query(
-      'SELECT nama_sekolah, alamat, logo, lokasi, kabupaten, kecamatan, desa FROM sekolah WHERE id_sekolah = 1'
+      'SELECT nama_sekolah, alamat, logo, lokasi, kabupaten, kecamatan, desa FROM sekolah WHERE id_sekolah = ?',
+      [SEKOLAH_ID]
     );
     const s = sekolahRows[0] || {};
 
     const [ksRows]: any = await pool.query(
       'SELECT nama, nip FROM kepala_sekolah WHERE tahun = ? AND semester = ? LIMIT 1',
-      [tahun, semester]
+      [useTahun, useSemester]
     );
     const ks = ksRows[0] || {};
 
     const [tpRows]: any = await pool.query(
-      'SELECT tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran = ?', [tahun]
+      'SELECT tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran = ?', [useTahun]
     );
     const tahunPelajaran = tpRows[0]?.tahun_pelajaran || '';
 
     const [semRows]: any = await pool.query(
-      'SELECT semester FROM semester WHERE id_semester = ?', [semester]
+      'SELECT semester FROM semester WHERE id_semester = ?', [useSemester]
     );
     const semesterLabel = semRows[0]?.semester || '';
 
@@ -223,44 +237,10 @@ export async function POST(req: NextRequest) {
 
       const html = generateTengahSemesterRaporHTML(siswaMidList, sekolahInfo, tahunPelajaran, semesterLabel, waliKelas);
 
-      let puppeteer;
-      try {
-        puppeteer = await import('puppeteer');
-      } catch {
-        return NextResponse.json({ error: 'Puppeteer tidak tersedia' }, { status: 500 });
-      }
-
-      const browser = await puppeteer.default.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      });
-
-      const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'load' });
-
       const firstSiswaMid = siswaMidList[0];
       const footerTengah = buildFooterTemplate(firstSiswaMid.nama_kelas, firstSiswaMid.nama_siswa, firstSiswaMid.nis || '-', firstSiswaMid.nisn || '-');
 
-      const pdfArray = await page.pdf({
-        width: '210mm',
-        height: '330mm',
-        printBackground: true,
-        displayHeaderFooter: true,
-        footerTemplate: footerTengah,
-        headerTemplate: '<div></div>',
-        margin: { top: '6.2mm', bottom: '12mm', left: '14.5mm', right: '15.7mm' },
-      });
-
-      await browser.close();
-
-      const pdfBuffer = Buffer.from(pdfArray);
-      return new NextResponse(pdfBuffer, {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="rapor-tengah-semester-${Date.now()}.pdf"`,
-        },
-      });
+      return await renderRaporPdf(html, footerTengah, `rapor-tengah-semester-${Date.now()}.pdf`);
     }
 
     if (jenis === 'semester') {
@@ -485,44 +465,10 @@ export async function POST(req: NextRequest) {
 
       const html = generateSemesterRaporHTML(siswaSemList, sekolahInfo, tahunPelajaran, semesterLabel, waliKelas);
 
-      let puppeteer;
-      try {
-        puppeteer = await import('puppeteer');
-      } catch {
-        return NextResponse.json({ error: 'Puppeteer tidak tersedia' }, { status: 500 });
-      }
-
-      const browser = await puppeteer.default.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      });
-
-      const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'load' });
-
       const firstSiswaSem = siswaSemList[0];
       const footerSemester = buildFooterTemplate(firstSiswaSem.nama_kelas, firstSiswaSem.nama_siswa, firstSiswaSem.nis || '-', firstSiswaSem.nisn || '-');
 
-      const pdfArray = await page.pdf({
-        width: '210mm',
-        height: '330mm',
-        printBackground: true,
-        displayHeaderFooter: true,
-        footerTemplate: footerSemester,
-        headerTemplate: '<div></div>',
-        margin: { top: '6.2mm', bottom: '12mm', left: '14.5mm', right: '15.7mm' },
-      });
-
-      await browser.close();
-
-      const pdfBuffer = Buffer.from(pdfArray);
-      return new NextResponse(pdfBuffer, {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="rapor-semester-${Date.now()}.pdf"`,
-        },
-      });
+      return await renderRaporPdf(html, footerSemester, `rapor-semester-${Date.now()}.pdf`);
     }
 
     const siswaList: SiswaInfo[] = siswaRows.map((row: any) => ({
@@ -541,48 +487,13 @@ export async function POST(req: NextRequest) {
       semesterLabel
     );
 
-    let puppeteer;
-    try {
-      puppeteer = await import('puppeteer');
-    } catch {
-      return NextResponse.json({ error: 'Puppeteer tidak tersedia' }, { status: 500 });
-    }
-
-      const browser = await puppeteer.default.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      });
-
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'load' });
-
     const footerDefault = buildFooterTemplate(siswaList[0].nama_kelas, siswaList[0].nama_siswa, siswaList[0].nis || '-', siswaList[0].nisn || '-');
 
-    const pdfArray = await page.pdf({
-      width: '210mm',
-      height: '330mm',
-      printBackground: true,
-      displayHeaderFooter: true,
-      footerTemplate: footerDefault,
-      headerTemplate: '<div></div>',
-      margin: { top: '6.2mm', bottom: '20mm', left: '14.5mm', right: '15.7mm' },
-    });
-
-    await browser.close();
-
-    const pdfBuffer = Buffer.from(pdfArray);
-
-    return new NextResponse(pdfBuffer, {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="rapor-${jenis}-${Date.now()}.pdf"`,
-      },
-    });
+    return await renderRaporPdf(html, footerDefault, `rapor-${jenis}-${Date.now()}.pdf`, '20mm');
   } catch (error: any) {
     console.error('Cetak rapor error:', error);
     return NextResponse.json(
-      { error: error.message || 'Gagal mencetak rapor' },
+      { error: 'Gagal mencetak rapor' },
       { status: 500 }
     );
   }

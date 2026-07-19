@@ -21,31 +21,31 @@ export default async function PiketHarianPage() {
 
   return (
     <div>
-      <h4 className="text-xl font-semibold mb-6">Jadwal Piket Harian</h4>
+      <h4 className="text-xl font-semibold mb-6 text-[#1A1A2E]">Jadwal Piket Harian</h4>
 
-      <div className="bg-white rounded-lg shadow border border-gray-200">
-        <div className="bg-blue-600 text-white px-5 py-3 rounded-t-lg font-semibold">
-          Jadwal Piket Saya
+      <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
+        <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
+          <h3 className="font-semibold text-[#1A1A2E]">Jadwal Piket Saya</h3>
         </div>
-        <div className="p-5">
+        <div className="p-4">
           {data.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-[#6B7280]">
               Anda belum memiliki jadwal piket harian.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">No</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Hari</th>
+                  <tr className="border-b border-[rgba(0,0,0,0.04)]">
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">No</th>
+                    <th className="text-left px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Hari</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.map((d: any, i: number) => (
-                    <tr key={d.id_piket_harian} className="border-b hover:bg-gray-50">
+                    <tr key={d.id_piket_harian} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                       <td className="px-4 py-3">{i + 1}</td>
-                      <td className="px-4 py-3 font-medium">{d.harian}</td>
+                      <td className="px-4 py-3 font-medium text-[#1A1A2E]">{d.harian}</td>
                     </tr>
                   ))}
                 </tbody>
