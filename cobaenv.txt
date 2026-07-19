@@ -1,0 +1,16 @@
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=root
+DB_NAME=abdinega_db_raporkm
+
+AUTH_SECRET=your-auth-secret-change-this
+
+NEXTAUTH_URL=http://localhost:3000
+
+CHROME_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+
+# VAPID keys for Web Push (PWA notifications)
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=BJyKCN23ZS5jyvJs4ss0yrNIrT5C1QOUxHVBl8enRI2IPrgx5dbXj3rrv1j9IKTLLGY2-i8oyg7kZSyRs7pnQGQ
+VAPID_PUBLIC_KEY=BJyKCN23ZS5jyvJs4ss0yrNIrT5C1QOUxHVBl8enRI2IPrgx5dbXj3rrv1j9IKTLLGY2-i8oyg7kZSyRs7pnQGQ
+VAPID_PRIVATE_KEY=SalNqXBWmVd3t1R0tiZdvOnTWvYqAD28iyvMxIxOu3g
+VAPID_SUBJECT=mailto:admin@smkan.sch.id
