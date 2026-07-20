@@ -100,7 +100,10 @@ export default function DaftarRaporClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_siswa_list: ids, jenis, tahun, semester }),
       });
-      if (!res.ok) throw new Error('Gagal mencetak');
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null);
+        throw new Error(errJson?.error || 'Gagal mencetak rapor');
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       if (idSiswa) {
@@ -110,9 +113,9 @@ export default function DaftarRaporClient({
         // Batch: open preview in new tab
         window.open(url, '_blank');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Gagal mencetak rapor. Silakan coba lagi.');
+      alert(err?.message || 'Gagal mencetak rapor. Silakan coba lagi.');
     } finally {
       setLoading(null);
     }
