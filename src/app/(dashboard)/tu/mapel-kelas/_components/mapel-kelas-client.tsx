@@ -346,6 +346,7 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
                           return (
                             <td key={col.key} className="px-4 py-3 min-w-40">
                               <Select
+                                instanceId={`guru-${row.id_mapel_kelas}`}
                                 options={guruOptions}
                                 value={val}
                                 onChange={(opt: any) => {
@@ -362,9 +363,12 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
                                 placeholder="Cari guru..."
                                 isClearable
                                 noOptionsMessage={() => 'Guru tidak ditemukan'}
+                                menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
+                                menuPosition="fixed"
+                                menuPlacement="auto"
                                 styles={{
                                   control: (base: any) => ({ ...base, minHeight: '28px', fontSize: '0.875rem' }),
-                                  menu: (base: any) => ({ ...base, zIndex: 9999 }),
+                                  menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
                                   option: (base: any) => ({ ...base, fontSize: '0.875rem' }),
                                 }}
                               />

@@ -26,7 +26,8 @@ module.exports = {
   apps: [
     {
       name: 'clone-rapor-next',
-      script: 'npm',
+      script: 'node_modules/next/dist/bin/next', //local
+      // script: 'npm', online
       args: 'start',
       env: {
         NODE_ENV: 'production',

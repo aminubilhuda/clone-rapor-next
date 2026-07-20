@@ -4,7 +4,7 @@ import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
-import { writeFile, unlink } from 'fs/promises';
+import { writeFile, unlink, mkdir } from 'fs/promises';
 import { join } from 'path';
 
 async function saveFile(file: File, currentFilename: string | null): Promise<string | null> {
@@ -19,6 +19,7 @@ async function saveFile(file: File, currentFilename: string | null): Promise<str
   const uploadDir = join(process.cwd(), 'public', 'uploads', 'sekolah');
   const filepath = join(uploadDir, filename);
 
+  await mkdir(uploadDir, { recursive: true });
   await writeFile(filepath, buffer);
 
   // Delete old file if exists
@@ -80,6 +81,7 @@ export async function updateProfil(formData: FormData) {
     revalidatePath('/tu/profil');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: 'Gagal menyimpan data' } as const;
+    console.error('Error updateProfil:', e);
+    return { success: false, error: e?.message || 'Gagal menyimpan data' } as const;
   }
 }

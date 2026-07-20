@@ -103,33 +103,54 @@ export async function updateSiswa(formData: FormData) {
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_siswa') as string;
-  const namaSiswa = formData.get('nama_siswa') as string;
-  const nis = formData.get('nis') as string;
-  const nisn = formData.get('nisn') as string;
-  const tempatLahir = formData.get('tempat_lahir') as string;
-  const tanggalLahir = formData.get('tanggal_lahir') as string;
-  const kelamin = formData.get('kelamin') as string;
-  const agama = formData.get('agama') as string;
-  const kontakSiswa = formData.get('kontak_siswa') as string;
-  const alamat = formData.get('alamat') as string;
-  const jurusan = formData.get('jurusan') as string;
-  const terimaKelas = formData.get('terima_kelas') as string;
-  const username = formData.get('username') as string;
+  const namaSiswa = (formData.get('nama_siswa') as string)?.trim();
+  const nis = (formData.get('nis') as string)?.trim() || null;
+  const nisn = (formData.get('nisn') as string)?.trim() || null;
+  const tempatLahir = (formData.get('tempat_lahir') as string)?.trim() || null;
+  const tanggalLahir = (formData.get('tanggal_lahir') as string)?.trim() || null;
+  const kelaminRaw = formData.get('kelamin') as string;
+  const kelamin = kelaminRaw ? Number(kelaminRaw) : null;
+  const agamaRaw = formData.get('agama') as string;
+  const agama = agamaRaw ? Number(agamaRaw) : null;
+  const kontakSiswa = (formData.get('kontak_siswa') as string)?.trim() || null;
+  const alamat = (formData.get('alamat') as string)?.trim() || null;
+  const jurusanRaw = formData.get('jurusan') as string;
+  const jurusan = jurusanRaw ? Number(jurusanRaw) : null;
+  const terimaKelas = (formData.get('terima_kelas') as string)?.trim() || null;
+  const username = (formData.get('username') as string)?.trim();
   const password = formData.get('password') as string;
   const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
+  if (!namaSiswa) return { success: false, error: 'Nama siswa wajib diisi' } as const;
+  if (!username) return { success: false, error: 'Username wajib diisi' } as const;
+
   try {
     if (!id) {
-      // Cek duplikat NIS/NISN sebelum insert
-      const [existing]: any = await pool.query(
-        `SELECT id_siswa, nis, nisn FROM siswa
-        WHERE deleted_at IS NULL AND (nis = ? OR nisn = ?)`,
-        [nis, nisn]
+      // Check username duplicate in siswa table
+      const [userDup]: any = await pool.query(
+        `SELECT id_siswa FROM siswa WHERE username = ? AND deleted_at IS NULL`,
+        [username]
       );
-      if (existing.length > 0) {
-        const dup = existing[0];
-        if (dup.nis === nis) return { success: false, error: `NIS "${nis}" sudah digunakan siswa lain` } as const;
-        if (dup.nisn === nisn) return { success: false, error: `NISN "${nisn}" sudah digunakan siswa lain` } as const;
+      if (userDup.length > 0) {
+        return { success: false, error: `Username "${username}" sudah digunakan siswa lain` } as const;
+      }
+
+      // Cek duplikat NIS/NISN sebelum insert
+      if (nis || nisn) {
+        const conds: string[] = [];
+        const params: any[] = [];
+        if (nis) { conds.push('nis = ?'); params.push(nis); }
+        if (nisn) { conds.push('nisn = ?'); params.push(nisn); }
+        const [existing]: any = await pool.query(
+          `SELECT id_siswa, nis, nisn FROM siswa
+          WHERE deleted_at IS NULL AND (${conds.join(' OR ')})`,
+          params
+        );
+        if (existing.length > 0) {
+          const dup = existing[0];
+          if (nis && dup.nis === nis) return { success: false, error: `NIS "${nis}" sudah digunakan siswa lain` } as const;
+          if (nisn && dup.nisn === nisn) return { success: false, error: `NISN "${nisn}" sudah digunakan siswa lain` } as const;
+        }
       }
 
       if (!hashedPassword) return { success: false, error: 'Password wajib diisi untuk siswa baru' } as const;
@@ -137,16 +158,43 @@ export async function updateSiswa(formData: FormData) {
       await pool.query(
         `INSERT INTO siswa (nama_siswa, nis, nisn, tempat_lahir, tanggal_lahir, kelamin, agama, kontak_siswa, alamat, jurusan, terima_kelas, username, password, aktif, terima_tingkat)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
-        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, hashedPassword, await resolveTingkat(terimaKelas)]
+        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, hashedPassword, await resolveTingkat(terimaKelas)]
       );
     } else {
+      // Edit mode: check username duplicate
+      const [userDup]: any = await pool.query(
+        `SELECT id_siswa FROM siswa WHERE username = ? AND id_siswa != ? AND deleted_at IS NULL`,
+        [username, id]
+      );
+      if (userDup.length > 0) {
+        return { success: false, error: `Username "${username}" sudah digunakan siswa lain` } as const;
+      }
+
+      // Check NIS/NISN duplicate
+      if (nis || nisn) {
+        const conds: string[] = [];
+        const params: any[] = [];
+        if (nis) { conds.push('nis = ?'); params.push(nis); }
+        if (nisn) { conds.push('nisn = ?'); params.push(nisn); }
+        const [existing]: any = await pool.query(
+          `SELECT id_siswa, nis, nisn FROM siswa
+          WHERE deleted_at IS NULL AND id_siswa != ? AND (${conds.join(' OR ')})`,
+          [id, ...params]
+        );
+        if (existing.length > 0) {
+          const dup = existing[0];
+          if (nis && dup.nis === nis) return { success: false, error: `NIS "${nis}" sudah digunakan siswa lain` } as const;
+          if (nisn && dup.nisn === nisn) return { success: false, error: `NISN "${nisn}" sudah digunakan siswa lain` } as const;
+        }
+      }
+
       const fields = [
         'nama_siswa = ?', 'nis = ?', 'nisn = ?', 'tempat_lahir = ?',
         'tanggal_lahir = ?', 'kelamin = ?', 'agama = ?',
         'kontak_siswa = ?', 'alamat = ?', 'jurusan = ?',
         'terima_kelas = ?', 'username = ?',
       ];
-      const values: any[] = [namaSiswa, nis, nisn, tempatLahir, tanggalLahir || null, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username];
+      const values: any[] = [namaSiswa, nis, nisn, tempatLahir, tanggalLahir, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username];
 
       if (hashedPassword) {
         fields.push('password = ?');
@@ -160,7 +208,11 @@ export async function updateSiswa(formData: FormData) {
     revalidatePath('/tu/kesiswaan');
     return { success: true } as const;
   } catch (e: any) {
-    return { success: false, error: 'Gagal menyimpan data' } as const;
+    console.error('Error updateSiswa:', e);
+    if (e.code === 'ER_DUP_ENTRY') {
+      return { success: false, error: 'Username, NIS, atau NISN sudah terdaftar di sistem' } as const;
+    }
+    return { success: false, error: e?.message || 'Gagal menyimpan data' } as const;
   }
 }
 

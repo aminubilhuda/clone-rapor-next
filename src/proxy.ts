@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
 import { JABATAN } from '@/lib/constants';
+import { getRequestOrigin } from '@/lib/url-helper';
 
 // Simple in-memory rate limiter for login attempts
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
@@ -33,6 +34,7 @@ function checkRateLimit(key: string): { allowed: boolean; retryAfter?: number } 
 export async function proxy(request: NextRequest) {
   const session = await auth();
   const { pathname } = request.nextUrl;
+  const origin = getRequestOrigin(request);
 
   // Rate limiting for login API
   if (pathname === '/api/auth/callback/credentials' && request.method === 'POST') {
@@ -51,8 +53,8 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/login' || pathname.startsWith('/api/auth')) {
     if (pathname === '/login' && session?.user) {
       const jabatan = session.user.jabatan;
-      if (jabatan === JABATAN.TU_ADMIN) return NextResponse.redirect(new URL('/tu', request.url));
-      if (jabatan === JABATAN.GURU) return NextResponse.redirect(new URL('/guru', request.url));
+      if (jabatan === JABATAN.TU_ADMIN) return NextResponse.redirect(new URL('/tu', origin));
+      if (jabatan === JABATAN.GURU) return NextResponse.redirect(new URL('/guru', origin));
     }
     return NextResponse.next();
   }
@@ -60,14 +62,14 @@ export async function proxy(request: NextRequest) {
   // Protect dashboard routes
   if (pathname.startsWith('/tu') || pathname.startsWith('/guru')) {
     if (!session?.user) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/login', origin));
     }
 
     if (pathname.startsWith('/tu') && session.user.jabatan !== JABATAN.SUPER_ADMIN && session.user.jabatan !== JABATAN.TU_ADMIN) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/login', origin));
     }
     if (pathname.startsWith('/guru') && session.user.jabatan !== JABATAN.GURU) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/login', origin));
     }
   }
 
