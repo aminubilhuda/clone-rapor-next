@@ -95,7 +95,10 @@ export default function Topbar() {
                 </a>
                 <div className="border-t border-[rgba(0,0,0,0.04)] my-1" />
                 <button
-                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  onClick={async () => {
+                    await signOut({ redirect: false });
+                    window.location.href = '/login';
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
