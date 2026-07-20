@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth';
 import { setViewFilter, clearViewFilter } from '@/lib/view-filter';
+import { getRequestOrigin } from '@/lib/url-helper';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -14,10 +15,11 @@ export async function POST(req: NextRequest) {
   const redirectTo = (formData.get('redirect') as string) || '/tu';
   // Prevent open redirect — only allow relative paths
   const safeRedirect = redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/tu';
+  const origin = getRequestOrigin(req);
 
   if (action === 'clear') {
     await clearViewFilter();
-    return NextResponse.redirect(new URL(safeRedirect, req.url));
+    return NextResponse.redirect(new URL(safeRedirect, origin));
   }
 
   const tahun = formData.get('tahun') as string;
@@ -31,5 +33,5 @@ export async function POST(req: NextRequest) {
   if (!result.success) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
-  return NextResponse.redirect(new URL(safeRedirect, req.url));
+  return NextResponse.redirect(new URL(safeRedirect, origin));
 }
