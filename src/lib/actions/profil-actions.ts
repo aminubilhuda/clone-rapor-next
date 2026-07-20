@@ -10,29 +10,36 @@ import { join } from 'path';
 async function saveFile(file: File, currentFilename: string | null): Promise<string | null> {
   if (!file || file.size === 0) return currentFilename;
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+  try {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-  // Generate unique filename
-  const ext = file.name.split('.').pop() || 'png';
-  const filename = `logo_${Date.now()}.${ext}`;
-  const uploadDir = join(process.cwd(), 'public', 'uploads', 'sekolah');
-  const filepath = join(uploadDir, filename);
+    // Generate unique filename
+    const ext = file.name.split('.').pop() || 'png';
+    const filename = `logo_${Date.now()}.${ext}`;
+    const uploadDir = join(process.cwd(), 'public', 'uploads', 'sekolah');
+    const filepath = join(uploadDir, filename);
 
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(filepath, buffer);
+    await mkdir(uploadDir, { recursive: true });
+    await writeFile(filepath, buffer);
 
-  // Delete old file if exists
-  if (currentFilename) {
-    try {
-      const oldPath = join(uploadDir, currentFilename);
-      await unlink(oldPath);
-    } catch {
-      // Ignore if old file doesn't exist
+    // Delete old file if exists
+    if (currentFilename) {
+      try {
+        const oldPath = join(uploadDir, currentFilename);
+        await unlink(oldPath);
+      } catch {
+        // Ignore if old file doesn't exist
+      }
     }
-  }
 
-  return filename;
+    return filename;
+  } catch (err: any) {
+    if (err?.code === 'EACCES') {
+      throw new Error(`Izin folder upload ditolak server (EACCES). Silakan jalankan 'chmod -R 777 public/uploads' atau 'chown -R www:www public/uploads' di aaPanel.`);
+    }
+    throw err;
+  }
 }
 
 export async function updateProfil(formData: FormData) {
