@@ -55,7 +55,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const urlObj = new URL(url);
         return urlObj.pathname + urlObj.search + urlObj.hash;
       } catch {}
-      return '/login';
+      return '/';
     },
     jwt({ token, user }) {
       if (user) {

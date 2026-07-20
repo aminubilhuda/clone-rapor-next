@@ -32,20 +32,33 @@ export default function LoginPage() {
     const username = formData.get('username') as string;
     const password = formData.get('password') as string;
 
-    const result = await signIn('credentials', {
-      username,
-      password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn('credentials', {
+        username,
+        password,
+        redirect: false,
+      });
 
-    if (result?.error) {
-      setError('Username atau Password Salah!');
-      setLoading(false);
-      return;
+      if (result?.error) {
+        setError('Username atau Password Salah!');
+        setLoading(false);
+        return;
+      }
+
+      window.location.replace('/');
+    } catch (err: any) {
+      console.error('Login submit error:', err);
+
+      const errStr = String(err?.message || err?.type || err);
+      if (errStr.includes('CredentialsSignin')) {
+        setError('Username atau Password Salah!');
+        setLoading(false);
+        return;
+      }
+
+      // Jika login sebenarnya sukses tetapi ada eksepsi lain saat signIn
+      window.location.replace('/');
     }
-
-    router.refresh();
-    window.location.href = '/';
   };
 
   return (
@@ -60,6 +73,7 @@ export default function LoginPage() {
                   src={logo}
                   alt="Logo Sekolah"
                   className="w-full h-full object-contain"
+                  onError={() => setLogo(null)}
                 />
               ) : (
                 <svg className="w-10 h-10 text-[#1A1A2E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
