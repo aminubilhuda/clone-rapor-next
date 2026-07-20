@@ -49,6 +49,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async redirect({ url }) {
+      if (url.startsWith('/')) return url;
+      try {
+        const urlObj = new URL(url);
+        return urlObj.pathname + urlObj.search + urlObj.hash;
+      } catch {}
+      return '/login';
+    },
     jwt({ token, user }) {
       if (user) {
         token.jabatan = user.jabatan;

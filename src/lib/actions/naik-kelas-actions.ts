@@ -100,14 +100,14 @@ export async function promoteKelas(formData: FormData) {
   }
 
   const sekolah = await getSekolahAktif();
+  const activeTahun = sekolah?.tahun || 1;
+  const activeSemester = sekolah?.semester || 1;
+  const targetSemester = 1;
 
-  // Naik kelas = awal tahun ajaran baru (ganjil = 1), bukan semester aktif
-  const semester = 1;
-
-  // Cari id_tahun_pelajaran berikutnya dari tabel, bukan asumsi +1
+  // Cari id_tahun_pelajaran berikutnya dari tabel
   const [tahunRows]: any = await pool.query(
     'SELECT id_tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran > ? ORDER BY id_tahun_pelajaran ASC LIMIT 1',
-    [sekolah?.tahun || 0]
+    [activeTahun]
   );
   if (tahunRows.length === 0) {
     return { success: false, error: 'Tahun pelajaran berikutnya tidak ditemukan. Silakan tambah tahun pelajaran baru di menu Pengaturan.' } as const;
@@ -116,16 +116,26 @@ export async function promoteKelas(formData: FormData) {
 
   try {
     const [siswaRows]: any = await pool.query(
-      'SELECT id_siswa FROM siswa_kelas WHERE id_kelas = ? AND id_tingkat = ?',
-      [idKelas, idTingkatLama]
+      'SELECT id_siswa FROM siswa_kelas WHERE id_kelas = ? AND id_tingkat = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL',
+      [idKelas, idTingkatLama, activeTahun, activeSemester]
     );
 
     if (siswaRows.length > 0) {
-      const values = siswaRows.map((siswa: any) => [tahunBaru, semester, idTingkatBaru, idKelasBaru, siswa.id_siswa, 1]);
-      await pool.query(
-        'INSERT INTO siswa_kelas (tahun, semester, id_tingkat, id_kelas, id_siswa, status) VALUES ?',
-        [values]
+      const idSiswaList = siswaRows.map((s: any) => s.id_siswa);
+      const [existingRows]: any = await pool.query(
+        'SELECT id_siswa FROM siswa_kelas WHERE id_kelas = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL AND id_siswa IN (?)',
+        [idKelasBaru, tahunBaru, targetSemester, idSiswaList]
       );
+      const existingSet = new Set(existingRows.map((e: any) => e.id_siswa));
+      const toInsert = siswaRows.filter((s: any) => !existingSet.has(s.id_siswa));
+
+      if (toInsert.length > 0) {
+        const values = toInsert.map((siswa: any) => [tahunBaru, targetSemester, idTingkatBaru, idKelasBaru, siswa.id_siswa, 1]);
+        await pool.query(
+          'INSERT INTO siswa_kelas (tahun, semester, id_tingkat, id_kelas, id_siswa, status) VALUES ?',
+          [values]
+        );
+      }
     }
 
     revalidatePath('/tu/naik-kelas');
@@ -135,7 +145,8 @@ export async function promoteKelas(formData: FormData) {
       message: `Berhasil menaikkan ${siswaRows.length} siswa`
     } as const;
   } catch (e: any) {
-    return { success: false, error: 'Gagal menaikkan kelas' } as const;
+    console.error('Error promoteKelas:', e);
+    return { success: false, error: `Gagal menaikkan kelas: ${e?.message || e}` } as const;
   }
 }
 
@@ -144,13 +155,13 @@ export async function promoteAllKelas() {
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const sekolah = await getSekolahAktif();
-
-  // Naik kelas = awal tahun ajaran baru (ganjil = 1), bukan semester aktif
-  const semester = 1;
+  const activeTahun = sekolah?.tahun || 1;
+  const activeSemester = sekolah?.semester || 1;
+  const targetSemester = 1;
 
   const [tahunRows]: any = await pool.query(
     'SELECT id_tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran > ? ORDER BY id_tahun_pelajaran ASC LIMIT 1',
-    [sekolah?.tahun || 0]
+    [activeTahun]
   );
   if (tahunRows.length === 0) {
     return { success: false, error: 'Tahun pelajaran berikutnya tidak ditemukan. Silakan tambah tahun pelajaran baru di menu Pengaturan.' } as const;
@@ -160,100 +171,41 @@ export async function promoteAllKelas() {
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
-    // Ambil semua kelas untuk mapping target (tingkat + kompetensi)
-    const [allKelasRows]: any = await conn.query(
-      'SELECT id_kelas, nama_kelas, id_tingkat, id_kompetensi_keahlian FROM kelas'
-    );
-    const kelasByTingkatKK = new Map<string, { id_kelas: number; nama_kelas: string }>();
-    for (const k of allKelasRows) {
-      kelasByTingkatKK.set(`${k.id_tingkat}-${k.id_kompetensi_keahlian}`, k);
-    }
 
-    // Ambil semua kelas yang punya siswa di periode aktif, kecuali tingkat akhir (XII)
+    // Ambil daftar tingkat yang terurut
+    const [allTingkatRows]: any = await conn.query(
+      'SELECT id_tingkat, tabjad, akhir FROM tingkat ORDER BY id_tingkat ASC'
+    );
+    const tingkatMap = new Map<number, any>();
+    allTingkatRows.forEach((t: any) => tingkatMap.set(t.id_tingkat, t));
+
+    // Helper untuk cari id_tingkat berikutnya
+    const getNextTingkatId = (currentId: number): number | null => {
+      const index = allTingkatRows.findIndex((t: any) => t.id_tingkat === currentId);
+      if (index !== -1 && index + 1 < allTingkatRows.length) {
+        return allTingkatRows[index + 1].id_tingkat;
+      }
+      return null;
+    };
+
+    // Ambil semua kelas di DB
+    const [allKelasRows]: any = await conn.query(
+      'SELECT id_kelas, nama_kelas, id_tingkat, id_kompetensi_keahlian FROM kelas ORDER BY nama_kelas'
+    );
+
+    // Ambil kelas non-akhir yang punya siswa di periode aktif
     const [kelasRows]: any = await conn.query(`
       SELECT k.id_kelas, k.id_tingkat, k.id_kompetensi_keahlian, k.nama_kelas,
         COUNT(sk.id_siswa_kelas) AS jumlah_siswa
       FROM siswa_kelas sk
       JOIN kelas k ON sk.id_kelas = k.id_kelas
-      WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL
-        AND k.id_tingkat < (SELECT MAX(id_tingkat) FROM tingkat)
+      JOIN tingkat t ON k.id_tingkat = t.id_tingkat
+      WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND (t.akhir IS NULL OR t.akhir = 0)
       GROUP BY k.id_kelas
       ORDER BY k.nama_kelas
-    `, [sekolah.tahun, semester]);
+    `, [activeTahun, activeSemester]);
 
-    if (kelasRows.length === 0) {
-      await conn.rollback();
-      return { success: false, error: 'Tidak ada kelas yang bisa dinaikkan.' } as const;
-    }
-
-    // Batch: ambil semua siswa dari semua kelas asal
-    const idKelasList = kelasRows.map((k: any) => k.id_kelas);
-    const [allSiswaRows]: any = await conn.query(
-      `SELECT sk.id_siswa, sk.id_kelas FROM siswa_kelas sk
-       WHERE sk.id_kelas IN (?) AND sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL`,
-      [idKelasList, sekolah.tahun, semester]
-    );
-    const siswaByKelas = new Map<number, number[]>();
-    for (const s of allSiswaRows) {
-      if (!siswaByKelas.has(s.id_kelas)) siswaByKelas.set(s.id_kelas, []);
-      siswaByKelas.get(s.id_kelas)!.push(s.id_siswa);
-    }
-
-    // Batch: ambil semua existing di kelas tujuan untuk tahun baru
-    const idTingkatBaru = [...new Set(kelasRows.map((k: any) => k.id_tingkat + 1))];
-    const [allTargetKelas]: any = await conn.query(
-      'SELECT id_kelas, id_tingkat, id_kompetensi_keahlian FROM kelas WHERE id_tingkat IN (?)',
-      [idTingkatBaru]
-    );
-    const targetIdKelasList = allTargetKelas.map((t: any) => t.id_kelas);
-    const [allExistingRows]: any = await conn.query(
-      'SELECT id_siswa, id_kelas FROM siswa_kelas WHERE id_kelas IN (?) AND tahun = ? AND semester = ? AND deleted_at IS NULL',
-      [targetIdKelasList.length > 0 ? targetIdKelasList : [0], tahunBaru, semester]
-    );
-    const existingByKelas = new Map<number, Set<number>>();
-    for (const e of allExistingRows) {
-      if (!existingByKelas.has(e.id_kelas)) existingByKelas.set(e.id_kelas, new Set());
-      existingByKelas.get(e.id_kelas)!.add(e.id_siswa);
-    }
-
-    const hasil: { kelas: string; target: string; siswa: number; status: string }[] = [];
-
-    for (const kelas of kelasRows) {
-      const targetKelasKey = `${kelas.id_tingkat + 1}-${kelas.id_kompetensi_keahlian}`;
-      const targetKelas = kelasByTingkatKK.get(targetKelasKey);
-
-      if (!targetKelas) {
-        hasil.push({ kelas: kelas.nama_kelas, target: '(tidak ditemukan)', siswa: 0, status: 'skip' });
-        continue;
-      }
-
-      const idSiswaList = siswaByKelas.get(kelas.id_kelas) || [];
-      if (idSiswaList.length === 0) {
-        hasil.push({ kelas: kelas.nama_kelas, target: targetKelas.nama_kelas, siswa: 0, status: 'skip' });
-        continue;
-      }
-
-      const existingSet = existingByKelas.get(targetKelas.id_kelas) || new Set();
-
-      const toInsert = idSiswaList.filter((idSiswa: number) => !existingSet.has(idSiswa));
-      if (toInsert.length > 0) {
-        const values = toInsert.map((idSiswa: number) => [tahunBaru, semester, kelas.id_tingkat + 1, targetKelas.id_kelas, idSiswa, 1]);
-        await conn.query(
-          'INSERT INTO siswa_kelas (tahun, semester, id_tingkat, id_kelas, id_siswa, status) VALUES ?',
-          [values]
-        );
-      }
-      const inserted = toInsert.length;
-
-      hasil.push({
-        kelas: kelas.nama_kelas,
-        target: targetKelas.nama_kelas,
-        siswa: kelas.jumlah_siswa,
-        status: `${inserted} siswa dipromosikan` + (inserted < kelas.jumlah_siswa ? ` (${kelas.jumlah_siswa - inserted} sudah ada)` : ''),
-      });
-    }
-
-    // Proses siswa kelas XII (tingkat akhir) — pindahkan ke lulusan
+    // Ambil kelas akhir (XII) yang punya siswa di periode aktif
     const [kelasXIIRows]: any = await conn.query(`
       SELECT k.id_kelas, k.nama_kelas, COUNT(sk.id_siswa_kelas) AS jumlah_siswa
       FROM siswa_kelas sk
@@ -262,14 +214,115 @@ export async function promoteAllKelas() {
       WHERE sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL AND t.akhir = 1
       GROUP BY k.id_kelas
       ORDER BY k.nama_kelas
-    `, [sekolah.tahun, semester]);
+    `, [activeTahun, activeSemester]);
 
+    if (kelasRows.length === 0 && kelasXIIRows.length === 0) {
+      await conn.rollback();
+      return { success: false, error: 'Tidak ada data siswa aktif di periode saat ini yang dapat dinaikkan.' } as const;
+    }
+
+    const hasil: { kelas: string; target: string; siswa: number; status: string }[] = [];
+
+    // 1. PROSES KELAS NON-AKHIR (X -> XI, XI -> XII)
+    if (kelasRows.length > 0) {
+      const idKelasList = kelasRows.map((k: any) => k.id_kelas);
+      const [allSiswaRows]: any = await conn.query(
+        `SELECT sk.id_siswa, sk.id_kelas FROM siswa_kelas sk
+         WHERE sk.id_kelas IN (?) AND sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL`,
+        [idKelasList, activeTahun, activeSemester]
+      );
+      const siswaByKelas = new Map<number, number[]>();
+      for (const s of allSiswaRows) {
+        if (!siswaByKelas.has(s.id_kelas)) siswaByKelas.set(s.id_kelas, []);
+        siswaByKelas.get(s.id_kelas)!.push(s.id_siswa);
+      }
+
+      // Pre-fetch existing siswa_kelas di tahun baru untuk menghindari duplikasi
+      const targetTingkatIds = [...new Set(kelasRows.map((k: any) => getNextTingkatId(k.id_tingkat)).filter(Boolean))];
+      let existingByTargetKelas = new Map<number, Set<number>>();
+
+      if (targetTingkatIds.length > 0) {
+        const [targetKelasInDb]: any = await conn.query(
+          'SELECT id_kelas FROM kelas WHERE id_tingkat IN (?)',
+          [targetTingkatIds]
+        );
+        const targetIdList = targetKelasInDb.map((t: any) => t.id_kelas);
+        if (targetIdList.length > 0) {
+          const [existingRows]: any = await conn.query(
+            'SELECT id_siswa, id_kelas FROM siswa_kelas WHERE id_kelas IN (?) AND tahun = ? AND semester = ? AND deleted_at IS NULL',
+            [targetIdList, tahunBaru, targetSemester]
+          );
+          for (const e of existingRows) {
+            if (!existingByTargetKelas.has(e.id_kelas)) existingByTargetKelas.set(e.id_kelas, new Set());
+            existingByTargetKelas.get(e.id_kelas)!.add(e.id_siswa);
+          }
+        }
+      }
+
+      for (const kelas of kelasRows) {
+        const nextTingkatId = getNextTingkatId(kelas.id_tingkat);
+        if (!nextTingkatId) {
+          hasil.push({ kelas: kelas.nama_kelas, target: '(tidak ditemukan tingkat tujuan)', siswa: 0, status: 'skip' });
+          continue;
+        }
+
+        // Cari kelas target dengan kompetensi & nama rombel yang cocok
+        const candidates = allKelasRows.filter(
+          (k: any) => k.id_tingkat === nextTingkatId && (k.id_kompetensi_keahlian === kelas.id_kompetensi_keahlian || !k.id_kompetensi_keahlian)
+        );
+
+        let targetKelas: any = null;
+        if (candidates.length === 1) {
+          targetKelas = candidates[0];
+        } else if (candidates.length > 1) {
+          const sourceSuffix = kelas.nama_kelas.replace(/^(X|XI|XII|[0-9]+)\s*/i, '').trim();
+          if (sourceSuffix) {
+            targetKelas = candidates.find((c: any) => {
+              const cSuffix = c.nama_kelas.replace(/^(X|XI|XII|[0-9]+)\s*/i, '').trim();
+              return cSuffix.toLowerCase() === sourceSuffix.toLowerCase();
+            });
+          }
+          if (!targetKelas) targetKelas = candidates[0];
+        }
+
+        if (!targetKelas) {
+          hasil.push({ kelas: kelas.nama_kelas, target: '(kelas tujuan tidak ditemukan)', siswa: 0, status: 'skip' });
+          continue;
+        }
+
+        const idSiswaList = siswaByKelas.get(kelas.id_kelas) || [];
+        if (idSiswaList.length === 0) {
+          hasil.push({ kelas: kelas.nama_kelas, target: targetKelas.nama_kelas, siswa: 0, status: 'skip' });
+          continue;
+        }
+
+        const existingSet = existingByTargetKelas.get(targetKelas.id_kelas) || new Set();
+        const toInsert = idSiswaList.filter((idSiswa: number) => !existingSet.has(idSiswa));
+
+        if (toInsert.length > 0) {
+          const values = toInsert.map((idSiswa: number) => [tahunBaru, targetSemester, targetKelas.id_tingkat, targetKelas.id_kelas, idSiswa, 1]);
+          await conn.query(
+            'INSERT INTO siswa_kelas (tahun, semester, id_tingkat, id_kelas, id_siswa, status) VALUES ?',
+            [values]
+          );
+        }
+        const inserted = toInsert.length;
+
+        hasil.push({
+          kelas: kelas.nama_kelas,
+          target: targetKelas.nama_kelas,
+          siswa: kelas.jumlah_siswa,
+          status: `${inserted} siswa dipromosikan` + (inserted < kelas.jumlah_siswa ? ` (${kelas.jumlah_siswa - inserted} sudah ada)` : ''),
+        });
+      }
+    }
+
+    // 2. PROSES KELAS AKHIR (XII -> LULUS)
     if (kelasXIIRows.length > 0) {
-      // Batch: ambil semua siswa XII
       const idKelasXIIList = kelasXIIRows.map((k: any) => k.id_kelas);
       const [allSiswaXIIRows]: any = await conn.query(
         'SELECT sk.id_siswa_kelas, sk.id_siswa, sk.id_kelas, s.nama_siswa FROM siswa_kelas sk JOIN siswa s ON sk.id_siswa = s.id_siswa WHERE sk.id_kelas IN (?) AND sk.tahun = ? AND sk.semester = ? AND sk.deleted_at IS NULL',
-        [idKelasXIIList, sekolah.tahun, semester]
+        [idKelasXIIList, activeTahun, activeSemester]
       );
       const siswaXIIByKelas = new Map<number, any[]>();
       const semuaIdSiswaXII: number[] = [];
@@ -279,37 +332,45 @@ export async function promoteAllKelas() {
         semuaIdSiswaXII.push(s.id_siswa);
       }
 
-      // Batch: cek semua lulusan yang sudah ada (periode penyelesaian)
-      const [existingLulusanRows]: any = await conn.query(
-        'SELECT id_siswa FROM lulusan WHERE id_siswa IN (?) AND tahun = ? AND semester = ?',
-        [semuaIdSiswaXII.length > 0 ? semuaIdSiswaXII : [0], sekolah.tahun, sekolah.semester]
-      );
-      const existingLulusanSet = new Set(existingLulusanRows.map((el: any) => el.id_siswa));
+      let existingLulusanSet = new Set<number>();
+      if (semuaIdSiswaXII.length > 0) {
+        try {
+          const [existingLulusanRows]: any = await conn.query(
+            'SELECT id_siswa FROM lulusan WHERE id_siswa IN (?) AND tahun = ? AND semester = ?',
+            [semuaIdSiswaXII, activeTahun, activeSemester]
+          );
+          existingLulusanSet = new Set(existingLulusanRows.map((el: any) => el.id_siswa));
+        } catch {
+          // Abaikan jika tabel lulusan belum ada
+        }
+      }
 
       for (const kelasXII of kelasXIIRows) {
         const siswaXIIList = siswaXIIByKelas.get(kelasXII.id_kelas) || [];
         if (siswaXIIList.length === 0) {
-          hasil.push({ kelas: kelasXII.nama_kelas, target: 'LULUS', siswa: 0, status: 'skip' });
+          hasil.push({ kelas: kelasXII.nama_kelas, target: '🎓 LULUS', siswa: 0, status: 'skip' });
           continue;
         }
 
-        let dipindahkan = 0;
         const toGraduate = siswaXIIList.filter((siswa: any) => !existingLulusanSet.has(siswa.id_siswa));
+        let dipindahkan = 0;
 
         if (toGraduate.length > 0) {
-          // Batch INSERT lulusan
           const tanggalLulus = new Date().toISOString().slice(0, 10);
-          const lulusanValues = toGraduate.map((siswa: any) => [sekolah.tahun, sekolah.semester, siswa.id_siswa, tanggalLulus]);
-          await conn.query(
-            'INSERT INTO lulusan (tahun, semester, id_siswa, tanggal_lulus) VALUES ?',
-            [lulusanValues]
-          );
+          const lulusanValues = toGraduate.map((siswa: any) => [activeTahun, activeSemester, siswa.id_siswa, tanggalLulus]);
 
-          // Batch UPDATE siswa SET aktif = 0
+          try {
+            await conn.query(
+              'INSERT INTO lulusan (tahun, semester, id_siswa, tanggal_lulus) VALUES ?',
+              [lulusanValues]
+            );
+          } catch {
+            // Abaikan jika lulusan insert terabaikan
+          }
+
           const idSiswaAktif = toGraduate.map((siswa: any) => siswa.id_siswa);
           await conn.query('UPDATE siswa SET aktif = 0 WHERE id_siswa IN (?)', [idSiswaAktif]);
 
-          // Batch UPDATE siswa_kelas SET deleted_at = NOW()
           const idSiswaKelasList = toGraduate.map((siswa: any) => siswa.id_siswa_kelas);
           await conn.query('UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa_kelas IN (?)', [idSiswaKelasList]);
 
@@ -330,7 +391,8 @@ export async function promoteAllKelas() {
     return { success: true, hasil } as const;
   } catch (e: any) {
     await conn.rollback();
-    return { success: false, error: 'Gagal menaikkan semua kelas' } as const;
+    console.error('Error promoteAllKelas:', e);
+    return { success: false, error: `Gagal menaikkan semua kelas: ${e?.message || e}` } as const;
   } finally {
     conn.release();
   }

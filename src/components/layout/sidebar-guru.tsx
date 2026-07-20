@@ -175,7 +175,10 @@ export default function SidebarGuru() {
             </p>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: '/login' })}
+            onClick={async () => {
+              await signOut({ redirect: false });
+              window.location.href = '/login';
+            }}
             className="text-white/30 hover:text-red-400/80 transition-colors"
             title="Logout"
           >
