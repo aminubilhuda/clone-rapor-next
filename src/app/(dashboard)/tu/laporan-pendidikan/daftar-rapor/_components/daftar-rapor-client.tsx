@@ -106,16 +106,35 @@ export default function DaftarRaporClient({
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      if (idSiswa) {
-        // Single student: open preview in new tab
-        window.open(url, '_blank');
-      } else {
-        // Batch: open preview in new tab
-        window.open(url, '_blank');
-      }
+      window.open(url, '_blank');
     } catch (err: any) {
       console.error(err);
       alert(err?.message || 'Gagal mencetak rapor. Silakan coba lagi.');
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const previewHtml = async (jenis: JenisRapor, idSiswa: number) => {
+    const key = `preview-${jenis}-${idSiswa}`;
+    setLoading(key);
+    try {
+      const res = await fetch('/api/tu/cetak-rapor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_siswa_list: [idSiswa], jenis, tahun, semester, format: 'html' }),
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null);
+        throw new Error(errJson?.error || 'Gagal memuat preview');
+      }
+      const html = await res.text();
+      const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || 'Gagal memuat preview. Silakan coba lagi.');
     } finally {
       setLoading(null);
     }
@@ -248,19 +267,39 @@ export default function DaftarRaporClient({
                     <td className="text-center px-3 py-2.5 text-[#6B7280] text-xs">{idx + 1}</td>
                     <td className="px-4 py-2.5 font-medium text-[#1A1A2E] text-sm">{sk.nama_siswa}</td>
                     <td className="text-center px-3 py-2.5">
-                      <button
-                        onClick={() => handleCetakSingle('pelengkap', sk.id_siswa)}
-                        disabled={loading === `pelengkap-${sk.id_siswa}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
-                      >
-                        {loading === `pelengkap-${sk.id_siswa}` ? (
-                          <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                        ) : null}
-                        Pelengkap Rapor
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => previewHtml('pelengkap', sk.id_siswa)}
+                          disabled={loading === `preview-pelengkap-${sk.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg px-2 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                          title="Preview Web"
+                        >
+                          {loading === `preview-pelengkap-${sk.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleCetakSingle('pelengkap', sk.id_siswa)}
+                          disabled={loading === `pelengkap-${sk.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                        >
+                          {loading === `pelengkap-${sk.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : null}
+                          PDF
+                        </button>
+                      </div>
                     </td>
                     <td className="text-center px-3 py-2.5">
                       <div className="flex items-center justify-center gap-2">
@@ -270,6 +309,24 @@ export default function DaftarRaporClient({
                           onChange={() => toggleOne('tengah_semester', sk.id_siswa)}
                           className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer accent-amber-600"
                         />
+                        <button
+                          onClick={() => previewHtml('tengah_semester', sk.id_siswa)}
+                          disabled={loading === `preview-tengah_semester-${sk.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg px-2 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                          title="Preview Web"
+                        >
+                          {loading === `preview-tengah_semester-${sk.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
                         <button
                           onClick={() => handleCetakSingle('tengah_semester', sk.id_siswa)}
                           disabled={loading === `tengah_semester-${sk.id_siswa}`}
@@ -281,7 +338,7 @@ export default function DaftarRaporClient({
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                             </svg>
                           ) : null}
-                          Tengah Semester
+                          PDF
                         </button>
                       </div>
                     </td>
@@ -294,6 +351,24 @@ export default function DaftarRaporClient({
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
                         />
                         <button
+                          onClick={() => previewHtml('semester', sk.id_siswa)}
+                          disabled={loading === `preview-semester-${sk.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg px-2 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                          title="Preview Web"
+                        >
+                          {loading === `preview-semester-${sk.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
                           onClick={() => handleCetakSingle('semester', sk.id_siswa)}
                           disabled={loading === `semester-${sk.id_siswa}`}
                           className="inline-flex items-center gap-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
@@ -304,7 +379,7 @@ export default function DaftarRaporClient({
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                             </svg>
                           ) : null}
-                          Semester
+                          PDF
                         </button>
                       </div>
                     </td>
@@ -317,6 +392,24 @@ export default function DaftarRaporClient({
                           className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer accent-red-600"
                         />
                         <button
+                          onClick={() => previewHtml('p5bk', sk.id_siswa)}
+                          disabled={loading === `preview-p5bk-${sk.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg px-2 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                          title="Preview Web"
+                        >
+                          {loading === `preview-p5bk-${sk.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
                           onClick={() => handleCetakSingle('p5bk', sk.id_siswa)}
                           disabled={loading === `p5bk-${sk.id_siswa}`}
                           className="inline-flex items-center gap-1 text-xs font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
@@ -327,24 +420,44 @@ export default function DaftarRaporClient({
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                             </svg>
                           ) : null}
-                          P5BK
+                          PDF
                         </button>
                       </div>
                     </td>
                     <td className="text-center px-3 py-2.5">
-                      <button
-                        onClick={() => handleCetakSingle('buku_induk', sk.id_siswa)}
-                        disabled={loading === `buku_induk-${sk.id_siswa}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
-                      >
-                        {loading === `buku_induk-${sk.id_siswa}` ? (
-                          <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                        ) : null}
-                        Buku Induk
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => previewHtml('buku_induk', sk.id_siswa)}
+                          disabled={loading === `preview-buku_induk-${sk.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg px-2 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                          title="Preview Web"
+                        >
+                          {loading === `preview-buku_induk-${sk.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : (
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleCetakSingle('buku_induk', sk.id_siswa)}
+                          disabled={loading === `buku_induk-${sk.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                        >
+                          {loading === `buku_induk-${sk.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : null}
+                          PDF
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

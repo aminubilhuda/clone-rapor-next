@@ -96,6 +96,31 @@ export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester 
     }
   };
 
+  const previewHtml = async (jenis: JenisRapor, idSiswa: number) => {
+    const key = `preview-${jenis}-${idSiswa}`;
+    setLoading(key);
+    try {
+      const res = await fetch('/api/tu/cetak-rapor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_siswa_list: [idSiswa], jenis, tahun, semester, format: 'html' }),
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null);
+        throw new Error(errJson?.error || 'Gagal memuat preview');
+      }
+      const html = await res.text();
+      const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || 'Gagal memuat preview. Silakan coba lagi.');
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const handleCetakSingle = (jenis: JenisRapor, idSiswa: number) => downloadPdf(jenis, idSiswa);
 
   const handleCetakBatch = async (jenis: JenisRapor) => {

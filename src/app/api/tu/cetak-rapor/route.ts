@@ -35,12 +35,14 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { id_siswa_list, jenis, tahun, semester } = body as {
+  const { id_siswa_list, jenis, tahun, semester, format } = body as {
     id_siswa_list: number[];
     jenis: string;
     tahun: number;
     semester: number;
+    format?: 'pdf' | 'html';
   };
+  const outputFormat = format || 'pdf';
 
   if (!id_siswa_list?.length || !VALID_JENIS.includes(jenis as JenisRapor)) {
     return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });
@@ -236,6 +238,10 @@ export async function POST(req: NextRequest) {
       });
 
       const html = generateTengahSemesterRaporHTML(siswaMidList, sekolahInfo, tahunPelajaran, semesterLabel, waliKelas);
+
+      if (outputFormat === 'html') {
+        return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      }
 
       const firstSiswaMid = siswaMidList[0];
       const footerTengah = buildFooterTemplate(firstSiswaMid.nama_kelas, firstSiswaMid.nama_siswa, firstSiswaMid.nis || '-', firstSiswaMid.nisn || '-');
@@ -465,6 +471,10 @@ export async function POST(req: NextRequest) {
 
       const html = generateSemesterRaporHTML(siswaSemList, sekolahInfo, tahunPelajaran, semesterLabel, waliKelas);
 
+      if (outputFormat === 'html') {
+        return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      }
+
       const firstSiswaSem = siswaSemList[0];
       const footerSemester = buildFooterTemplate(firstSiswaSem.nama_kelas, firstSiswaSem.nama_siswa, firstSiswaSem.nis || '-', firstSiswaSem.nisn || '-');
 
@@ -486,6 +496,10 @@ export async function POST(req: NextRequest) {
       tahunPelajaran,
       semesterLabel
     );
+
+    if (outputFormat === 'html') {
+      return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+    }
 
     const footerDefault = buildFooterTemplate(siswaList[0].nama_kelas, siswaList[0].nama_siswa, siswaList[0].nis || '-', siswaList[0].nisn || '-');
 
