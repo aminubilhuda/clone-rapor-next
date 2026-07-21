@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateRaporHTML, JenisRapor, SiswaInfo, SekolahInfo } from '@/lib/pdf-templates/rapor-template';
 import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, MapelNilai, PresensiData } from '@/lib/pdf-templates/tengah-semester-template';
 import { generateSemesterRaporHTML, SiswaSemesterRapor, KelompokSemester, MapelSemester, PrakerinItem, EskulItem, OrganisasiItem } from '@/lib/pdf-templates/semester-template';
-import { renderRaporPdf } from '@/lib/pdf-templates/render-pdf';
+import { renderRaporPdf, renderRaporPdfBatch } from '@/lib/pdf-templates/render-pdf';
 
 const VALID_JENIS: JenisRapor[] = ['pelengkap', 'tengah_semester', 'semester', 'p5bk', 'buku_induk'];
 
@@ -19,6 +19,55 @@ function buildFooterTemplate(nama_kelas: string, nama_siswa: string, nis: string
       <span>Halaman: <span class="pageNumber"></span> / <span class="totalPages"></span></span>
     </div>
   </div>`;
+}
+
+function wrapHtmlForPrint(html: string, siswa?: SiswaInfo): string {
+  const info = siswa
+    ? `${siswa.nama_kelas || '-'} | ${siswa.nama_siswa || '-'} | ${siswa.nis || '-'}${siswa.nisn ? '/' + siswa.nisn : ''}`
+    : '';
+  const escaped = info.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const printCss = `
+<style>
+  @media print {
+    @page {
+      size: 210mm 330mm;
+      margin: 6.2mm 15.7mm 18mm 14.5mm;
+    }
+    .print-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      font-size: 9pt;
+      font-family: Arial, Helvetica, sans-serif;
+      font-style: italic;
+      padding: 0;
+    }
+    .print-footer-inner {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1.5pt double #555;
+      padding-top: 6px;
+    }
+    .print-footer-meta:empty {
+      display: none;
+    }
+  }
+  @media screen {
+    .print-footer { display: none; }
+  }
+</style>
+<div class="print-footer">
+  <div class="print-footer-inner">
+    <span class="print-footer-meta">${escaped}</span>
+    <span>E-Rapor SMK</span>
+  </div>
+</div>`;
+  // Inject before </body> or at the end
+  if (html.includes('</body>')) {
+    return html.replace('</body>', printCss + '</body>');
+  }
+  return html + printCss;
 }
 
 function tglIndo(dateStr: string): string {
@@ -240,7 +289,8 @@ export async function POST(req: NextRequest) {
       const html = generateTengahSemesterRaporHTML(siswaMidList, sekolahInfo, tahunPelajaran, semesterLabel, waliKelas);
 
       if (outputFormat === 'html') {
-        return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        const wrappedHtml = wrapHtmlForPrint(html, siswaMidList.length === 1 ? siswaMidList[0] : undefined);
+        return new NextResponse(wrappedHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       }
 
       const firstSiswaMid = siswaMidList[0];
@@ -472,7 +522,16 @@ export async function POST(req: NextRequest) {
       const html = generateSemesterRaporHTML(siswaSemList, sekolahInfo, tahunPelajaran, semesterLabel, waliKelas);
 
       if (outputFormat === 'html') {
-        return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        const wrappedHtml = wrapHtmlForPrint(html, siswaSemList.length === 1 ? siswaSemList[0] : undefined);
+        return new NextResponse(wrappedHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      }
+
+      if (siswaSemList.length > 1) {
+        const documents = siswaSemList.map((siswa) => ({
+          html: generateSemesterRaporHTML([siswa], sekolahInfo, tahunPelajaran, semesterLabel, waliKelas),
+          footerTemplate: buildFooterTemplate(siswa.nama_kelas, siswa.nama_siswa, siswa.nis || '-', siswa.nisn || '-'),
+        }));
+        return await renderRaporPdfBatch(documents, `rapor-semester-${Date.now()}.pdf`);
       }
 
       const firstSiswaSem = siswaSemList[0];
@@ -498,7 +557,8 @@ export async function POST(req: NextRequest) {
     );
 
     if (outputFormat === 'html') {
-      return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      const wrappedHtml = wrapHtmlForPrint(html, siswaList.length === 1 ? siswaList[0] : undefined);
+      return new NextResponse(wrappedHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
     }
 
     const footerDefault = buildFooterTemplate(siswaList[0].nama_kelas, siswaList[0].nama_siswa, siswaList[0].nis || '-', siswaList[0].nisn || '-');
