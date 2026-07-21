@@ -115,14 +115,17 @@ export default function DaftarRaporClient({
     }
   };
 
-  const previewHtml = async (jenis: JenisRapor, idSiswa: number) => {
-    const key = `preview-${jenis}-${idSiswa}`;
+  const previewHtml = async (jenis: JenisRapor, idSiswa?: number) => {
+    const ids = idSiswa ? [idSiswa] : Array.from(selected[jenis]);
+    if (ids.length === 0) return;
+    const key = idSiswa ? `preview-${jenis}-${idSiswa}` : `batch-preview-${jenis}`;
+    const previewWindow = window.open('', '_blank');
     setLoading(key);
     try {
       const res = await fetch('/api/tu/cetak-rapor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_siswa_list: [idSiswa], jenis, tahun, semester, format: 'html' }),
+        body: JSON.stringify({ id_siswa_list: ids, jenis, tahun, semester, format: 'html' }),
       });
       if (!res.ok) {
         const errJson = await res.json().catch(() => null);
@@ -131,8 +134,13 @@ export default function DaftarRaporClient({
       const html = await res.text();
       const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      if (previewWindow) {
+        previewWindow.location.href = url;
+      } else {
+        window.open(url, '_blank');
+      }
     } catch (err: any) {
+      previewWindow?.close();
       console.error(err);
       alert(err?.message || 'Gagal memuat preview. Silakan coba lagi.');
     } finally {
@@ -146,6 +154,8 @@ export default function DaftarRaporClient({
     await downloadPdf(jenis);
     setSelected((prev) => ({ ...prev, [jenis]: new Set() }));
   };
+
+  const handlePreviewBatch = (jenis: JenisRapor) => previewHtml(jenis);
 
   const hasAnyBatch = CHECKBOX_JENIS.some((j) => selected[j].size > 0);
 
@@ -192,12 +202,31 @@ export default function DaftarRaporClient({
                 const count = selected[j].size;
                 if (count === 0) return null;
                 return (
-                  <button
-                    key={j}
-                    onClick={() => handleCetakBatch(j)}
-                    disabled={loading === `batch-${j}`}
-                    className={`inline-flex items-center gap-1.5 text-xs font-medium text-white ${cfg.color} ${cfg.hoverColor} rounded-lg px-3 py-1.5 transition-all disabled:opacity-50`}
-                  >
+                  <div key={j} className="inline-flex items-center gap-1">
+                    <button
+                      onClick={() => handlePreviewBatch(j)}
+                      disabled={loading === `batch-preview-${j}`}
+                      className="inline-flex items-center justify-center w-7 h-7 text-blue-600 bg-white hover:bg-blue-100 border border-blue-200 rounded-lg transition-all disabled:opacity-50 active:scale-[0.97]"
+                      title={`Preview batch ${cfg.label}`}
+                      aria-label={`Preview batch ${cfg.label}`}
+                    >
+                      {loading === `batch-preview-${j}` ? (
+                        <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleCetakBatch(j)}
+                      disabled={loading === `batch-${j}`}
+                      className={`inline-flex items-center gap-1.5 text-xs font-medium text-white ${cfg.color} ${cfg.hoverColor} rounded-lg px-3 py-1.5 transition-all disabled:opacity-50`}
+                    >
                     {loading === `batch-${j}` ? (
                       <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -209,7 +238,8 @@ export default function DaftarRaporClient({
                       </svg>
                     )}
                     {cfg.label} ({count})
-                  </button>
+                    </button>
+                  </div>
                 );
               })}
             </div>

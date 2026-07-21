@@ -1,64 +1,62 @@
 import { NextResponse } from 'next/server';
 import { existsSync } from 'fs';
+import { PDFDocument } from 'pdf-lib';
 
-export async function renderRaporPdf(
-  html: string,
-  footerTemplate: string,
-  filename: string,
-  bottomMargin = '12mm'
-): Promise<NextResponse> {
+interface RaporPdfDocument {
+  html: string;
+  footerTemplate: string;
+}
+
+async function launchPuppeteerBrowser() {
   let puppeteer;
   try {
     puppeteer = await import('puppeteer');
   } catch {
-    return NextResponse.json({ error: 'Puppeteer tidak tersedia di server' }, { status: 500 });
+    throw new Error('Puppeteer tidak tersedia di server');
   }
   if (!puppeteer?.default) {
-    return NextResponse.json({ error: 'Puppeteer tidak tersedia di server' }, { status: 500 });
+    throw new Error('Puppeteer tidak tersedia di server');
   }
 
-  // Hanya gunakan CHROME_PATH jika berkas benar-benar ada di disk (mencegah error path Mac di Windows/Linux)
   const customChromePath = process.env.CHROME_PATH?.trim();
   const validExecutablePath = customChromePath && existsSync(customChromePath) ? customChromePath : undefined;
+  const launchOptions = {
+    headless: true as const,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
+  };
 
-  let browser;
   try {
-    browser = await puppeteer.default.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-      ],
+    return await puppeteer.default.launch({
+      ...launchOptions,
       executablePath: validExecutablePath,
     });
   } catch (launchErr: any) {
-    // Fallback: coba launch tanpa executablePath jika pembukaan kustom gagal
     if (validExecutablePath) {
       try {
-        browser = await puppeteer.default.launch({
-          headless: true,
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-          ],
-        });
+        return await puppeteer.default.launch(launchOptions);
       } catch (fallbackErr: any) {
         throw new Error(`Gagal membuka browser Puppeteer: ${fallbackErr?.message || fallbackErr}`);
       }
-    } else {
-      throw new Error(`Gagal membuka browser Puppeteer: ${launchErr?.message || launchErr}`);
     }
+    throw new Error(`Gagal membuka browser Puppeteer: ${launchErr?.message || launchErr}`);
   }
+}
 
+async function renderPdfBuffer(
+  browser: Awaited<ReturnType<typeof launchPuppeteerBrowser>>,
+  html: string,
+  footerTemplate: string,
+  bottomMargin: string,
+): Promise<Uint8Array> {
+  const page = await browser.newPage();
   try {
-    const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'load' });
-
-    const pdfArray = await page.pdf({
+    return await page.pdf({
       width: '210mm',
       height: '330mm',
       printBackground: true,
@@ -67,17 +65,70 @@ export async function renderRaporPdf(
       headerTemplate: '<div></div>',
       margin: { top: '6.2mm', bottom: bottomMargin, left: '14.5mm', right: '15.7mm' },
     });
-
-    await browser.close();
-
-    return new NextResponse(Buffer.from(pdfArray), {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${filename}"`,
-      },
-    });
-  } catch (pdfErr: any) {
-    if (browser) await browser.close();
-    throw pdfErr;
+  } finally {
+    await page.close();
   }
+}
+
+export async function renderRaporPdf(
+  html: string,
+  footerTemplate: string,
+  filename: string,
+  bottomMargin = '12mm'
+): Promise<NextResponse> {
+  try {
+    const browser = await launchPuppeteerBrowser();
+    try {
+      const pdfArray = await renderPdfBuffer(browser, html, footerTemplate, bottomMargin);
+      return pdfResponse(pdfArray, filename);
+    } finally {
+      await browser.close();
+    }
+  } catch (error: any) {
+    if (error?.message === 'Puppeteer tidak tersedia di server') {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    throw error;
+  }
+}
+
+export async function renderRaporPdfBatch(
+  documents: RaporPdfDocument[],
+  filename: string,
+  bottomMargin = '12mm',
+): Promise<NextResponse> {
+  if (documents.length === 0) {
+    return NextResponse.json({ error: 'Tidak ada dokumen rapor untuk dicetak' }, { status: 400 });
+  }
+
+  let browser;
+  try {
+    browser = await launchPuppeteerBrowser();
+    const mergedPdf = await PDFDocument.create();
+
+    for (const document of documents) {
+      const pdfArray = await renderPdfBuffer(browser, document.html, document.footerTemplate, bottomMargin);
+      const studentPdf = await PDFDocument.load(pdfArray);
+      const pages = await mergedPdf.copyPages(studentPdf, studentPdf.getPageIndices());
+      for (const page of pages) mergedPdf.addPage(page);
+    }
+
+    return pdfResponse(await mergedPdf.save(), filename);
+  } catch (error: any) {
+    if (error?.message === 'Puppeteer tidak tersedia di server') {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    throw error;
+  } finally {
+    if (browser) await browser.close();
+  }
+}
+
+function pdfResponse(pdfArray: Uint8Array, filename: string): NextResponse {
+  return new NextResponse(Buffer.from(pdfArray), {
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+    },
+  });
 }
