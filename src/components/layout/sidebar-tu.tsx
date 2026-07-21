@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { signOut, useSession } from 'next-auth/react';
 
 type MenuItem =
   | { label: string; href: string; icon: string }
@@ -74,12 +73,10 @@ const menuItems = [
 
 export default function SidebarTU({ data }: { data?: SidebarData }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [expandedParents, setExpandedParents] = useState<Record<string, boolean>>({});
   const [logo, setLogo] = useState<string | null>(null);
-  const userName = session?.user?.name || 'Admin';
 
   useEffect(() => {
     fetch('/api/sekolah-logo')
@@ -143,7 +140,12 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
           <Link href="/tu" className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10 overflow-hidden">
               {logo ? (
-                <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                  onError={() => setLogo(null)}
+                />
               ) : (
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -155,34 +157,6 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
               <p className="text-[11px] text-white/40">E-Rapor SMK</p>
             </div>
           </Link>
-        </div>
-
-        {/* Profile */}
-        <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-3">
-          <div className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center">
-            <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" id="sidebar-user-name">{userName}</p>
-            <p className="text-[11px] text-emerald-400/80 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-emerald-400/80 rounded-full inline-block" />
-              online
-            </p>
-          </div>
-          <button
-            onClick={async () => {
-              await signOut({ redirect: false });
-              window.location.href = '/login';
-            }}
-            className="text-white/30 hover:text-red-400/80 transition-colors"
-            title="Logout"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
         </div>
 
         {/* Year/Semester Filter */}

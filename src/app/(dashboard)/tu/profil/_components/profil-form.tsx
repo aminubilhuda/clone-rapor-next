@@ -68,6 +68,7 @@ export default function ProfilForm({ sekolah, kepala }: ProfilFormProps) {
                   src={logoPreview}
                   alt="Logo Sekolah"
                   className="w-full h-full object-contain"
+                  onError={() => setLogoPreview(null)}
                 />
               ) : (
                 <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,6 +110,7 @@ export default function ProfilForm({ sekolah, kepala }: ProfilFormProps) {
                   src={logoProvPreview}
                   alt="Logo Provinsi"
                   className="w-full h-full object-contain"
+                  onError={() => setLogoProvPreview(null)}
                 />
               ) : (
                 <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

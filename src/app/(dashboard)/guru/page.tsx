@@ -136,8 +136,11 @@ export default async function GuruDashboardPage() {
             </a>
             {stats.jumlahWali > 0 && (
               <>
+                <a href="/guru/catatan-wali" className="block p-3 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.04)] transition">
+                  <span className="text-sm font-medium text-[#1A1A2E]">Catatan Wali</span>
+                </a>
                 <a href="/guru/catatan-rapor" className="block p-3 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.04)] transition">
-                  <span className="text-sm font-medium text-[#1A1A2E]">Cetak Rapor</span>
+                  <span className="text-sm font-medium text-[#1A1A2E]">Daftar Rapor</span>
                 </a>
                 <a href="/guru/lager-nilai-kelas" className="block p-3 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.04)] transition">
                   <span className="text-sm font-medium text-[#1A1A2E]">Leger Nilai</span>

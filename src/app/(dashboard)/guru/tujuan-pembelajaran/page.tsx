@@ -35,7 +35,7 @@ async function getDetail(idMapel: number, idTingkat: number, idUser: number) {
   if (mapelRows.length === 0) return null;
 
   const [kelasRows]: any = await pool.query(`
-    SELECT DISTINCT k.id_kelas, k.nama_kelas, mk.id_mapel_kelas
+    SELECT DISTINCT k.id_kelas, k.nama_kelas
     FROM mapel_kelas mk
     JOIN kelas k ON mk.id_kelas = k.id_kelas
     WHERE mk.id_mapel = ? AND mk.tahun = ? AND mk.semester = ? AND mk.id_user = ? AND k.id_tingkat = ?
@@ -66,7 +66,12 @@ async function getDetail(idMapel: number, idTingkat: number, idUser: number) {
     const key = displayKey(row);
     const existing = acc.find(t => displayKey(t) === key);
     if (existing) {
-      existing.kelas.push({ id_kelas: row.id_kelas, nama_kelas: row.nama_kelas });
+      const kelasSudahAda = existing.kelas.some(
+        (kelas: any) => kelas.id_kelas === row.id_kelas
+      );
+      if (!kelasSudahAda) {
+        existing.kelas.push({ id_kelas: row.id_kelas, nama_kelas: row.nama_kelas });
+      }
     } else {
       acc.push({
         id_tujuan: row.id_tujuan,
