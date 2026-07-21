@@ -11,6 +11,7 @@ const pageTitles: Record<string, string> = {
   '/tu/kesiswaan': 'Data Siswa',
   '/tu/mapel': 'Mata Pelajaran',
   '/tu/ekstra': 'Ekstrakurikuler',
+  '/tu/organisasi': 'Organisasi',
   '/tu/kompetensi': 'Kompetensi Keahlian',
   '/tu/prakerin': 'Prakerin',
   '/tu/deskripsi-rapor': 'Deskripsi Rapor',
@@ -25,6 +26,8 @@ const pageTitles: Record<string, string> = {
   '/tu/piket-harian': 'Piket Harian',
   '/tu/pengaturan': 'Pengaturan',
   '/guru/absensi-piket': 'Absensi Piket',
+  '/guru/catatan-wali': 'Catatan Wali',
+  '/guru/catatan-rapor': 'Daftar Rapor',
 };
 
 export default function Topbar() {
@@ -50,42 +53,56 @@ export default function Topbar() {
   }, []);
 
   return (
-    <div className="h-16 bg-white/80 backdrop-blur-md border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between px-6 premium-shadow" style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-      <div>
-        <h2 className="text-base font-semibold text-[#1A1A2E]">
+    <div className="flex h-16 items-center justify-between gap-3 border-b border-[rgba(0,0,0,0.06)] bg-white/80 pl-16 pr-4 backdrop-blur-md premium-shadow lg:px-6" style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+      <div className="min-w-0">
+        <h2 className="truncate text-base font-semibold text-[#1A1A2E]">
           {pageTitle}
         </h2>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex shrink-0 items-center">
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-2 p-1 rounded-lg hover:bg-[#1A1A2E]/5 transition-colors"
+            className="flex h-10 max-w-52 items-center gap-2 rounded-lg px-1.5 transition-colors hover:bg-[#1A1A2E]/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A2E]/20"
+            title={`Menu profil ${userName}`}
+            aria-label={`Menu profil ${userName}`}
+            aria-haspopup="menu"
+            aria-expanded={isProfileOpen}
+            aria-controls="profile-menu"
           >
-            <div className="w-8 h-8 bg-[#1A1A2E]/5 rounded-full flex items-center justify-center">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1A1A2E]/5" aria-hidden="true">
               <span className="text-xs font-medium text-[#1A1A2E]/60">
                 {userName.charAt(0).toUpperCase()}
               </span>
             </div>
-            <svg className={`w-4 h-4 text-[#6B7280] transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="hidden max-w-36 truncate text-sm font-medium text-[#1A1A2E] sm:block">
+              {userName}
+            </span>
+            <svg className={`hidden h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-200 sm:block ${isProfileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
 
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl border border-[rgba(0,0,0,0.06)] premium-shadow-lg py-2 z-50">
-              {/* User Info */}
-              <div className="px-4 py-3 border-b border-[rgba(0,0,0,0.04)]">
-                <p className="text-sm font-semibold text-[#1A1A2E] truncate">{userName}</p>
-                <p className="text-xs text-[#6B7280] mt-0.5">{roleLabel}</p>
+            <div id="profile-menu" role="menu" className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-lg border border-[rgba(0,0,0,0.06)] bg-white premium-shadow-lg">
+              <div className="flex items-center gap-3 border-b border-[rgba(0,0,0,0.04)] px-4 py-3.5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1A1A2E]/5" aria-hidden="true">
+                  <span className="text-sm font-semibold text-[#1A1A2E]/60">
+                    {userName.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-[#1A1A2E]">{userName}</p>
+                  <p className="mt-0.5 text-xs text-[#6B7280]">{roleLabel}</p>
+                </div>
               </div>
 
-              {/* Menu Items */}
               <div className="py-1">
                 <a
                   href={profilHref}
                   onClick={() => setIsProfileOpen(false)}
+                  role="menuitem"
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1A1A2E] hover:bg-[#F8F9FB] transition-colors"
                 >
                   <svg className="w-4 h-4 text-[#6B7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,6 +116,7 @@ export default function Topbar() {
                     await signOut({ redirect: false });
                     window.location.href = '/login';
                   }}
+                  role="menuitem"
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

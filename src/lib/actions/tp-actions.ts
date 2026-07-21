@@ -5,6 +5,38 @@ import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
+function formatDisplayOrder(index: number) {
+  const zeroBased = index - 1;
+  return `${Math.floor(zeroBased / 10) + 1}.${(zeroBased % 10) + 1}`;
+}
+
+function getNextDisplayIndex(rows: any[]) {
+  const usedOrders = new Set<string>();
+  let highestIndex = 0;
+
+  for (const row of rows) {
+    const displayOrder = String(row.urut || '').split('-').pop() || '';
+    usedOrders.add(displayOrder);
+
+    const match = /^(\d+)\.(\d+)$/.exec(displayOrder);
+    if (match) {
+      const parsedIndex = (Number(match[1]) - 1) * 10 + Number(match[2]);
+      highestIndex = Math.max(highestIndex, parsedIndex);
+    }
+  }
+
+  highestIndex = Math.max(highestIndex, usedOrders.size);
+
+  let nextIndex = highestIndex + 1;
+  while (usedOrders.has(formatDisplayOrder(nextIndex))) nextIndex += 1;
+  return nextIndex;
+}
+
+function createKode(singkatan: string, displayIndex: number) {
+  const random = Math.random().toString(36).substring(2, 6);
+  return `${singkatan}-${random}-${formatDisplayOrder(displayIndex)}`;
+}
+
 export async function getKodeNext(idMapel: number) {
   const authResult = await requireGuru();
   if (authResult.error || !authResult.user) return { success: false, error: authResult.error || 'Unauthorized' } as const;
@@ -15,19 +47,15 @@ export async function getKodeNext(idMapel: number) {
       'SELECT s_mapel FROM mapel WHERE id_mapel = ?', [idMapel]
     );
     const singkatan = (mRows[0]?.s_mapel || 'XX').substring(0, 4).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 6);
 
     const sekolah = await getSekolahWithFilter();
     const [rows]: any = await pool.query(
-      'SELECT COUNT(*) AS cnt FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?',
+      'SELECT DISTINCT urut FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?',
       [sekolah.tahun, sekolah.semester, idMapel, user.id_user]
     );
-    const count = rows[0]?.cnt || 0;
-    const num = Math.floor(count / 10) + 1;
-    const dec = (count % 10) + 1;
-    const display = `${num}.${dec}`;
+    const nextIndex = getNextDisplayIndex(rows);
 
-    return { success: true, kode: `${singkatan}-${random}-${display}` } as const;
+    return { success: true, kode: createKode(singkatan, nextIndex) } as const;
   } catch (e: any) {
     return { success: false, error: 'Gagal mengambil data' } as const;
   }
@@ -228,6 +256,12 @@ export async function copyTujuan(formData: FormData) {
     );
     if (srcRows.length === 0) return { success: false, error: 'TP sumber tidak ditemukan' } as const;
 
+    const [mapelRows]: any = await pool.query(
+      'SELECT s_mapel FROM mapel WHERE id_mapel = ?',
+      [idMapel]
+    );
+    const singkatan = (mapelRows[0]?.s_mapel || 'XX').substring(0, 4).toUpperCase();
+
     const srcByKode = new Map<string, any>();
     for (const row of srcRows) {
       if (!srcByKode.has(row.urut)) srcByKode.set(row.urut, row);
@@ -247,9 +281,20 @@ export async function copyTujuan(formData: FormData) {
     try {
       await conn.beginTransaction();
 
+      const [currentRows]: any = await conn.query(
+        `SELECT urut
+         FROM tujuan_pembelajaran
+         WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?
+         FOR UPDATE`,
+        [sekolah.tahun, sekolah.semester, idMapel, user.id_user]
+      );
+      let nextDisplayIndex = getNextDisplayIndex(currentRows);
+
       for (const kode of kodes) {
         const src = srcByKode.get(kode);
         if (!src) continue;
+        const kodeBaru = createKode(singkatan, nextDisplayIndex);
+        nextDisplayIndex += 1;
 
         for (const idKelas of kelasIds) {
           const idTingkat = tingkatByKelas.get(idKelas);
@@ -259,7 +304,7 @@ export async function copyTujuan(formData: FormData) {
             `INSERT INTO tujuan_pembelajaran
              (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, tujuan, kktp, middle_formatif, middle_ph, formatif_as)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)`,
-            [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, user.id_user, kode, src.tujuan, src.kktp]
+            [sekolah.tahun, sekolah.semester, idTingkat, idKelas, idMapel, user.id_user, kodeBaru, src.tujuan, src.kktp]
           );
         }
       }

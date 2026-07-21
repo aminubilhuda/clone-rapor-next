@@ -1,18 +1,26 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
+import CatatanWaliEditor from '@/components/guru/catatan-wali-editor';
 
 interface Siswa {
+  id_kelas: number;
   id_siswa: number;
   nama_siswa: string;
   nis: string;
   nisn: string;
   nama_kelas: string;
+  catatan: string;
+}
+
+interface KelasItem {
+  id_kelas: number;
+  nama_kelas: string;
 }
 
 interface Props {
   data: Siswa[];
-  namaKelas: string;
+  kelasList: KelasItem[];
   tahun: number;
   semester: number;
 }
@@ -29,7 +37,8 @@ const JENIS_CONFIG: { key: JenisRapor; label: string; color: string; hoverColor:
 
 const CHECKBOX_JENIS: JenisRapor[] = ['tengah_semester', 'semester', 'p5bk'];
 
-export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester }: Props) {
+export default function CetakRaporGuruClient({ data, kelasList, tahun, semester }: Props) {
+  const [selectedKelas, setSelectedKelas] = useState(kelasList[0]?.id_kelas || 0);
   const [selected, setSelected] = useState<Record<JenisRapor, Set<number>>>({
     pelengkap: new Set(),
     tengah_semester: new Set(),
@@ -38,8 +47,27 @@ export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester 
     buku_induk: new Set(),
   });
   const [loading, setLoading] = useState<string | null>(null);
+  const [catatanBySiswa, setCatatanBySiswa] = useState<Record<number, string>>(
+    Object.fromEntries(data.map((siswa) => [siswa.id_siswa, siswa.catatan || '']))
+  );
+  const [editingSiswa, setEditingSiswa] = useState<Siswa | null>(null);
 
-  const filteredSiswa = data;
+  const filteredSiswa = useMemo(
+    () => data.filter((siswa) => siswa.id_kelas === selectedKelas),
+    [data, selectedKelas]
+  );
+  const namaKelas = kelasList.find((kelas) => kelas.id_kelas === selectedKelas)?.nama_kelas || '';
+
+  const handleKelasChange = (idKelas: number) => {
+    setSelectedKelas(idKelas);
+    setSelected({
+      pelengkap: new Set(),
+      tengah_semester: new Set(),
+      semester: new Set(),
+      p5bk: new Set(),
+      buku_induk: new Set(),
+    });
+  };
 
   const toggleAll = useCallback((jenis: JenisRapor) => {
     setSelected((prev) => {
@@ -88,34 +116,9 @@ export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err?.message || 'Gagal mencetak rapor. Silakan coba lagi.');
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  const previewHtml = async (jenis: JenisRapor, idSiswa: number) => {
-    const key = `preview-${jenis}-${idSiswa}`;
-    setLoading(key);
-    try {
-      const res = await fetch('/api/tu/cetak-rapor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_siswa_list: [idSiswa], jenis, tahun, semester, format: 'html' }),
-      });
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => null);
-        throw new Error(errJson?.error || 'Gagal memuat preview');
-      }
-      const html = await res.text();
-      const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    } catch (err: any) {
-      console.error(err);
-      alert(err?.message || 'Gagal memuat preview. Silakan coba lagi.');
+      alert(err instanceof Error ? err.message : 'Gagal mencetak rapor. Silakan coba lagi.');
     } finally {
       setLoading(null);
     }
@@ -131,8 +134,27 @@ export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester 
   const hasAnyBatch = CHECKBOX_JENIS.some((j) => selected[j].size > 0);
 
   return (
-    <div>
-      <h4 className="text-xl font-semibold mb-6">Cetak Rapor</h4>
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h4 className="text-xl font-semibold text-[#1A1A2E]">Daftar Rapor</h4>
+          <p className="mt-1 text-sm text-gray-500">Periksa catatan wali, lihat preview, atau cetak rapor siswa.</p>
+        </div>
+        {kelasList.length > 1 && (
+          <div className="w-full sm:w-56">
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">Kelas</label>
+            <select
+              value={selectedKelas}
+              onChange={(event) => handleKelasChange(Number(event.target.value))}
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15"
+            >
+              {kelasList.map((kelas) => (
+                <option key={kelas.id_kelas} value={kelas.id_kelas}>{kelas.nama_kelas}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
 
       {filteredSiswa.length === 0 ? (
         <div className="text-center py-16">
@@ -182,6 +204,7 @@ export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester 
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="text-center px-3 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider w-10">No</th>
                   <th className="text-left px-4 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider">Nama Peserta Didik</th>
+                  <th className="text-center px-3 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider">Catatan Wali</th>
                   <th className="text-center px-3 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider text-green-700">Pelengkap Rapor</th>
                   <th className="text-center px-3 py-3 font-medium text-[#6B7280] text-xs uppercase tracking-wider">
                     <div className="flex items-center justify-center gap-1.5">
@@ -227,6 +250,24 @@ export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester 
                   <tr key={siswa.id_siswa} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
                     <td className="text-center px-3 py-2.5 text-[#6B7280] text-xs">{idx + 1}</td>
                     <td className="px-4 py-2.5 font-medium text-[#1A1A2E] text-sm">{siswa.nama_siswa}</td>
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center justify-center gap-2">
+                        <span className={`rounded px-2 py-1 text-xs font-medium ${catatanBySiswa[siswa.id_siswa]?.trim() ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                          {catatanBySiswa[siswa.id_siswa]?.trim() ? 'Terisi' : 'Belum'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setEditingSiswa(siswa)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-blue-600 transition hover:bg-blue-50"
+                          title={`Edit catatan ${siswa.nama_siswa}`}
+                          aria-label={`Edit catatan ${siswa.nama_siswa}`}
+                        >
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-7.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l6.586-6.586z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
                     <td className="text-center px-3 py-2.5">
                       <button
                         onClick={() => handleCetakSingle('pelengkap', siswa.id_siswa)}
@@ -330,6 +371,43 @@ export default function CetakRaporGuruClient({ data, namaKelas, tahun, semester 
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {editingSiswa && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={(event) => { if (event.target === event.currentTarget) setEditingSiswa(null); }}
+        >
+          <div className="w-full max-w-xl overflow-hidden rounded-lg bg-white shadow-xl">
+            <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
+              <h3 className="font-semibold text-gray-900">Catatan Wali</h3>
+              <p className="mt-1 text-sm text-gray-500">{editingSiswa.nama_siswa} | {editingSiswa.nama_kelas}</p>
+            </div>
+            <div className="px-4 py-4 sm:px-6">
+              <CatatanWaliEditor
+                key={editingSiswa.id_siswa}
+                idKelas={editingSiswa.id_kelas}
+                idSiswa={editingSiswa.id_siswa}
+                initialValue={catatanBySiswa[editingSiswa.id_siswa] || ''}
+                siswaName={editingSiswa.nama_siswa}
+                autoFocus
+                onSaved={(catatan) => setCatatanBySiswa((current) => ({
+                  ...current,
+                  [editingSiswa.id_siswa]: catatan,
+                }))}
+              />
+            </div>
+            <div className="flex justify-end border-t border-gray-200 px-4 py-3 sm:px-6">
+              <button
+                type="button"
+                onClick={() => setEditingSiswa(null)}
+                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+              >
+                Selesai
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -40,7 +40,8 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
         `SELECT k.id_kelas, k.nama_kelas
          FROM kelas_wali kw
          JOIN kelas k ON kw.id_kelas = k.id_kelas
-         WHERE kw.id_user = ? AND kw.tahun = ? AND kw.semester = ?`,
+         WHERE kw.id_user = ? AND kw.tahun = ? AND kw.semester = ?
+           AND kw.deleted_at IS NULL`,
         [idUser, tahun, semester]
       ),
       pool.query(

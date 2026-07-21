@@ -1,12 +1,8 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useState, FormEvent, useEffect } from 'react';
-import Image from 'next/image';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
@@ -33,31 +29,37 @@ export default function LoginPage() {
     const password = formData.get('password') as string;
 
     try {
-      const result = await signIn('credentials', {
-        username,
-        password,
-        redirect: false,
-      });
+      const csrfResponse = await fetch('/api/auth/csrf');
+      if (!csrfResponse.ok) throw new Error('Gagal mengambil token keamanan');
+      const { csrfToken } = await csrfResponse.json();
 
-      if (result?.error) {
+      const callbackResponse = await fetch('/api/auth/callback/credentials?', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Auth-Return-Redirect': '1',
+        },
+        body: new URLSearchParams({
+          username,
+          password,
+          csrfToken,
+          callbackUrl: `${window.location.origin}/`,
+        }),
+      });
+      const data = await callbackResponse.json();
+      const resultUrl = new URL(data.url || '/', window.location.origin);
+
+      if (resultUrl.searchParams.has('error')) {
         setError('Username atau Password Salah!');
         setLoading(false);
         return;
       }
 
-      window.location.replace('/');
+      window.location.replace(resultUrl.href);
     } catch (err: any) {
       console.error('Login submit error:', err);
-
-      const errStr = String(err?.message || err?.type || err);
-      if (errStr.includes('CredentialsSignin')) {
-        setError('Username atau Password Salah!');
-        setLoading(false);
-        return;
-      }
-
-      // Jika login sebenarnya sukses tetapi ada eksepsi lain saat signIn
-      window.location.replace('/');
+      setError('Terjadi kesalahan saat masuk. Silakan coba lagi.');
+      setLoading(false);
     }
   };
 
