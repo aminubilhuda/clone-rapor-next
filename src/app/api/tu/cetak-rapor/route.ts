@@ -11,9 +11,12 @@ import {
   PelengkapSekolahInfo,
   PelengkapSiswaInfo,
 } from '@/lib/pdf-templates/pelengkap-template';
+import { generatePelengkapRaporPdf } from '@/lib/pdf-templates/pelengkap-pdfmake';
 import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, MapelNilai, PresensiData } from '@/lib/pdf-templates/tengah-semester-template';
+import { generateTengahSemesterRaporPdf } from '@/lib/pdf-templates/tengah-semester-pdfmake';
 import { generateSemesterRaporHTML, SiswaSemesterRapor, KelompokSemester, MapelSemester, PrakerinItem, EskulItem, OrganisasiItem } from '@/lib/pdf-templates/semester-template';
-import { renderRaporPdf, renderRaporPdfBatch } from '@/lib/pdf-templates/render-pdf';
+import { generateSemesterRaporPdf } from '@/lib/pdf-templates/semester-pdfmake';
+import { pdfResponse, renderRaporPdf, renderRaporPdfBatch } from '@/lib/pdf-templates/render-pdf';
 
 const VALID_JENIS: JenisRapor[] = ['pelengkap', 'tengah_semester', 'semester', 'p5bk', 'buku_induk'];
 
@@ -254,12 +257,27 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      return await renderRaporPdf(
+      const filename = `pelengkap-rapor-${Date.now()}.pdf`;
+      if (process.env.PELENGKAP_PDF_ENGINE?.trim().toLowerCase() !== 'puppeteer') {
+        try {
+          const pdf = await generatePelengkapRaporPdf(
+            pelengkapRows as PelengkapSiswaInfo[],
+            pelengkapSekolah,
+          );
+          return pdfResponse(pdf, filename, { 'X-PDF-Renderer': 'pdfmake' });
+        } catch (pdfMakeError) {
+          console.error('[pelengkap-rapor] pdfmake gagal, memakai Puppeteer fallback', pdfMakeError);
+        }
+      }
+
+      const fallbackResponse = await renderRaporPdf(
         html,
         '<div></div>',
-        `pelengkap-rapor-${Date.now()}.pdf`,
+        filename,
         '8mm',
       );
+      fallbackResponse.headers.set('X-PDF-Renderer', 'puppeteer-fallback');
+      return fallbackResponse;
     }
 
     if (jenis === 'tengah_semester') {
@@ -273,7 +291,7 @@ export async function POST(req: NextRequest) {
         JOIN tingkat t ON k.id_tingkat = t.id_tingkat
         WHERE sk.tahun = ? AND sk.semester = ? AND s.id_siswa IN (${placeholders})
           AND sk.deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const siswaKelasMap = new Map<number, { id_kelas: number; nama_kelas: string; fase: string }>();
       for (const r of siswaKelasRows) {
@@ -292,23 +310,27 @@ export async function POST(req: NextRequest) {
         JOIN mapel m ON ms.id_mapel = m.id_mapel
         WHERE ms.tahun = ? AND ms.semester = ? AND ms.aktif = 1 AND ms.id_siswa IN (${placeholders})
         ORDER BY m.id_kelompok ASC, m.urut ASC
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [nilaiTsRows]: any = await pool.query(`
         SELECT id_siswa, id_mapel, nilai FROM nilai_sumatif_ts
         WHERE tahun = ? AND semester = ? AND id_siswa IN (${placeholders})
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
       const nilaiTsMap = new Map<string, number>();
       for (const r of nilaiTsRows) {
         nilaiTsMap.set(`${r.id_siswa}-${r.id_mapel}`, r.nilai);
       }
 
-      const allMapelIds = [...new Set(mapelSiswaRows.map((r: any) => r.id_mapel))];
-      const mapelPlaceholders = allMapelIds.map(() => '?').join(',');
-      const [kktpRows]: any = await pool.query(`
-        SELECT DISTINCT id_mapel, kktp FROM tujuan_pembelajaran
-        WHERE tahun = ? AND semester = ? AND id_mapel IN (${mapelPlaceholders})
-      `, [tahun, semester, ...allMapelIds]);
+      const allMapelIds = [...new Set<number>(mapelSiswaRows.map((r: any) => Number(r.id_mapel)))];
+      let kktpRows: any[] = [];
+      if (allMapelIds.length > 0) {
+        const mapelPlaceholders = allMapelIds.map(() => '?').join(',');
+        const [rows]: any = await pool.query(`
+          SELECT DISTINCT id_mapel, kktp FROM tujuan_pembelajaran
+          WHERE tahun = ? AND semester = ? AND id_mapel IN (${mapelPlaceholders})
+        `, [useTahun, useSemester, ...allMapelIds]);
+        kktpRows = rows;
+      }
       const kktpMap = new Map<number, number>();
       for (const r of kktpRows) {
         if (!kktpMap.has(r.id_mapel)) kktpMap.set(r.id_mapel, r.kktp);
@@ -320,7 +342,7 @@ export async function POST(req: NextRequest) {
         WHERE p.tahun = ? AND p.semester = ? AND p.id_siswa IN (${placeholders})
           AND p.deleted_at IS NULL
         GROUP BY p.id_siswa, p.id_absen
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [absenRows]: any = await pool.query(
         'SELECT * FROM absen WHERE id_absen > 1 AND deleted_at IS NULL ORDER BY id_absen ASC'
@@ -330,7 +352,7 @@ export async function POST(req: NextRequest) {
         SELECT id_siswa, catatan FROM catatan_wali
         WHERE tahun = ? AND semester = ? AND id_siswa IN (${placeholders})
           AND deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
       const catatanMap = new Map<number, string>();
       for (const r of catatanRows) catatanMap.set(r.id_siswa, r.catatan);
 
@@ -342,13 +364,13 @@ export async function POST(req: NextRequest) {
           JOIN users u ON kw.id_user = u.id_user
           WHERE kw.tahun = ? AND kw.semester = ? AND kw.deleted_at IS NULL AND kw.id_kelas IN (${kelasPlaceholders})
           LIMIT 1
-        `, [tahun, semester, ...kelasIds]);
+        `, [useTahun, useSemester, ...kelasIds]);
         if (kwRows[0]) waliKelas = { nama: kwRows[0].nama, nip: kwRows[0].nip || '-' };
       }
 
       const [pembagianRows]: any = await pool.query(
         'SELECT tanggal_mid FROM pembagian_raport WHERE tahun = ? AND semester = ? AND deleted_at IS NULL LIMIT 1',
-        [tahun, semester]
+        [useTahun, useSemester]
       );
       const tanggalMid = pembagianRows[0]?.tanggal_mid ? tglIndo(pembagianRows[0].tanggal_mid) : '';
 
@@ -402,8 +424,26 @@ export async function POST(req: NextRequest) {
 
       const firstSiswaMid = siswaMidList[0];
       const footerTengah = buildFooterTemplate(firstSiswaMid.nama_kelas, firstSiswaMid.nama_siswa, firstSiswaMid.nis || '-', firstSiswaMid.nisn || '-');
+      const filename = `rapor-tengah-semester-${Date.now()}.pdf`;
 
-      return await renderRaporPdf(html, footerTengah, `rapor-tengah-semester-${Date.now()}.pdf`);
+      if (process.env.TENGAH_SEMESTER_PDF_ENGINE?.trim().toLowerCase() !== 'puppeteer') {
+        try {
+          const pdf = await generateTengahSemesterRaporPdf(
+            siswaMidList,
+            sekolahInfo,
+            tahunPelajaran,
+            semesterLabel,
+            waliKelas,
+          );
+          return pdfResponse(pdf, filename, { 'X-PDF-Renderer': 'pdfmake' });
+        } catch (pdfMakeError) {
+          console.error('[rapor-tengah-semester] pdfmake gagal, memakai Puppeteer fallback', pdfMakeError);
+        }
+      }
+
+      const fallbackResponse = await renderRaporPdf(html, footerTengah, filename);
+      fallbackResponse.headers.set('X-PDF-Renderer', 'puppeteer-fallback');
+      return fallbackResponse;
     }
 
     if (jenis === 'semester') {
@@ -417,7 +457,7 @@ export async function POST(req: NextRequest) {
         JOIN tingkat t ON k.id_tingkat = t.id_tingkat
         WHERE sk.tahun = ? AND sk.semester = ? AND s.id_siswa IN (${placeholders})
           AND sk.deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const siswaKelasMap = new Map<number, { id_kelas: number; id_tingkat: number; nama_kelas: string; fase: string }>();
       for (const r of siswaKelasRows) {
@@ -436,12 +476,12 @@ export async function POST(req: NextRequest) {
         JOIN mapel m ON ms.id_mapel = m.id_mapel
         WHERE ms.tahun = ? AND ms.semester = ? AND ms.aktif = 1 AND ms.id_siswa IN (${placeholders})
         ORDER BY m.id_kelompok ASC, m.urut ASC
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [nilaiMataRows]: any = await pool.query(`
         SELECT id_siswa, id_mapel, nilai FROM nilai_mata_pelajaran
         WHERE tahun = ? AND semester = ? AND id_siswa IN (${placeholders}) AND deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
       const nilaiMataMap = new Map<string, number>();
       for (const r of nilaiMataRows) {
         nilaiMataMap.set(`${r.id_siswa}-${r.id_mapel}`, Number(r.nilai));
@@ -454,14 +494,14 @@ export async function POST(req: NextRequest) {
       const [phRows]: any = await pool.query(`
         SELECT id_siswa, id_mapel, id_tujuan, nilai FROM nilai_sumatif_ph
         WHERE tahun = ? AND semester = ? AND id_siswa IN (${placeholders}) AND deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const allMapelIds = [...new Set(mapelSiswaRows.map((r: any) => r.id_mapel))];
       const mapelPlaceholders = allMapelIds.length > 0 ? allMapelIds.map(() => '?').join(',') : 'NULL';
       const [tpRows2]: any = await pool.query(`
         SELECT id_tujuan, id_mapel, tujuan FROM tujuan_pembelajaran
         WHERE tahun = ? AND semester = ? AND id_mapel IN (${mapelPlaceholders})
-      `, [tahun, semester, ...allMapelIds]);
+      `, [useTahun, useSemester, ...allMapelIds]);
       const tpMap = new Map<number, { id_mapel: number; tujuan: string }>();
       for (const r of tpRows2) tpMap.set(r.id_tujuan, { id_mapel: r.id_mapel, tujuan: r.tujuan });
 
@@ -478,7 +518,7 @@ export async function POST(req: NextRequest) {
         FROM siswa_prakerin sp
         JOIN prakerin p ON sp.id_prakerin = p.id_prakerin
         WHERE sp.tahun = ? AND sp.semester = ? AND sp.id_siswa IN (${placeholders}) AND sp.deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [kokurikulerRows]: any = await pool.query(`
         SELECT nk.id_siswa, dk.keterangan AS keterangan_nilai, dim.dimensi, pt.deskripsi
@@ -489,28 +529,28 @@ export async function POST(req: NextRequest) {
         JOIN dimensi_kokurikuler dim ON pt.id_dimensi = dim.id_dimensi
         WHERE pk.tahun = ? AND pk.semester = ? AND nk.id_siswa IN (${placeholders})
           AND nk.deleted_at IS NULL AND pk.deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [eskulRows]: any = await pool.query(`
         SELECT se.id_siswa, e.nama_eskul, se.predikat, se.keterangan
         FROM siswa_eskul se
         JOIN eskul e ON se.id_eskul = e.id_eskul
         WHERE se.tahun = ? AND se.semester = ? AND se.id_siswa IN (${placeholders}) AND se.deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [orgRows]: any = await pool.query(`
         SELECT so.id_siswa, o.nama_organisasi
         FROM siswa_organisasi so
         JOIN organisasi o ON so.id_organisasi = o.id_organisasi
         WHERE so.tahun = ? AND so.semester = ? AND so.id_siswa IN (${placeholders}) AND so.deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [presensiRows]: any = await pool.query(`
         SELECT p.id_siswa, p.id_absen, COALESCE(SUM(p.jumlah), 0) AS total
         FROM presensi p
         WHERE p.tahun = ? AND p.semester = ? AND p.id_siswa IN (${placeholders}) AND p.deleted_at IS NULL
         GROUP BY p.id_siswa, p.id_absen
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
 
       const [absenRows]: any = await pool.query(
         'SELECT * FROM absen WHERE id_absen > 1 AND deleted_at IS NULL ORDER BY id_absen ASC'
@@ -519,7 +559,7 @@ export async function POST(req: NextRequest) {
       const [catatanRows]: any = await pool.query(`
         SELECT id_siswa, catatan FROM catatan_wali
         WHERE tahun = ? AND semester = ? AND id_siswa IN (${placeholders}) AND deleted_at IS NULL
-      `, [tahun, semester, ...ids]);
+      `, [useTahun, useSemester, ...ids]);
       const catatanMap = new Map<number, string>();
       for (const r of catatanRows) catatanMap.set(r.id_siswa, r.catatan);
 
@@ -531,13 +571,13 @@ export async function POST(req: NextRequest) {
           JOIN users u ON kw.id_user = u.id_user
           WHERE kw.tahun = ? AND kw.semester = ? AND kw.deleted_at IS NULL AND kw.id_kelas IN (${kelasPlaceholders})
           LIMIT 1
-        `, [tahun, semester, ...kelasIds]);
+        `, [useTahun, useSemester, ...kelasIds]);
         if (kwRows[0]) waliKelas = { nama: kwRows[0].nama, nip: kwRows[0].nip || '-' };
       }
 
       const [pembagianRows]: any = await pool.query(
         'SELECT tanggal_rapor FROM pembagian_raport WHERE tahun = ? AND semester = ? AND deleted_at IS NULL LIMIT 1',
-        [tahun, semester]
+        [useTahun, useSemester]
       );
       const tanggalRapor = pembagianRows[0]?.tanggal_rapor ? tglIndo(pembagianRows[0].tanggal_rapor) : '';
 
@@ -620,7 +660,7 @@ export async function POST(req: NextRequest) {
           tanggapan_ortu: '',
           tanggal_rapor: tanggalRapor,
           lokasi,
-          isSemester2: semester === 2,
+          isSemester2: useSemester === 2,
           tingkatNaik: namaTingkatNaik,
           tahunPelajaran,
         };
@@ -633,18 +673,39 @@ export async function POST(req: NextRequest) {
         return new NextResponse(wrappedHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       }
 
+      const filename = `rapor-semester-${Date.now()}.pdf`;
+      const usePdfMake = process.env.SEMESTER_PDF_ENGINE !== 'puppeteer';
+      if (usePdfMake) {
+        try {
+          const pdf = await generateSemesterRaporPdf(
+            siswaSemList,
+            sekolahInfo,
+            tahunPelajaran,
+            semesterLabel,
+            waliKelas,
+          );
+          return pdfResponse(pdf, filename, { 'X-PDF-Renderer': 'pdfmake' });
+        } catch (pdfMakeError) {
+          console.error('[rapor-semester] pdfmake gagal, memakai Puppeteer fallback', pdfMakeError);
+        }
+      }
+
       if (siswaSemList.length > 1) {
         const documents = siswaSemList.map((siswa) => ({
           html: generateSemesterRaporHTML([siswa], sekolahInfo, tahunPelajaran, semesterLabel, waliKelas),
           footerTemplate: buildFooterTemplate(siswa.nama_kelas, siswa.nama_siswa, siswa.nis || '-', siswa.nisn || '-'),
         }));
-        return await renderRaporPdfBatch(documents, `rapor-semester-${Date.now()}.pdf`);
+        const fallbackResponse = await renderRaporPdfBatch(documents, filename);
+        fallbackResponse.headers.set('X-PDF-Renderer', 'puppeteer-fallback');
+        return fallbackResponse;
       }
 
       const firstSiswaSem = siswaSemList[0];
       const footerSemester = buildFooterTemplate(firstSiswaSem.nama_kelas, firstSiswaSem.nama_siswa, firstSiswaSem.nis || '-', firstSiswaSem.nisn || '-');
 
-      return await renderRaporPdf(html, footerSemester, `rapor-semester-${Date.now()}.pdf`);
+      const fallbackResponse = await renderRaporPdf(html, footerSemester, filename);
+      fallbackResponse.headers.set('X-PDF-Renderer', 'puppeteer-fallback');
+      return fallbackResponse;
     }
 
     const siswaList: SiswaInfo[] = siswaRows.map((row: any) => ({
