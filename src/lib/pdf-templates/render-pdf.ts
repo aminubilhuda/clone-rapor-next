@@ -153,12 +153,17 @@ export async function renderRaporPdfBatch(
   }
 }
 
-function pdfResponse(pdfArray: Uint8Array, filename: string): NextResponse {
+export function pdfResponse(
+  pdfArray: Uint8Array,
+  filename: string,
+  extraHeaders?: Record<string, string>,
+): NextResponse {
   return new NextResponse(Buffer.from(pdfArray), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `inline; filename="${filename}"`,
       'Cache-Control': 'private, no-store',
+      ...extraHeaders,
     },
   });
 }
