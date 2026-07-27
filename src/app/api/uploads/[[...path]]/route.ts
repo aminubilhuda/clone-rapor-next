@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
-import { join, resolve } from 'path';
+import { join, resolve, sep } from 'path';
 
 const UPLOADS_DIR = resolve(join(process.cwd(), 'public', 'uploads'));
 
@@ -25,7 +25,7 @@ export async function GET(
 
   // Prevent path traversal
   const filePath = resolve(join(process.cwd(), 'public', 'uploads', ...path));
-  if (!filePath.startsWith(UPLOADS_DIR)) {
+  if (!filePath.startsWith(`${UPLOADS_DIR}${sep}`)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

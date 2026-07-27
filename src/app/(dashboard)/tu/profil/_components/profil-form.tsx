@@ -7,9 +7,24 @@ import { updateProfil } from '@/lib/actions/profil-actions';
 interface ProfilFormProps {
   sekolah: any;
   kepala: any;
+  pegawai: Array<{
+    id_user: number;
+    nama: string;
+    nip: string;
+    nuptk: string;
+    nama_jabatan: string;
+  }>;
+  kepalaUserId: number | null;
+  periode: string;
 }
 
-export default function ProfilForm({ sekolah, kepala }: ProfilFormProps) {
+export default function ProfilForm({
+  sekolah,
+  kepala,
+  pegawai,
+  kepalaUserId,
+  periode,
+}: ProfilFormProps) {
   const [saving, setSaving] = useState(false);
   const { showToast } = useToast();
   const [logoPreview, setLogoPreview] = useState<string | null>(
@@ -195,6 +210,39 @@ export default function ProfilForm({ sekolah, kepala }: ProfilFormProps) {
         <label className="block text-sm font-medium text-[#1A1A2E]/80 mb-1.5">Misi</label>
         <textarea name="misi" rows={3} defaultValue={sekolah.misi} className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all" />
       </div>
+
+      <div className="mt-6 rounded-xl border border-[rgba(0,0,0,0.08)] bg-[#F8F9FB] p-4">
+        <h4 className="font-semibold text-[#1A1A2E]">Kepala Sekolah</h4>
+        <p className="mt-1 text-xs text-gray-500">
+          Dipakai pada tanda tangan rapor periode {periode || 'aktif'}. Pemilihan ini tidak mengubah hak akses akun guru.
+        </p>
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-[#1A1A2E]/80">
+              Pilih dari Data Pegawai
+            </label>
+            <select
+              name="kepala_user_id"
+              defaultValue={kepalaUserId ?? ''}
+              required
+              className="w-full rounded-xl border border-[rgba(0,0,0,0.08)] bg-white px-3.5 py-2.5 text-sm outline-none transition-all focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20"
+            >
+              <option value="">-- Pilih Kepala Sekolah --</option>
+              {pegawai.map((item) => (
+                <option key={item.id_user} value={item.id_user}>
+                  {item.nama} — {item.nama_jabatan}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white px-4 py-3 text-sm">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Tersimpan saat ini</p>
+            <p className="mt-1 font-semibold text-[#1A1A2E]">{kepala?.nama || 'Belum ditentukan'}</p>
+            <p className="mt-1 text-gray-500">NIP: {kepala?.nip || '-'}</p>
+          </div>
+        </div>
+      </div>
+
       <div className="mt-6 text-right">
         <button
           type="submit"

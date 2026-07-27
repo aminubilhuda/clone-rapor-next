@@ -2,8 +2,15 @@ import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { existsSync } from 'fs';
+import { basename, join } from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateRaporHTML, JenisRapor, SiswaInfo, SekolahInfo } from '@/lib/pdf-templates/rapor-template';
+import {
+  generatePelengkapRaporHTML,
+  PelengkapSekolahInfo,
+  PelengkapSiswaInfo,
+} from '@/lib/pdf-templates/pelengkap-template';
 import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, MapelNilai, PresensiData } from '@/lib/pdf-templates/tengah-semester-template';
 import { generateSemesterRaporHTML, SiswaSemesterRapor, KelompokSemester, MapelSemester, PrakerinItem, EskulItem, OrganisasiItem } from '@/lib/pdf-templates/semester-template';
 import { renderRaporPdf, renderRaporPdfBatch } from '@/lib/pdf-templates/render-pdf';
@@ -124,13 +131,17 @@ export async function POST(req: NextRequest) {
     }
 
     const [sekolahRows]: any = await pool.query(
-      'SELECT nama_sekolah, alamat, logo, lokasi, kabupaten, kecamatan, desa FROM sekolah WHERE id_sekolah = ?',
+      `SELECT npsn, nama_sekolah, alamat, logo, logo_prov, lokasi, kabupaten, kecamatan, desa,
+              provinsi, website, email, kontak
+       FROM sekolah WHERE id_sekolah = ?`,
       [SEKOLAH_ID]
     );
     const s = sekolahRows[0] || {};
 
     const [ksRows]: any = await pool.query(
-      'SELECT nama, nip FROM kepala_sekolah WHERE tahun = ? AND semester = ? LIMIT 1',
+      `SELECT nama, nip FROM kepala_sekolah
+       WHERE tahun = ? AND semester = ? AND deleted_at IS NULL
+       ORDER BY id_kepala_sekolah DESC LIMIT 1`,
       [useTahun, useSemester]
     );
     const ks = ksRows[0] || {};
@@ -154,6 +165,81 @@ export async function POST(req: NextRequest) {
       nama_kepsek: ks.nama || '',
       nip_kepsek: ks.nip || '',
     };
+
+    if (jenis === 'pelengkap') {
+      const configuredProvinceLogo = basename(String(s.logo_prov || ''));
+      const provinceLogoPath = configuredProvinceLogo
+        ? join(process.cwd(), 'public', 'uploads', 'sekolah', configuredProvinceLogo)
+        : '';
+      const provinceLogo = provinceLogoPath && existsSync(provinceLogoPath)
+        ? configuredProvinceLogo
+        : 'logo-provinsi-jawa-timur.png';
+
+      const [pelengkapRows]: any = await pool.query(`
+        SELECT s.id_siswa, s.nama_siswa, s.nik_pd, s.nkk, s.nis, s.nisn,
+               s.tempat_lahir, s.tanggal_lahir, jk.jenis_kelamin, a.agama,
+               s.kontak_siswa, s.jumlah_saudara, s.anak_ke,
+               s.nama_ayah, s.pendidikan_ayah, s.pekerjaan_ayah, s.kontak_ayah,
+               s.nama_ibu, s.pendidikan_ibu, s.pekerjaan_ibu, s.kontak_ibu,
+               s.alamat, s.alamat_orang_tua, s.nama_wali, s.alamat_wali,
+               s.pekerjaan_wali, s.kontak_wali, s.sekolah_asal,
+               s.terima_tanggal, s.terima_kelas, k.nama_kelas,
+               kk.kompetensi_keahlian
+        FROM siswa s
+        JOIN siswa_kelas sk ON s.id_siswa = sk.id_siswa
+        JOIN kelas k ON sk.id_kelas = k.id_kelas
+        LEFT JOIN jenis_kelamin jk ON s.kelamin = jk.id_jenis_kelamin
+        LEFT JOIN agama a ON s.agama = a.id_agama
+        LEFT JOIN kompetensi_keahlian kk
+          ON k.id_kompetensi_keahlian = kk.id_kompetensi_keahlian
+        WHERE sk.tahun = ? AND sk.semester = ?
+          AND s.id_siswa IN (${placeholders})
+          AND sk.deleted_at IS NULL AND s.deleted_at IS NULL
+        ORDER BY s.nama_siswa ASC
+      `, [useTahun, useSemester, ...id_siswa_list]);
+
+      if (pelengkapRows.length === 0) {
+        return NextResponse.json({ error: 'Data pelengkap siswa tidak ditemukan' }, { status: 404 });
+      }
+
+      const pelengkapSekolah: PelengkapSekolahInfo = {
+        npsn: s.npsn || '',
+        nama_sekolah: s.nama_sekolah || '',
+        alamat: s.alamat || '',
+        desa: s.desa || '',
+        kecamatan: s.kecamatan || '',
+        kabupaten: s.kabupaten || '',
+        provinsi: s.provinsi || '',
+        website: s.website || '',
+        email: s.email || '',
+        kontak: s.kontak || '',
+        logo_prov: provinceLogo,
+        logo: s.logo || null,
+        nama_kepsek: ks.nama || '',
+        nip_kepsek: ks.nip || '',
+      };
+
+      const html = generatePelengkapRaporHTML(
+        pelengkapRows as PelengkapSiswaInfo[],
+        pelengkapSekolah,
+      );
+
+      if (outputFormat === 'html') {
+        return new NextResponse(html, {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'private, no-store',
+          },
+        });
+      }
+
+      return await renderRaporPdf(
+        html,
+        '<div></div>',
+        `pelengkap-rapor-${Date.now()}.pdf`,
+        '8mm',
+      );
+    }
 
     if (jenis === 'tengah_semester') {
       const ids = id_siswa_list;

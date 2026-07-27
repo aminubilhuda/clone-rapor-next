@@ -27,7 +27,9 @@ export async function getSekolahInfo(): Promise<SekolahInfo | null> {
 
     const sekolah = await getSekolahWithFilter();
     const [ksRows]: any = await pool.query(
-      'SELECT nama, nip FROM kepala_sekolah WHERE tahun = ? AND semester = ? LIMIT 1',
+      `SELECT nama, nip FROM kepala_sekolah
+       WHERE tahun = ? AND semester = ? AND deleted_at IS NULL
+       ORDER BY id_kepala_sekolah DESC LIMIT 1`,
       [sekolah.tahun, sekolah.semester]
     );
     const ks = ksRows[0] || {};
