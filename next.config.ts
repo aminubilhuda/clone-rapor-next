@@ -37,6 +37,7 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   // Mengaktifkan Turbopack sebagai bundler (dev & build). Object kosong = pakai default.
   turbopack: {},
+  outputFileTracingRoot: process.cwd(),
   /* config options here */
 };
 

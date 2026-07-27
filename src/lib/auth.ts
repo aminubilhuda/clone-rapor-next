@@ -2,6 +2,14 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { pool } from './db';
 import bcrypt from 'bcryptjs';
+import type { RowDataPacket } from 'mysql2';
+
+interface AuthUserRow extends RowDataPacket {
+  id_user: number;
+  jabatan: number;
+  nama: string;
+  password: string;
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
@@ -19,8 +27,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         try {
-          const [rows]: any = await pool.query(
-            'SELECT * FROM users WHERE username = ?',
+          const [rows] = await pool.query<AuthUserRow[]>(
+            `SELECT id_user, jabatan, nama, password
+             FROM users
+             WHERE username = ? AND deleted_at IS NULL`,
             [credentials.username]
           );
 
@@ -49,14 +59,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async redirect({ url }) {
-      if (url.startsWith('/')) return url;
-      try {
-        const urlObj = new URL(url);
-        return urlObj.pathname + urlObj.search + urlObj.hash;
-      } catch {}
-      return '/';
-    },
     jwt({ token, user }) {
       if (user) {
         token.jabatan = user.jabatan;

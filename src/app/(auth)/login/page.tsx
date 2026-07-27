@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, FormEvent, useEffect } from 'react';
+import { signIn } from 'next-auth/react';
+import InstallPrompt from '@/components/pwa/install-prompt';
 
 export default function LoginPage() {
   const [error, setError] = useState('');
@@ -29,34 +31,21 @@ export default function LoginPage() {
     const password = formData.get('password') as string;
 
     try {
-      const csrfResponse = await fetch('/api/auth/csrf');
-      if (!csrfResponse.ok) throw new Error('Gagal mengambil token keamanan');
-      const { csrfToken } = await csrfResponse.json();
-
-      const callbackResponse = await fetch('/api/auth/callback/credentials?', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-Auth-Return-Redirect': '1',
-        },
-        body: new URLSearchParams({
-          username,
-          password,
-          csrfToken,
-          callbackUrl: `${window.location.origin}/`,
-        }),
+      const result = await signIn('credentials', {
+        username,
+        password,
+        redirect: false,
+        redirectTo: '/',
       });
-      const data = await callbackResponse.json();
-      const resultUrl = new URL(data.url || '/', window.location.origin);
 
-      if (resultUrl.searchParams.has('error')) {
+      if (!result.ok || result.error) {
         setError('Username atau Password Salah!');
         setLoading(false);
         return;
       }
 
-      window.location.replace(resultUrl.href);
-    } catch (err: any) {
+      window.location.replace(result.url || '/');
+    } catch (err: unknown) {
       console.error('Login submit error:', err);
       setError('Terjadi kesalahan saat masuk. Silakan coba lagi.');
       setLoading(false);
@@ -64,9 +53,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F9FB]">
-      <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl p-8 premium-shadow-lg border border-[rgba(0,0,0,0.04)]">
+    <div className="h-full overflow-y-auto bg-[#F8F9FB]">
+      <div className="flex min-h-full items-center justify-center px-4 py-6">
+        <div className="w-full max-w-sm">
+          <div className="bg-white rounded-2xl p-8 premium-shadow-lg border border-[rgba(0,0,0,0.04)]">
           {/* Brand */}
           <div className="text-center mb-8">
             <div className="mx-auto w-20 h-20 rounded-xl bg-[#F8F9FB] flex items-center justify-center mb-4 overflow-hidden">
@@ -139,8 +129,11 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 text-center text-xs text-[#6B7280]/60">
-            &copy; {new Date().getFullYear()} E-Rapor SMK Abdi Negara Tuban
+            <InstallPrompt />
+
+            <div className="mt-8 text-center text-xs text-[#6B7280]/60">
+              &copy; {new Date().getFullYear()} E-Rapor SMK Abdi Negara Tuban
+            </div>
           </div>
         </div>
       </div>
