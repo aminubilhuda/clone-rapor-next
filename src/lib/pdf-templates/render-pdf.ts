@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { existsSync } from 'fs';
 import { PDFDocument } from 'pdf-lib';
+import type { Browser } from 'puppeteer';
 
 interface RaporPdfDocument {
   html: string;
   footerTemplate: string;
 }
+
+const globalForPdf = globalThis as unknown as {
+  raporPdfBrowserPromise?: Promise<Browser>;
+};
 
 async function launchPuppeteerBrowser() {
   let puppeteer;
@@ -47,8 +52,38 @@ async function launchPuppeteerBrowser() {
   }
 }
 
+async function getPuppeteerBrowser(): Promise<Browser> {
+  if (globalForPdf.raporPdfBrowserPromise) {
+    try {
+      const browser = await globalForPdf.raporPdfBrowserPromise;
+      if (browser.connected) return browser;
+    } catch {
+      // A fresh browser will be started below.
+    }
+    delete globalForPdf.raporPdfBrowserPromise;
+  }
+
+  const browserPromise = launchPuppeteerBrowser();
+  globalForPdf.raporPdfBrowserPromise = browserPromise;
+
+  try {
+    const browser = await browserPromise;
+    browser.on('disconnected', () => {
+      if (globalForPdf.raporPdfBrowserPromise === browserPromise) {
+        delete globalForPdf.raporPdfBrowserPromise;
+      }
+    });
+    return browser;
+  } catch (error) {
+    if (globalForPdf.raporPdfBrowserPromise === browserPromise) {
+      delete globalForPdf.raporPdfBrowserPromise;
+    }
+    throw error;
+  }
+}
+
 async function renderPdfBuffer(
-  browser: Awaited<ReturnType<typeof launchPuppeteerBrowser>>,
+  browser: Browser,
   html: string,
   footerTemplate: string,
   bottomMargin: string,
@@ -56,6 +91,7 @@ async function renderPdfBuffer(
   const page = await browser.newPage();
   try {
     await page.setContent(html, { waitUntil: 'load' });
+    await page.waitForNetworkIdle({ idleTime: 500, timeout: 10_000 });
     return await page.pdf({
       width: '210mm',
       height: '330mm',
@@ -77,13 +113,9 @@ export async function renderRaporPdf(
   bottomMargin = '12mm'
 ): Promise<NextResponse> {
   try {
-    const browser = await launchPuppeteerBrowser();
-    try {
-      const pdfArray = await renderPdfBuffer(browser, html, footerTemplate, bottomMargin);
-      return pdfResponse(pdfArray, filename);
-    } finally {
-      await browser.close();
-    }
+    const browser = await getPuppeteerBrowser();
+    const pdfArray = await renderPdfBuffer(browser, html, footerTemplate, bottomMargin);
+    return pdfResponse(pdfArray, filename);
   } catch (error: any) {
     if (error?.message === 'Puppeteer tidak tersedia di server') {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -101,9 +133,8 @@ export async function renderRaporPdfBatch(
     return NextResponse.json({ error: 'Tidak ada dokumen rapor untuk dicetak' }, { status: 400 });
   }
 
-  let browser;
   try {
-    browser = await launchPuppeteerBrowser();
+    const browser = await getPuppeteerBrowser();
     const mergedPdf = await PDFDocument.create();
 
     for (const document of documents) {
@@ -119,8 +150,6 @@ export async function renderRaporPdfBatch(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
     throw error;
-  } finally {
-    if (browser) await browser.close();
   }
 }
 
@@ -128,7 +157,8 @@ function pdfResponse(pdfArray: Uint8Array, filename: string): NextResponse {
   return new NextResponse(Buffer.from(pdfArray), {
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Disposition': `inline; filename="${filename}"`,
+      'Cache-Control': 'private, no-store',
     },
   });
 }

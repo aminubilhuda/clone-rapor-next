@@ -61,6 +61,27 @@ function wrapHtmlForPrint(html: string, siswa?: SiswaInfo): string {
     }
   }
   @media screen {
+    html {
+      min-height: 100%;
+      background: #e5e7eb;
+    }
+    body {
+      min-height: 100%;
+      padding: 16px;
+      background: #e5e7eb;
+      overflow-x: auto;
+    }
+    .page {
+      width: 210mm;
+      min-height: 330mm;
+      margin: 0 auto 16px;
+      padding: 16.2mm 15.7mm 18mm 14.5mm;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
+    }
+    .page-break {
+      height: 0;
+    }
     .print-footer { display: none; }
   }
 </style>
