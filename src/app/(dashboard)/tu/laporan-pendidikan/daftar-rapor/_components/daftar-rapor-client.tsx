@@ -89,10 +89,23 @@ export default function DaftarRaporClient({
     return `Rapor_${kelasName}_${label}.pdf`;
   };
 
-  const downloadPdf = async (jenis: JenisRapor, idSiswa?: number) => {
+  const previewPdf = async (jenis: JenisRapor, idSiswa?: number) => {
     const ids = idSiswa ? [idSiswa] : Array.from(selected[jenis]);
     if (ids.length === 0) return;
     const key = idSiswa ? `${jenis}-${idSiswa}` : `batch-${jenis}`;
+    const previewWindow = window.open('', '_blank');
+    if (previewWindow) {
+      previewWindow.document.title = 'Menyiapkan PDF...';
+      previewWindow.document.body.innerHTML = `
+        <div style="min-height:100vh;display:grid;place-items:center;background:#e5e7eb;font-family:Arial,sans-serif;color:#374151">
+          <div style="text-align:center">
+            <div style="width:32px;height:32px;margin:0 auto 12px;border:3px solid #d1d5db;border-top-color:#dc2626;border-radius:50%;animation:spin .8s linear infinite"></div>
+            <strong>Menyiapkan preview PDF...</strong>
+          </div>
+        </div>
+        <style>@keyframes spin { to { transform:rotate(360deg) } }</style>
+      `;
+    }
     setLoading(key);
     try {
       const res = await fetch('/api/tu/cetak-rapor', {
@@ -105,9 +118,24 @@ export default function DaftarRaporClient({
         throw new Error(errJson?.error || 'Gagal mencetak rapor');
       }
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      const pdfFile = new File([blob], getFilename(jenis, idSiswa), {
+        type: 'application/pdf',
+      });
+      const url = URL.createObjectURL(pdfFile);
+
+      if (previewWindow) {
+        previewWindow.location.replace(url);
+      } else {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.click();
+      }
+
+      window.setTimeout(() => URL.revokeObjectURL(url), 300_000);
     } catch (err: any) {
+      previewWindow?.close();
       console.error(err);
       alert(err?.message || 'Gagal mencetak rapor. Silakan coba lagi.');
     } finally {
@@ -148,10 +176,10 @@ export default function DaftarRaporClient({
     }
   };
 
-  const handleCetakSingle = (jenis: JenisRapor, idSiswa: number) => downloadPdf(jenis, idSiswa);
+  const handleCetakSingle = (jenis: JenisRapor, idSiswa: number) => previewPdf(jenis, idSiswa);
 
   const handleCetakBatch = async (jenis: JenisRapor) => {
-    await downloadPdf(jenis);
+    await previewPdf(jenis);
     setSelected((prev) => ({ ...prev, [jenis]: new Set() }));
   };
 
@@ -499,5 +527,4 @@ export default function DaftarRaporClient({
     </div>
   );
 }
-
 
