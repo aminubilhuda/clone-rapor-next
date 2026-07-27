@@ -3,11 +3,18 @@ import Credentials from 'next-auth/providers/credentials';
 import { pool } from './db';
 import bcrypt from 'bcryptjs';
 import type { RowDataPacket } from 'mysql2';
+import { JABATAN } from './constants';
 
-interface AuthUserRow extends RowDataPacket {
+interface StaffAuthRow extends RowDataPacket {
   id_user: number;
   jabatan: number;
   nama: string;
+  password: string;
+}
+
+interface StudentAuthRow extends RowDataPacket {
+  id_siswa: number;
+  nama_siswa: string;
   password: string;
 }
 
@@ -27,29 +34,52 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         try {
-          const [rows] = await pool.query<AuthUserRow[]>(
+          const [staffRows] = await pool.query<StaffAuthRow[]>(
             `SELECT id_user, jabatan, nama, password
              FROM users
              WHERE username = ? AND deleted_at IS NULL`,
             [credentials.username]
           );
 
-          if (rows.length === 0) return null;
+          if (staffRows.length > 0) {
+            const user = staffRows[0];
+            const isValid = await bcrypt.compare(
+              credentials.password as string,
+              user.password
+            );
 
-          const user = rows[0];
+            if (!isValid) return null;
 
-          const isValid = await bcrypt.compare(
-            credentials.password as string,
-            user.password
+            return {
+              id: user.id_user.toString(),
+              name: user.nama,
+              jabatan: user.jabatan,
+              id_user: user.id_user,
+            };
+          }
+
+          const [studentRows] = await pool.query<StudentAuthRow[]>(
+            `SELECT id_siswa, nama_siswa, password
+             FROM siswa
+             WHERE username = ? AND aktif = 1 AND deleted_at IS NULL`,
+            [credentials.username]
           );
 
-          if (!isValid) return null;
+          if (studentRows.length === 0) return null;
+
+          const student = studentRows[0];
+          const isStudentPasswordValid = await bcrypt.compare(
+            credentials.password as string,
+            student.password
+          );
+
+          if (!isStudentPasswordValid) return null;
 
           return {
-            id: user.id_user.toString(),
-            name: user.nama,
-            jabatan: user.jabatan,
-            id_user: user.id_user,
+            id: `siswa:${student.id_siswa}`,
+            name: student.nama_siswa,
+            jabatan: JABATAN.SISWA,
+            id_siswa: student.id_siswa,
           };
         } catch (error) {
           console.error('Auth error:', error);
@@ -63,6 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.jabatan = user.jabatan;
         token.id_user = user.id_user;
+        token.id_siswa = user.id_siswa;
       }
       return token;
     },
@@ -70,6 +101,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.jabatan = token.jabatan as number | undefined;
         session.user.id_user = token.id_user as number | undefined;
+        session.user.id_siswa = token.id_siswa as number | undefined;
       }
       return session;
     },

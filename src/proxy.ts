@@ -53,14 +53,15 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/login' || pathname.startsWith('/api/auth')) {
     if (pathname === '/login' && session?.user) {
       const jabatan = session.user.jabatan;
-      if (jabatan === JABATAN.TU_ADMIN) return NextResponse.redirect(new URL('/tu', origin));
+      if (jabatan === JABATAN.SUPER_ADMIN || jabatan === JABATAN.TU_ADMIN) return NextResponse.redirect(new URL('/tu', origin));
       if (jabatan === JABATAN.GURU) return NextResponse.redirect(new URL('/guru', origin));
+      if (jabatan === JABATAN.SISWA) return NextResponse.redirect(new URL('/siswa', origin));
     }
     return NextResponse.next();
   }
 
   // Protect dashboard routes
-  if (pathname.startsWith('/tu') || pathname.startsWith('/guru')) {
+  if (pathname.startsWith('/tu') || pathname.startsWith('/guru') || pathname.startsWith('/siswa')) {
     if (!session?.user) {
       return NextResponse.redirect(new URL('/login', origin));
     }
@@ -71,11 +72,14 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith('/guru') && session.user.jabatan !== JABATAN.GURU) {
       return NextResponse.redirect(new URL('/login', origin));
     }
+    if (pathname.startsWith('/siswa') && session.user.jabatan !== JABATAN.SISWA) {
+      return NextResponse.redirect(new URL('/login', origin));
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/login', '/tu/:path*', '/guru/:path*', '/api/auth/callback/credentials'],
+  matcher: ['/login', '/tu/:path*', '/guru/:path*', '/siswa/:path*', '/api/auth/callback/credentials'],
 };

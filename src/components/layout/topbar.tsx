@@ -28,6 +28,9 @@ const pageTitles: Record<string, string> = {
   '/guru/absensi-piket': 'Absensi Piket',
   '/guru/catatan-wali': 'Catatan Wali',
   '/guru/catatan-rapor': 'Daftar Rapor',
+  '/siswa': 'Dashboard Siswa',
+  '/siswa/nilai': 'Nilai Saya',
+  '/siswa/presensi': 'Presensi Saya',
 };
 
 export default function Topbar() {
@@ -39,8 +42,9 @@ export default function Topbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isGuru = pathname.startsWith('/guru');
-  const roleLabel = isGuru ? 'Guru' : 'Tata Usaha';
-  const profilHref = isGuru ? '/guru/profil' : '/tu/profil-user';
+  const isSiswa = pathname.startsWith('/siswa');
+  const roleLabel = isSiswa ? 'Siswa' : isGuru ? 'Guru' : 'Tata Usaha';
+  const profilHref = isSiswa ? '/siswa' : isGuru ? '/guru/profil' : '/tu/profil-user';
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

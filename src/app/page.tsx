@@ -9,6 +9,7 @@ export default async function Home() {
     const jabatan = session.user.jabatan;
     if (jabatan === JABATAN.SUPER_ADMIN || jabatan === JABATAN.TU_ADMIN) redirect('/tu');
     if (jabatan === JABATAN.GURU) redirect('/guru');
+    if (jabatan === JABATAN.SISWA) redirect('/siswa');
   }
 
   redirect('/login');
