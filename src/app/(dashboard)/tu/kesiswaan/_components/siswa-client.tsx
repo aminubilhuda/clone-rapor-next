@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/ui/toast-provider';
-import { updateSiswa, deleteSiswa, importSiswa } from '@/lib/actions/siswa-actions';
+import { updateSiswa, deleteSiswa, importSiswa, generateUsernamePasswordBulk } from '@/lib/actions/siswa-actions';
+import { confirmAlert } from '@/lib/swal';
 import ModalSiswa from './modal-siswa';
 import ModalHapus from './modal-hapus';
 import ModalImportSiswa from './modal-import-siswa';
@@ -32,9 +33,12 @@ interface SiswaClientProps {
   refAgama: any[];
   refJurusan: any[];
   refTingkat: any[];
+  refHubKeluarga: any[];
+  refJenisSiswa: any[];
+  refPendidikan: any[];
 }
 
-export default function SiswaClient({ siswa, total, page, perPage, search, refKelamin, refAgama, refJurusan, refTingkat }: SiswaClientProps) {
+export default function SiswaClient({ siswa, total, page, perPage, search, refKelamin, refAgama, refJurusan, refTingkat, refHubKeluarga, refJenisSiswa, refPendidikan }: SiswaClientProps) {
   const { showToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -90,12 +94,33 @@ export default function SiswaClient({ siswa, total, page, perPage, search, refKe
     }
   };
 
+  const handleBulkGenerate = async () => {
+    const confirmed = await confirmAlert(
+      'Generate Username/Password',
+      'Semua siswa yang memiliki NISN akan di-set username & password = NISN. Lanjutkan?'
+    );
+    if (!confirmed) return;
+    const result = await generateUsernamePasswordBulk();
+    if (result.success) {
+      showToast(`Berhasil generate ${result.count} siswa`, 'success');
+      router.refresh();
+    } else {
+      showToast(result.error || 'Gagal generate!', 'error');
+    }
+  };
+
   return (
     <>
       <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
         <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between">
           <h5 className="font-semibold text-[#1A1A2E]">Daftar Siswa</h5>
           <div className="flex items-center gap-2">
+            <button onClick={handleBulkGenerate} className="bg-white text-[#DC2626] border border-[#DC2626]/30 px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#DC2626]/5 active:scale-[0.98] transition-all flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+              Generate Username/Pwd
+            </button>
             <button onClick={() => setModalImport(true)} className="bg-white text-[#DC2626] border border-[#DC2626]/30 px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#DC2626]/5 active:scale-[0.98] transition-all flex items-center gap-1.5">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -204,6 +229,10 @@ export default function SiswaClient({ siswa, total, page, perPage, search, refKe
         refKelamin={refKelamin}
         refAgama={refAgama}
         refJurusan={refJurusan}
+        refTingkat={refTingkat}
+        refHubKeluarga={refHubKeluarga}
+        refJenisSiswa={refJenisSiswa}
+        refPendidikan={refPendidikan}
         onSave={handleSave}
       />
 
@@ -221,6 +250,9 @@ export default function SiswaClient({ siswa, total, page, perPage, search, refKe
         refAgama={refAgama}
         refJurusan={refJurusan}
         refTingkat={refTingkat}
+        refHubKeluarga={refHubKeluarga}
+        refJenisSiswa={refJenisSiswa}
+        refPendidikan={refPendidikan}
         onImport={importSiswa}
       />
     </>

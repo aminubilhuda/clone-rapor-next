@@ -26,8 +26,16 @@ export async function getSiswaList(search: string, page: number, perPage: number
 
   const [rows]: any = await pool.query(`
     SELECT
-      s.id_siswa, s.nama_siswa, s.nis, s.nisn, s.terima_kelas,
+      s.id_siswa, s.nama_siswa, s.nik_pd, s.nkk,
+      s.nis, s.nisn, s.terima_kelas,
       s.tempat_lahir, s.tanggal_lahir, s.kelamin, s.agama, s.jurusan,
+      s.kontak_siswa, s.hub_keluarga, s.jumlah_saudara, s.anak_ke,
+      s.nama_ayah, s.nik_ayah, s.tahun_ayah, s.pendidikan_ayah, s.pekerjaan_ayah, s.kontak_ayah,
+      s.nama_ibu, s.nik_ibu, s.tahun_ibu, s.pendidikan_ibu, s.pekerjaan_ibu, s.kontak_ibu,
+      s.alamat, s.alamat_orang_tua,
+      s.nama_wali, s.alamat_wali, s.pekerjaan_wali, s.kontak_wali,
+      s.terima_tingkat, s.sekolah_asal, s.terima_tanggal,
+      s.username, s.foto, s.jenis_siswa, s.aktif,
       jk.jenis_kelamin, a.agama,
       kk.kompetensi_keahlian,
       COALESCE(k.nama_kelas, 'Belum Bergabung') as kelas_display
@@ -104,6 +112,8 @@ export async function updateSiswa(formData: FormData) {
 
   const id = formData.get('id_siswa') as string;
   const namaSiswa = (formData.get('nama_siswa') as string)?.trim();
+  const nikPd = (formData.get('nik_pd') as string)?.trim() || null;
+  const nkk = (formData.get('nkk') as string)?.trim() || null;
   const nis = (formData.get('nis') as string)?.trim() || null;
   const nisn = (formData.get('nisn') as string)?.trim() || null;
   const tempatLahir = (formData.get('tempat_lahir') as string)?.trim() || null;
@@ -113,10 +123,41 @@ export async function updateSiswa(formData: FormData) {
   const agamaRaw = formData.get('agama') as string;
   const agama = agamaRaw ? Number(agamaRaw) : null;
   const kontakSiswa = (formData.get('kontak_siswa') as string)?.trim() || null;
+  const hubKeluargaRaw = formData.get('hub_keluarga') as string;
+  const hubKeluarga = hubKeluargaRaw ? Number(hubKeluargaRaw) : null;
+  const jumlahSaudaraRaw = formData.get('jumlah_saudara') as string;
+  const jumlahSaudara = jumlahSaudaraRaw ? Number(jumlahSaudaraRaw) : 0;
+  const anakKeRaw = formData.get('anak_ke') as string;
+  const anakKe = anakKeRaw ? Number(anakKeRaw) : 0;
+  const namaAyah = (formData.get('nama_ayah') as string)?.trim() || null;
+  const nikAyah = (formData.get('nik_ayah') as string)?.trim() || null;
+  const tahunAyahRaw = formData.get('tahun_ayah') as string;
+  const tahunAyah = tahunAyahRaw ? Number(tahunAyahRaw) : 0;
+  const pendidikanAyah = (formData.get('pendidikan_ayah') as string)?.trim() || null;
+  const pekerjaanAyah = (formData.get('pekerjaan_ayah') as string)?.trim() || null;
+  const kontakAyah = (formData.get('kontak_ayah') as string)?.trim() || null;
+  const namaIbu = (formData.get('nama_ibu') as string)?.trim() || null;
+  const nikIbu = (formData.get('nik_ibu') as string)?.trim() || null;
+  const tahunIbuRaw = formData.get('tahun_ibu') as string;
+  const tahunIbu = tahunIbuRaw ? Number(tahunIbuRaw) : 0;
+  const pendidikanIbu = (formData.get('pendidikan_ibu') as string)?.trim() || null;
+  const pekerjaanIbu = (formData.get('pekerjaan_ibu') as string)?.trim() || null;
+  const kontakIbu = (formData.get('kontak_ibu') as string)?.trim() || null;
   const alamat = (formData.get('alamat') as string)?.trim() || null;
+  const alamatOrtu = (formData.get('alamat_orang_tua') as string)?.trim() || null;
+  const namaWali = (formData.get('nama_wali') as string)?.trim() || null;
+  const alamatWali = (formData.get('alamat_wali') as string)?.trim() || null;
+  const pekerjaanWali = (formData.get('pekerjaan_wali') as string)?.trim() || null;
+  const kontakWali = (formData.get('kontak_wali') as string)?.trim() || null;
   const jurusanRaw = formData.get('jurusan') as string;
   const jurusan = jurusanRaw ? Number(jurusanRaw) : null;
+  const terimaTingkatRaw = formData.get('terima_tingkat') as string;
+  const terimaTingkat = terimaTingkatRaw ? Number(terimaTingkatRaw) : null;
   const terimaKelas = (formData.get('terima_kelas') as string)?.trim() || null;
+  const sekolahAsal = (formData.get('sekolah_asal') as string)?.trim() || null;
+  const terimaTanggal = (formData.get('terima_tanggal') as string)?.trim() || null;
+  const jenisSiswaRaw = formData.get('jenis_siswa') as string;
+  const jenisSiswa = jenisSiswaRaw ? Number(jenisSiswaRaw) : 1;
   const username = (formData.get('username') as string)?.trim();
   const password = formData.get('password') as string;
   const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
@@ -156,9 +197,26 @@ export async function updateSiswa(formData: FormData) {
       if (!hashedPassword) return { success: false, error: 'Password wajib diisi untuk siswa baru' } as const;
 
       await pool.query(
-        `INSERT INTO siswa (nama_siswa, nis, nisn, tempat_lahir, tanggal_lahir, kelamin, agama, kontak_siswa, alamat, jurusan, terima_kelas, username, password, aktif, terima_tingkat)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
-        [namaSiswa, nis, nisn, tempatLahir, tanggalLahir, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username, hashedPassword, await resolveTingkat(terimaKelas)]
+        `INSERT INTO siswa (
+          nama_siswa, nik_pd, nkk, nis, nisn,
+          tempat_lahir, tanggal_lahir, kelamin, agama,
+          kontak_siswa, hub_keluarga, jumlah_saudara, anak_ke,
+          nama_ayah, nik_ayah, tahun_ayah, pendidikan_ayah, pekerjaan_ayah, kontak_ayah,
+          nama_ibu, nik_ibu, tahun_ibu, pendidikan_ibu, pekerjaan_ibu, kontak_ibu,
+          alamat, alamat_orang_tua,
+          nama_wali, alamat_wali, pekerjaan_wali, kontak_wali,
+          jurusan, terima_tingkat, terima_kelas, sekolah_asal,
+          terima_tanggal, jenis_siswa, username, password, aktif
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+        [namaSiswa, nikPd, nkk, nis, nisn,
+          tempatLahir, tanggalLahir, kelamin, agama,
+          kontakSiswa, hubKeluarga, jumlahSaudara, anakKe,
+          namaAyah, nikAyah, tahunAyah, pendidikanAyah, pekerjaanAyah, kontakAyah,
+          namaIbu, nikIbu, tahunIbu, pendidikanIbu, pekerjaanIbu, kontakIbu,
+          alamat, alamatOrtu,
+          namaWali, alamatWali, pekerjaanWali, kontakWali,
+          jurusan, (await resolveTingkat(terimaKelas)) ?? terimaTingkat, terimaKelas, sekolahAsal,
+          terimaTanggal, jenisSiswa, username, hashedPassword]
       );
     } else {
       // Edit mode: check username duplicate
@@ -189,12 +247,17 @@ export async function updateSiswa(formData: FormData) {
       }
 
       const fields = [
-        'nama_siswa = ?', 'nis = ?', 'nisn = ?', 'tempat_lahir = ?',
-        'tanggal_lahir = ?', 'kelamin = ?', 'agama = ?',
-        'kontak_siswa = ?', 'alamat = ?', 'jurusan = ?',
-        'terima_kelas = ?', 'username = ?',
+        'nama_siswa = ?', 'nik_pd = ?', 'nkk = ?', 'nis = ?', 'nisn = ?',
+        'tempat_lahir = ?', 'tanggal_lahir = ?', 'kelamin = ?', 'agama = ?',
+        'kontak_siswa = ?', 'hub_keluarga = ?', 'jumlah_saudara = ?', 'anak_ke = ?',
+        'nama_ayah = ?', 'nik_ayah = ?', 'tahun_ayah = ?', 'pendidikan_ayah = ?', 'pekerjaan_ayah = ?', 'kontak_ayah = ?',
+        'nama_ibu = ?', 'nik_ibu = ?', 'tahun_ibu = ?', 'pendidikan_ibu = ?', 'pekerjaan_ibu = ?', 'kontak_ibu = ?',
+        'alamat = ?', 'alamat_orang_tua = ?',
+        'nama_wali = ?', 'alamat_wali = ?', 'pekerjaan_wali = ?', 'kontak_wali = ?',
+        'jurusan = ?', 'terima_tingkat = ?', 'terima_kelas = ?', 'sekolah_asal = ?',
+        'terima_tanggal = ?', 'jenis_siswa = ?', 'username = ?',
       ];
-      const values: any[] = [namaSiswa, nis, nisn, tempatLahir, tanggalLahir, kelamin, agama, kontakSiswa, alamat, jurusan, terimaKelas, username];
+      const values: any[] = [namaSiswa, nikPd, nkk, nis, nisn, tempatLahir, tanggalLahir, kelamin, agama, kontakSiswa, hubKeluarga, jumlahSaudara, anakKe, namaAyah, nikAyah, tahunAyah, pendidikanAyah, pekerjaanAyah, kontakAyah, namaIbu, nikIbu, tahunIbu, pendidikanIbu, pekerjaanIbu, kontakIbu, alamat, alamatOrtu, namaWali, alamatWali, pekerjaanWali, kontakWali, jurusan, (await resolveTingkat(terimaKelas)) ?? terimaTingkat, terimaKelas, sekolahAsal, terimaTanggal, jenisSiswa, username];
 
       if (hashedPassword) {
         fields.push('password = ?');
@@ -218,18 +281,42 @@ export async function updateSiswa(formData: FormData) {
 
 export async function importSiswa(rows: {
   nama_siswa?: string;
+  nik_pd?: string;
+  nkk?: string;
   nis?: string;
   nisn?: string;
   tempat_lahir?: string;
   tanggal_lahir?: string | null;
   kelamin?: number | null;
   agama?: number | null;
-  jurusan?: number | null;
   kontak_siswa?: string;
+  hub_keluarga?: number | null;
+  jumlah_saudara?: number;
+  anak_ke?: number;
+  nama_ayah?: string;
+  nik_ayah?: string;
+  tahun_ayah?: number;
+  pendidikan_ayah?: string;
+  pekerjaan_ayah?: string;
+  kontak_ayah?: string;
+  nama_ibu?: string;
+  nik_ibu?: string;
+  tahun_ibu?: number;
+  pendidikan_ibu?: string;
+  pekerjaan_ibu?: string;
+  kontak_ibu?: string;
   alamat?: string;
-  terima_kelas?: string;
-  terima_tanggal?: string | null;
+  alamat_orang_tua?: string;
+  nama_wali?: string;
+  alamat_wali?: string;
+  pekerjaan_wali?: string;
+  kontak_wali?: string;
+  jurusan?: number | null;
   terima_tingkat?: number | null;
+  terima_kelas?: string;
+  sekolah_asal?: string;
+  terima_tanggal?: string | null;
+  jenis_siswa?: number;
   username?: string;
   password?: string;
 }[]) {
@@ -283,14 +370,21 @@ export async function importSiswa(rows: {
         const pwVal = r.password ? [await bcrypt.hash(r.password, 10)] : [];
         await pool.query(
           `UPDATE siswa SET
-            nama_siswa = ?, nis = ?, nisn = ?, tempat_lahir = ?,
-            tanggal_lahir = ?, kelamin = ?, agama = ?,
-            kontak_siswa = ?, alamat = ?, jurusan = ?,
-            terima_kelas = ?, terima_tanggal = ?, terima_tingkat = ?, username = ?
+            nama_siswa = ?, nik_pd = ?, nkk = ?, nis = ?, nisn = ?,
+            tempat_lahir = ?, tanggal_lahir = ?, kelamin = ?, agama = ?,
+            kontak_siswa = ?, hub_keluarga = ?, jumlah_saudara = ?, anak_ke = ?,
+            nama_ayah = ?, nik_ayah = ?, tahun_ayah = ?, pendidikan_ayah = ?, pekerjaan_ayah = ?, kontak_ayah = ?,
+            nama_ibu = ?, nik_ibu = ?, tahun_ibu = ?, pendidikan_ibu = ?, pekerjaan_ibu = ?, kontak_ibu = ?,
+            alamat = ?, alamat_orang_tua = ?,
+            nama_wali = ?, alamat_wali = ?, pekerjaan_wali = ?, kontak_wali = ?,
+            jurusan = ?, terima_tingkat = ?, terima_kelas = ?, sekolah_asal = ?,
+            terima_tanggal = ?, jenis_siswa = ?, username = ?
             ${pwClause}
           WHERE id_siswa = ?`,
           [
             r.nama_siswa,
+            r.nik_pd || null,
+            r.nkk || null,
             r.nis || null,
             r.nisn || null,
             r.tempat_lahir || null,
@@ -298,11 +392,33 @@ export async function importSiswa(rows: {
             r.kelamin || null,
             r.agama || null,
             r.kontak_siswa || null,
+            r.hub_keluarga || null,
+            r.jumlah_saudara || 0,
+            r.anak_ke || 0,
+            r.nama_ayah || null,
+            r.nik_ayah || null,
+            r.tahun_ayah || 0,
+            r.pendidikan_ayah || null,
+            r.pekerjaan_ayah || null,
+            r.kontak_ayah || null,
+            r.nama_ibu || null,
+            r.nik_ibu || null,
+            r.tahun_ibu || 0,
+            r.pendidikan_ibu || null,
+            r.pekerjaan_ibu || null,
+            r.kontak_ibu || null,
             r.alamat || null,
+            r.alamat_orang_tua || null,
+            r.nama_wali || null,
+            r.alamat_wali || null,
+            r.pekerjaan_wali || null,
+            r.kontak_wali || null,
             r.jurusan || null,
-            r.terima_kelas || null,
-            r.terima_tanggal || null,
             terimaTingkat,
+            r.terima_kelas || null,
+            r.sekolah_asal || null,
+            r.terima_tanggal || null,
+            r.jenis_siswa || 1,
             r.username,
             ...pwVal,
             existingId,
@@ -314,10 +430,21 @@ export async function importSiswa(rows: {
         if (!r.password) { errors.push(`Baris ${i + 1} (${r.nama_siswa}): password wajib diisi untuk siswa baru`); continue; }
         const hashedPassword = await bcrypt.hash(r.password, 10);
         await pool.query(
-          `INSERT INTO siswa (nama_siswa, nis, nisn, tempat_lahir, tanggal_lahir, kelamin, agama, kontak_siswa, alamat, jurusan, terima_kelas, terima_tanggal, terima_tingkat, username, password, aktif)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+          `INSERT INTO siswa (
+            nama_siswa, nik_pd, nkk, nis, nisn,
+            tempat_lahir, tanggal_lahir, kelamin, agama,
+            kontak_siswa, hub_keluarga, jumlah_saudara, anak_ke,
+            nama_ayah, nik_ayah, tahun_ayah, pendidikan_ayah, pekerjaan_ayah, kontak_ayah,
+            nama_ibu, nik_ibu, tahun_ibu, pendidikan_ibu, pekerjaan_ibu, kontak_ibu,
+            alamat, alamat_orang_tua,
+            nama_wali, alamat_wali, pekerjaan_wali, kontak_wali,
+            jurusan, terima_tingkat, terima_kelas, sekolah_asal,
+            terima_tanggal, jenis_siswa, username, password, aktif
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
           [
             r.nama_siswa,
+            r.nik_pd || null,
+            r.nkk || null,
             r.nis || null,
             r.nisn || null,
             r.tempat_lahir || null,
@@ -325,11 +452,33 @@ export async function importSiswa(rows: {
             r.kelamin || null,
             r.agama || null,
             r.kontak_siswa || null,
+            r.hub_keluarga || null,
+            r.jumlah_saudara || 0,
+            r.anak_ke || 0,
+            r.nama_ayah || null,
+            r.nik_ayah || null,
+            r.tahun_ayah || 0,
+            r.pendidikan_ayah || null,
+            r.pekerjaan_ayah || null,
+            r.kontak_ayah || null,
+            r.nama_ibu || null,
+            r.nik_ibu || null,
+            r.tahun_ibu || 0,
+            r.pendidikan_ibu || null,
+            r.pekerjaan_ibu || null,
+            r.kontak_ibu || null,
             r.alamat || null,
+            r.alamat_orang_tua || null,
+            r.nama_wali || null,
+            r.alamat_wali || null,
+            r.pekerjaan_wali || null,
+            r.kontak_wali || null,
             r.jurusan || null,
-            r.terima_kelas || null,
-            r.terima_tanggal || null,
             terimaTingkat,
+            r.terima_kelas || null,
+            r.sekolah_asal || null,
+            r.terima_tanggal || null,
+            r.jenis_siswa || 1,
             r.username,
             hashedPassword,
           ]
@@ -394,5 +543,34 @@ export async function nonaktifkanSiswa(id: number) {
     return { success: false, error: 'Gagal menonaktifkan siswa' } as const;
   } finally {
     conn.release();
+  }
+}
+
+export async function generateUsernamePasswordBulk() {
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
+
+  try {
+    const [rows]: any = await pool.query(`
+      SELECT id_siswa, nisn FROM siswa
+      WHERE deleted_at IS NULL AND aktif = 1
+        AND nisn IS NOT NULL AND nisn != ''
+    `);
+
+    let updated = 0;
+    for (const s of rows) {
+      const nisnStr = String(s.nisn).trim();
+      const hash = await bcrypt.hash(nisnStr, 10);
+      await pool.query(
+        `UPDATE siswa SET username = ?, password = ? WHERE id_siswa = ?`,
+        [nisnStr, hash, s.id_siswa]
+      );
+      updated++;
+    }
+
+    revalidatePath('/tu/kesiswaan');
+    return { success: true, count: updated } as const;
+  } catch (e: any) {
+    return { success: false, error: e?.message || 'Gagal generate username/password' } as const;
   }
 }
