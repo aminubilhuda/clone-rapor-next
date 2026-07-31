@@ -29,9 +29,17 @@ export default async function SiswaDashboardPage() {
           <div>
             <p className="text-sm font-medium text-red-300">Data Peserta Didik</p>
             <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{siswa.nama_siswa}</h1>
-            <p className="mt-3 text-sm text-white/55">
-              Pastikan data diri Anda sudah benar. Hubungi Tata Usaha jika ditemukan ketidaksesuaian.
-            </p>
+            <div className="mt-3 flex items-center gap-3">
+              <p className="text-sm text-white/55">
+                Pastikan data diri Anda sudah benar.
+              </p>
+              <a href="/siswa/profile" className="inline-flex items-center gap-1.5 text-sm font-medium text-red-300 hover:text-red-200 transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit Data
+              </a>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3">

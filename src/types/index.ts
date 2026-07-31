@@ -102,15 +102,47 @@ export interface MapelKelas {
 export interface Siswa {
   id_siswa: number;
   nama_siswa: string;
-  nis: string;
-  nisn: string;
-  tempat_lahir: string;
-  tanggal_lahir: string;
-  kelamin: number;
-  agama: number;
-  alamat: string;
-  jurusan: number;
+  nik_pd: string | null;
+  nkk: string | null;
+  nis: string | null;
+  nisn: string | null;
+  tempat_lahir: string | null;
+  tanggal_lahir: string | null;
+  kelamin: number | null;
+  agama: number | null;
+  kontak_siswa: string | null;
+  hub_keluarga: number | null;
+  jumlah_saudara: number;
+  anak_ke: number;
+  nama_ayah: string | null;
+  nik_ayah: string | null;
+  tahun_ayah: number;
+  pendidikan_ayah: string | null;
+  pekerjaan_ayah: string | null;
+  kontak_ayah: string | null;
+  nama_ibu: string | null;
+  nik_ibu: string | null;
+  tahun_ibu: number;
+  pendidikan_ibu: string | null;
+  pekerjaan_ibu: string | null;
+  kontak_ibu: string | null;
+  alamat: string | null;
+  alamat_orang_tua: string | null;
+  nama_wali: string | null;
+  alamat_wali: string | null;
+  pekerjaan_wali: string | null;
+  kontak_wali: string | null;
+  terima_tingkat: number | null;
+  jurusan: number | null;
+  sekolah_asal: string | null;
+  terima_tanggal: string | null;
+  terima_kelas: string | null;
+  username: string | null;
+  password: string;
+  foto: string | null;
+  jenis_siswa: number;
   aktif: number;
+  deleted_at: string | null;
 }
 
 export interface SiswaKelas {

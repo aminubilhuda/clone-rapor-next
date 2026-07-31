@@ -25,10 +25,12 @@ const pageTitles: Record<string, string> = {
   '/tu/p5bk': 'P5BK',
   '/tu/piket-harian': 'Piket Harian',
   '/tu/pengaturan': 'Pengaturan',
+  '/tu/notifikasi': 'Kirim Notifikasi',
   '/guru/absensi-piket': 'Absensi Piket',
   '/guru/catatan-wali': 'Catatan Wali',
   '/guru/catatan-rapor': 'Daftar Rapor',
   '/siswa': 'Dashboard Siswa',
+  '/siswa/profile': 'Profil Saya',
   '/siswa/nilai': 'Nilai Saya',
   '/siswa/presensi': 'Presensi Saya',
 };
@@ -44,7 +46,7 @@ export default function Topbar() {
   const isGuru = pathname.startsWith('/guru');
   const isSiswa = pathname.startsWith('/siswa');
   const roleLabel = isSiswa ? 'Siswa' : isGuru ? 'Guru' : 'Tata Usaha';
-  const profilHref = isSiswa ? '/siswa' : isGuru ? '/guru/profil' : '/tu/profil-user';
+  const profilHref = isSiswa ? '/siswa/profile' : isGuru ? '/guru/profil' : '/tu/profil-user';
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -64,7 +66,7 @@ export default function Topbar() {
         </h2>
       </div>
 
-      <div className="flex shrink-0 items-center">
+      <div className="flex shrink-0 items-center gap-2">
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}

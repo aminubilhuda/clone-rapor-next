@@ -9,14 +9,22 @@ type PushPayload = {
   url?: string;
 };
 
+const TARGET_LABELS: Record<string, number | null> = {
+  all: null,
+  siswa: 4,
+  guru: 3,
+  tu: 2,
+};
+
 export async function POST(req: NextRequest) {
   const session = await auth();
-  // Only TU admin (jabatan 2) may broadcast notifications.
-  if (!session?.user || session.user.jabatan !== 2) {
+  // SuperAdmin (1) and TU (2) may broadcast.
+  const jabatan = (session?.user as any)?.jabatan;
+  if (!session?.user || (jabatan !== 1 && jabatan !== 2)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { userId, subscriptions, title, body, url } = await req.json();
+  const { userId, subscriptions, title, body, url, target } = await req.json();
 
   let rows: any[] = [];
   if (Array.isArray(subscriptions) && subscriptions.length > 0) {
@@ -28,8 +36,17 @@ export async function POST(req: NextRequest) {
     );
     rows = r;
   } else {
-    const [r]: any = await pool.query("SELECT endpoint, p256dh, auth FROM push_subscriptions");
-    rows = r;
+    const jabatanFilter = TARGET_LABELS[target as string] ?? null;
+    if (jabatanFilter !== null) {
+      const [r]: any = await pool.query(
+        "SELECT endpoint, p256dh, auth FROM push_subscriptions WHERE jabatan = ?",
+        [jabatanFilter]
+      );
+      rows = r;
+    } else {
+      const [r]: any = await pool.query("SELECT endpoint, p256dh, auth FROM push_subscriptions");
+      rows = r;
+    }
   }
 
   if (rows.length === 0) {
@@ -54,7 +71,6 @@ export async function POST(req: NextRequest) {
         );
         sent++;
       } catch (err: any) {
-        // 404/410 = subscription expired; clean it up.
         if (err?.statusCode === 404 || err?.statusCode === 410) {
           await pool
             .query("DELETE FROM push_subscriptions WHERE endpoint = ?", [sub.endpoint])

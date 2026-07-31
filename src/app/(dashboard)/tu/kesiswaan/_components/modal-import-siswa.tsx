@@ -11,23 +11,50 @@ interface ModalImportSiswaProps {
   refAgama: any[];
   refJurusan: any[];
   refTingkat: any[];
+  refHubKeluarga: any[];
+  refJenisSiswa: any[];
+  refPendidikan: any[];
   onImport: (rows: any[]) => Promise<{ success: boolean; count?: number; inserted?: number; updated?: number; errors?: string[] }>;
 }
 
 const COLUMN_MAP: { keys: string[]; field: string }[] = [
   { keys: ['nama siswa *', 'nama siswa', 'nama', 'nama_lengkap'], field: 'nama_siswa' },
+  { keys: ['nik', 'nik_pd', 'nik siswa'], field: 'nik_pd' },
+  { keys: ['nkk', 'no kk', 'nomor kk', 'no. kk'], field: 'nkk' },
   { keys: ['nis'], field: 'nis' },
   { keys: ['nisn'], field: 'nisn' },
   { keys: ['tempat lahir', 'tempat_lahir', 'tempat'], field: 'tempat_lahir' },
   { keys: ['tanggal lahir', 'tgl lahir', 'tanggal_lahir', 'tgl_lahir', 'ttl'], field: 'tanggal_lahir' },
   { keys: ['jenis kelamin', 'kelamin', 'jk', 'jenis_kelamin', 'jenis kelamin'], field: 'kelamin' },
   { keys: ['agama'], field: 'agama' },
-  { keys: ['jurusan', 'kompetensi keahlian', 'kompetensi_keahlian'], field: 'jurusan' },
+  { keys: ['hubungan keluarga', 'hub_keluarga', 'hubungan'], field: 'hub_keluarga' },
+  { keys: ['jumlah saudara', 'jml saudara', 'saudara'], field: 'jumlah_saudara' },
+  { keys: ['anak ke', 'anak_ke'], field: 'anak_ke' },
   { keys: ['kontak', 'telepon', 'hp', 'no hp', 'no. hp', 'kontak_siswa'], field: 'kontak_siswa' },
+  { keys: ['jurusan', 'kompetensi keahlian', 'kompetensi_keahlian'], field: 'jurusan' },
   { keys: ['alamat'], field: 'alamat' },
+  { keys: ['alamat orang tua', 'alamat_ortu', 'alamat_orang_tua'], field: 'alamat_orang_tua' },
+  { keys: ['nama ayah', 'nama_ayah', 'ayah'], field: 'nama_ayah' },
+  { keys: ['nik ayah', 'nik_ayah'], field: 'nik_ayah' },
+  { keys: ['tahun ayah', 'tahun lahir ayah', 'tahun_ayah'], field: 'tahun_ayah' },
+  { keys: ['pendidikan ayah', 'pendidikan_ayah'], field: 'pendidikan_ayah' },
+  { keys: ['pekerjaan ayah', 'pekerjaan_ayah'], field: 'pekerjaan_ayah' },
+  { keys: ['kontak ayah', 'kontak_ayah', 'telp ayah', 'hp ayah'], field: 'kontak_ayah' },
+  { keys: ['nama ibu', 'nama_ibu', 'ibu'], field: 'nama_ibu' },
+  { keys: ['nik ibu', 'nik_ibu'], field: 'nik_ibu' },
+  { keys: ['tahun ibu', 'tahun lahir ibu', 'tahun_ibu'], field: 'tahun_ibu' },
+  { keys: ['pendidikan ibu', 'pendidikan_ibu'], field: 'pendidikan_ibu' },
+  { keys: ['pekerjaan ibu', 'pekerjaan_ibu'], field: 'pekerjaan_ibu' },
+  { keys: ['kontak ibu', 'kontak_ibu', 'telp ibu', 'hp ibu'], field: 'kontak_ibu' },
+  { keys: ['nama wali', 'nama_wali', 'wali'], field: 'nama_wali' },
+  { keys: ['alamat wali', 'alamat_wali'], field: 'alamat_wali' },
+  { keys: ['pekerjaan wali', 'pekerjaan_wali'], field: 'pekerjaan_wali' },
+  { keys: ['kontak wali', 'kontak_wali', 'telp wali', 'hp wali'], field: 'kontak_wali' },
   { keys: ['terima kelas', 'kelas', 'terima_kelas'], field: 'terima_kelas' },
   { keys: ['tanggal masuk', 'tgl masuk', 'terima tanggal', 'terima_tanggal', 'tgl_masuk'], field: 'terima_tanggal' },
   { keys: ['tingkat', 'terima tingkat', 'terima_tingkat'], field: 'terima_tingkat' },
+  { keys: ['sekolah asal', 'sekolah_asal', 'asal sekolah'], field: 'sekolah_asal' },
+  { keys: ['jenis siswa', 'jenis_siswa'], field: 'jenis_siswa' },
   { keys: ['username *', 'username', 'user', 'login'], field: 'username' },
   { keys: ['password *', 'password', 'pass', 'pwd'], field: 'password' },
 ];
@@ -61,7 +88,7 @@ function excelDateToISO(value: any): string | null {
   return null;
 }
 
-export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, refJurusan, refTingkat, onImport }: ModalImportSiswaProps) {
+export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, refJurusan, refTingkat, refHubKeluarga, refJenisSiswa, refPendidikan, onImport }: ModalImportSiswaProps) {
   const { showToast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<any[] | null>(null);
@@ -126,9 +153,26 @@ export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, 
           jurusanMap.set(j.kompetensi_keahlian.toLowerCase(), j.id_kompetensi_keahlian);
         }
 
+        const hubKeluargaMap = new Map<string, number>();
+        for (const h of refHubKeluarga) {
+          hubKeluargaMap.set(h.hubunga_keluarga.toLowerCase(), h.id_hubungan_keluarga);
+        }
+
+        const jenisSiswaMap = new Map<string, number>();
+        for (const js of refJenisSiswa) {
+          jenisSiswaMap.set(js.jenis_siswa.toLowerCase(), js.id_jenis_siswa);
+        }
+
+        const pendidikanMap = new Map<string, string>();
+        for (const p of refPendidikan) {
+          pendidikanMap.set(p.pendidikan.toLowerCase(), String(p.id_pendidikan));
+        }
+
         const mapped = json.map((row: any) => {
           const r: any = {};
           if (map.nama_siswa) r.nama_siswa = String(row[map.nama_siswa] ?? '').trim();
+          if (map.nik_pd) r.nik_pd = String(row[map.nik_pd] ?? '').trim();
+          if (map.nkk) r.nkk = String(row[map.nkk] ?? '').trim();
           if (map.nis) r.nis = String(row[map.nis] ?? '').trim();
           if (map.nisn) r.nisn = String(row[map.nisn] ?? '').trim();
           if (map.tempat_lahir) r.tempat_lahir = String(row[map.tempat_lahir] ?? '').trim();
@@ -143,14 +187,63 @@ export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, 
             const raw = String(row[map.agama] ?? '').trim().toLowerCase();
             r.agama = agamaMap.get(raw) ?? null;
           }
+          if (map.hub_keluarga) {
+            const raw = String(row[map.hub_keluarga] ?? '').trim().toLowerCase();
+            r.hub_keluarga = hubKeluargaMap.get(raw) ?? null;
+          }
           if (map.jurusan) {
             const raw = String(row[map.jurusan] ?? '').trim().toLowerCase();
             r.jurusan = jurusanMap.get(raw) ?? null;
           }
+          if (map.jenis_siswa) {
+            const raw = String(row[map.jenis_siswa] ?? '').trim().toLowerCase();
+            r.jenis_siswa = jenisSiswaMap.get(raw) ?? null;
+          }
+          if (map.pendidikan_ayah) {
+            const raw = String(row[map.pendidikan_ayah] ?? '').trim().toLowerCase();
+            r.pendidikan_ayah = pendidikanMap.get(raw) ?? null;
+          }
+          if (map.pendidikan_ibu) {
+            const raw = String(row[map.pendidikan_ibu] ?? '').trim().toLowerCase();
+            r.pendidikan_ibu = pendidikanMap.get(raw) ?? null;
+          }
 
+          // Numeric fields
+          if (map.jumlah_saudara) {
+            const v = parseInt(String(row[map.jumlah_saudara] ?? ''), 10);
+            r.jumlah_saudara = isNaN(v) ? 0 : v;
+          }
+          if (map.anak_ke) {
+            const v = parseInt(String(row[map.anak_ke] ?? ''), 10);
+            r.anak_ke = isNaN(v) ? 0 : v;
+          }
+          if (map.tahun_ayah) {
+            const v = parseInt(String(row[map.tahun_ayah] ?? ''), 10);
+            r.tahun_ayah = isNaN(v) ? 0 : v;
+          }
+          if (map.tahun_ibu) {
+            const v = parseInt(String(row[map.tahun_ibu] ?? ''), 10);
+            r.tahun_ibu = isNaN(v) ? 0 : v;
+          }
+
+          // Text fields
           if (map.kontak_siswa) r.kontak_siswa = String(row[map.kontak_siswa] ?? '').trim();
           if (map.alamat) r.alamat = String(row[map.alamat] ?? '').trim();
+          if (map.alamat_orang_tua) r.alamat_orang_tua = String(row[map.alamat_orang_tua] ?? '').trim();
+          if (map.nama_ayah) r.nama_ayah = String(row[map.nama_ayah] ?? '').trim();
+          if (map.nik_ayah) r.nik_ayah = String(row[map.nik_ayah] ?? '').trim();
+          if (map.pekerjaan_ayah) r.pekerjaan_ayah = String(row[map.pekerjaan_ayah] ?? '').trim();
+          if (map.kontak_ayah) r.kontak_ayah = String(row[map.kontak_ayah] ?? '').trim();
+          if (map.nama_ibu) r.nama_ibu = String(row[map.nama_ibu] ?? '').trim();
+          if (map.nik_ibu) r.nik_ibu = String(row[map.nik_ibu] ?? '').trim();
+          if (map.pekerjaan_ibu) r.pekerjaan_ibu = String(row[map.pekerjaan_ibu] ?? '').trim();
+          if (map.kontak_ibu) r.kontak_ibu = String(row[map.kontak_ibu] ?? '').trim();
+          if (map.nama_wali) r.nama_wali = String(row[map.nama_wali] ?? '').trim();
+          if (map.alamat_wali) r.alamat_wali = String(row[map.alamat_wali] ?? '').trim();
+          if (map.pekerjaan_wali) r.pekerjaan_wali = String(row[map.pekerjaan_wali] ?? '').trim();
+          if (map.kontak_wali) r.kontak_wali = String(row[map.kontak_wali] ?? '').trim();
           if (map.terima_kelas) r.terima_kelas = String(row[map.terima_kelas] ?? '').trim();
+          if (map.sekolah_asal) r.sekolah_asal = String(row[map.sekolah_asal] ?? '').trim();
           r.terima_tanggal = map.terima_tanggal ? excelDateToISO(row[map.terima_tanggal]) : null;
 
           // terima_tingkat: number langsung atau lookup dari roman
@@ -208,7 +301,7 @@ export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, 
   };
 
   const requiredFields = ['nama_siswa', 'username', 'password'];
-  const optionalFields = ['nis', 'nisn', 'tempat_lahir', 'tanggal_lahir', 'kelamin', 'agama', 'jurusan', 'kontak_siswa', 'alamat', 'terima_kelas', 'terima_tanggal', 'terima_tingkat'];
+  const optionalFields = ['nik_pd', 'nkk', 'nis', 'nisn', 'tempat_lahir', 'tanggal_lahir', 'kelamin', 'agama', 'hub_keluarga', 'jumlah_saudara', 'anak_ke', 'jurusan', 'kontak_siswa', 'alamat', 'alamat_orang_tua', 'nama_ayah', 'nik_ayah', 'tahun_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'kontak_ayah', 'nama_ibu', 'nik_ibu', 'tahun_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'kontak_ibu', 'nama_wali', 'alamat_wali', 'pekerjaan_wali', 'kontak_wali', 'terima_kelas', 'terima_tanggal', 'terima_tingkat', 'sekolah_asal', 'jenis_siswa'];
   const allFields = [...requiredFields, ...optionalFields];
 
   return (
