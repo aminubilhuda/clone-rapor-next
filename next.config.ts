@@ -31,7 +31,6 @@ const withPWA = withPWAInit({
       },
     ],
   },
-  customWorkerSrc: "src/service-worker",
 });
 
 const nextConfig: NextConfig = {
