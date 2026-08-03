@@ -5,7 +5,6 @@ import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast-provider';
 import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register';
-import { ClientInit } from '@/components/pwa/client-init';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 
@@ -75,7 +74,6 @@ export default async function RootLayout({
           </ToastProvider>
         </SessionProvider>
         <ServiceWorkerRegister />
-        <ClientInit />
       </body>
     </html>
   );
