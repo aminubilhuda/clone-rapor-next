@@ -10,6 +10,7 @@ interface StaffAuthRow extends RowDataPacket {
   jabatan: number;
   nama: string;
   password: string;
+  moto: string;
 }
 
 interface StudentAuthRow extends RowDataPacket {
@@ -35,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         try {
           const [staffRows] = await pool.query<StaffAuthRow[]>(
-            `SELECT id_user, jabatan, nama, password
+            `SELECT id_user, jabatan, nama, password, IFNULL(moto, '') AS moto
              FROM users
              WHERE username = ? AND deleted_at IS NULL`,
             [credentials.username]
@@ -55,6 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               name: user.nama,
               jabatan: user.jabatan,
               id_user: user.id_user,
+              moto: user.moto,
             };
           }
 
@@ -94,6 +96,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.jabatan = user.jabatan;
         token.id_user = user.id_user;
         token.id_siswa = user.id_siswa;
+        token.moto = user.moto;
       }
       return token;
     },
@@ -102,6 +105,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.jabatan = token.jabatan as number | undefined;
         session.user.id_user = token.id_user as number | undefined;
         session.user.id_siswa = token.id_siswa as number | undefined;
+        session.user.moto = token.moto as string | undefined;
       }
       return session;
     },
