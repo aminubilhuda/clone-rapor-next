@@ -27,6 +27,7 @@ const pageTitles: Record<string, string> = {
   '/tu/pengaturan': 'Pengaturan',
   '/tu/notifikasi': 'Kirim Notifikasi',
   '/guru/absensi-piket': 'Absensi Piket',
+  '/guru/rekap-absensi-bk': 'Rekap Absensi BK',
   '/guru/catatan-wali': 'Catatan Wali',
   '/guru/catatan-rapor': 'Daftar Rapor',
   '/siswa': 'Dashboard Siswa',

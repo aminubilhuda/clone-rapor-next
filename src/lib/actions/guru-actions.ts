@@ -13,6 +13,7 @@ export interface GuruTugas {
   isPembimbingPrakerin: boolean;
   isP5BK: boolean;
   isKokurikuler: boolean;
+  isGuruBK: boolean;
   kelasList: { id_kelas: number; nama_kelas: string }[];
   ekstraList: { id_eskul: number; nama_eskul: string }[];
   organisasiList: { id_organisasi: number; nama_organisasi: string }[];
@@ -84,6 +85,11 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
       [idUser]
     );
 
+    const [guruBKRows]: any = await pool.query(
+      `SELECT 1 FROM users WHERE id_user = ? AND moto = '1' LIMIT 1`,
+      [idUser]
+    );
+
     return {
       isWaliKelas: waliRows.length > 0,
       isPembinaEkstra: ekstraRows.length > 0,
@@ -93,6 +99,7 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
       isPembimbingPrakerin: prakerinRows.length > 0,
       isP5BK: p5bkRows.length > 0,
       isKokurikuler: kokurikulerRows.length > 0,
+      isGuruBK: guruBKRows.length > 0,
       kelasList: waliRows.map((r: any) => ({ id_kelas: r.id_kelas, nama_kelas: r.nama_kelas })),
       ekstraList: ekstraRows.map((r: any) => ({ id_eskul: r.id_eskul, nama_eskul: r.nama_eskul })),
       organisasiList: orgRows.map((r: any) => ({ id_organisasi: r.id_organisasi, nama_organisasi: r.nama_organisasi })),

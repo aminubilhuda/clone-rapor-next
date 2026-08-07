@@ -10,10 +10,10 @@ import {
 } from '@/lib/actions/presensi-actions';
 
 const ABSEN_OPTIONS = [
-  { id_absen: 1, label: 'Hadir', sort: 'H' },
-  { id_absen: 2, label: 'Sakit', sort: 'S' },
-  { id_absen: 3, label: 'Izin', sort: 'I' },
-  { id_absen: 4, label: 'Tanpa Berita', sort: 'TB' },
+  { id_absen: 1, label: 'Hadir', sort: 'H', color: 'bg-[#16A34A] text-white border-[#16A34A] hover:bg-[#15803D]' },
+  { id_absen: 2, label: 'Sakit', sort: 'S', color: 'bg-[#EA580C] text-white border-[#EA580C] hover:bg-[#C2410C]' },
+  { id_absen: 3, label: 'Izin', sort: 'I', color: 'bg-[#2563EB] text-white border-[#2563EB] hover:bg-[#1D4ED8]' },
+  { id_absen: 4, label: 'Tanpa Berita', sort: 'TB', color: 'bg-[#DC2626] text-white border-[#DC2626] hover:bg-[#B91C1C]' },
 ];
 
 interface KelasItem {
@@ -44,6 +44,7 @@ export default function AbsensiPiketClient() {
   const [loadingKelas, setLoadingKelas] = useState(true);
   const [loadingSiswa, setLoadingSiswa] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     getKelasList().then((data) => {
@@ -76,6 +77,7 @@ export default function AbsensiPiketClient() {
 
   const handleKelasChange = (idKelas: number) => {
     setSelectedKelas(idKelas);
+    setSearchQuery('');
     if (idKelas) loadSiswa(idKelas);
   };
 
@@ -133,6 +135,10 @@ export default function AbsensiPiketClient() {
   const showTable = !loadingSiswa && !sudahAbsen && siswaList.length > 0;
   const showRekap = !loadingSiswa && sudahAbsen && selectedKelas;
 
+  const filteredSiswa = siswaList.filter((s) =>
+    s.nama_siswa.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="h-full flex flex-col">
       <h4 className="text-xl font-semibold mb-4 shrink-0">Absensi Piket Harian</h4>
@@ -159,7 +165,19 @@ export default function AbsensiPiketClient() {
             <>
               <span className="text-[rgba(0,0,0,0.08)]">|</span>
               <span className="text-xs text-[#6B7280]">{siswaList.length} siswa</span>
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center gap-2">
+                <div className="relative">
+                  <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Cari nama siswa..."
+                    className="bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-lg pl-8 pr-3 py-1.5 text-xs focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all w-48"
+                  />
+                </div>
                 <button
                   onClick={handleSemuaHadir}
                   className="text-xs font-medium text-[#6B7280] hover:text-[#1A1A2E] bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-lg px-3 py-1.5 transition-colors"
@@ -210,7 +228,7 @@ export default function AbsensiPiketClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {siswaList.map((siswa, i) => {
+                  {filteredSiswa.map((siswa, i) => {
                     const entry = absensi.find((a) => a.id_siswa === siswa.id_siswa);
                     const currentAbsen = entry?.id_absen ?? 1;
                     return (
@@ -219,26 +237,17 @@ export default function AbsensiPiketClient() {
                         <td className="px-5 py-2.5 font-medium text-[#1A1A2E]">{siswa.nama_siswa}</td>
                         {ABSEN_OPTIONS.map((a) => (
                           <td key={a.id_absen} className="px-3 py-2.5 text-center">
-                            <label className="inline-flex items-center justify-center cursor-pointer">
-                              <input
-                                type="radio"
-                                name={`absen-${siswa.id_siswa}`}
-                                checked={currentAbsen === a.id_absen}
-                                onChange={() => handleRadioChange(siswa.id_siswa, a.id_absen)}
-                                className="sr-only"
-                              />
-                              <span
-                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                                  currentAbsen === a.id_absen
-                                    ? 'border-[#DC2626] bg-[#DC2626]'
-                                    : 'border-[rgba(0,0,0,0.12)] bg-white hover:border-[#DC2626]/40'
-                                }`}
-                              >
-                                {currentAbsen === a.id_absen && (
-                                  <span className="w-2 h-2 rounded-full bg-white" />
-                                )}
-                              </span>
-                            </label>
+                            <button
+                              type="button"
+                              onClick={() => handleRadioChange(siswa.id_siswa, a.id_absen)}
+                              className={`w-10 h-10 rounded-lg text-xs font-semibold border-2 transition-all ${
+                                currentAbsen === a.id_absen
+                                  ? a.color
+                                  : 'bg-white text-[#6B7280] border-[rgba(0,0,0,0.12)] hover:border-[rgba(0,0,0,0.2)]'
+                              }`}
+                            >
+                              {a.sort}
+                            </button>
                           </td>
                         ))}
                       </tr>

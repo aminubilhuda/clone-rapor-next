@@ -174,12 +174,14 @@ declare module 'next-auth' {
     jabatan?: number;
     id_user?: number;
     id_siswa?: number;
+    moto?: string;
   }
   interface Session {
     user: {
       id_user?: number;
       id_siswa?: number;
       jabatan?: number;
+      moto?: string;
       name?: string | null;
       email?: string | null;
       image?: string | null;
@@ -192,5 +194,6 @@ declare module '@auth/core/jwt' {
     jabatan?: number;
     id_user?: number;
     id_siswa?: number;
+    moto?: string;
   }
 }

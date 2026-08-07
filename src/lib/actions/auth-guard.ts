@@ -30,6 +30,23 @@ export async function requireGuru() {
 }
 
 /**
+ * Guard for Guru BK pages (jabatan 3 + moto = '1').
+ */
+export async function requireGuruBK() {
+  const session = await auth();
+  if (!session?.user) {
+    return { error: 'Unauthorized', user: null };
+  }
+  if (session.user.jabatan !== 3) {
+    return { error: 'Forbidden', user: null };
+  }
+  if (session.user.moto !== '1') {
+    return { error: 'Bukan Guru BK', user: null };
+  }
+  return { user: session.user, error: null };
+}
+
+/**
  * Guard for any authenticated user.
  */
 export async function requireAuth() {
