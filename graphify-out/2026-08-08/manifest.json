@@ -55,7 +55,7 @@
     "semantic_hash": "239f3ebf717465dc636818a1a619398d"
   },
   "public/fallback-ce627215c0e4a9af.js": {
-    "mtime": 1786152233.978459,
+    "mtime": 1786147579.6109462,
     "ast_hash": "68469f9711fc1906966c7fd5d18c83bb",
     "semantic_hash": "68469f9711fc1906966c7fd5d18c83bb"
   },
@@ -65,17 +65,17 @@
     "semantic_hash": "b099dcfc364b9ee7f20f38941f3a82ca"
   },
   "public/sw.js": {
-    "mtime": 1786152233.987153,
-    "ast_hash": "1a4dc0f895ae6c02c0522b4cff3f841f",
+    "mtime": 1786147579.620879,
+    "ast_hash": "d0af44b6c28b4c2ccbbaaea2d8e5a96d",
     "semantic_hash": ""
   },
   "public/swe-worker-5c72df51bb1f6ee0.js": {
-    "mtime": 1786152233.9784596,
+    "mtime": 1786147579.6107647,
     "ast_hash": "76fdd3369f623a3edcf74ce2200bfdd0",
     "semantic_hash": "76fdd3369f623a3edcf74ce2200bfdd0"
   },
   "public/workbox-4a6e5f9b.js": {
-    "mtime": 1786152233.9871824,
+    "mtime": 1786147579.6208768,
     "ast_hash": "a0e6fefa451b936daf14a7b3df12df49",
     "semantic_hash": "a0e6fefa451b936daf14a7b3df12df49"
   },
@@ -170,9 +170,9 @@
     "semantic_hash": "4f08f93b0fd05473b236a24b5266346b"
   },
   "src/app/(dashboard)/guru/layout.tsx": {
-    "mtime": 1786152210.4974744,
-    "ast_hash": "7092b195d420604de0e7eec4f8e4895a",
-    "semantic_hash": ""
+    "mtime": 1785758465.3346627,
+    "ast_hash": "1e376c31754884418d3a0de7a5e0a8fd",
+    "semantic_hash": "1e376c31754884418d3a0de7a5e0a8fd"
   },
   "src/app/(dashboard)/guru/organisasi/_components/organisasi-guru-client.tsx": {
     "mtime": 1785758465.3348224,
@@ -435,9 +435,9 @@
     "semantic_hash": "cda3a7f8ac04c8bff52ad18a248fa149"
   },
   "src/app/(dashboard)/tu/layout.tsx": {
-    "mtime": 1786152220.529332,
-    "ast_hash": "30f7ab925728116aba3a16bd0d42014a",
-    "semantic_hash": ""
+    "mtime": 1785758465.3419883,
+    "ast_hash": "747f61185598a24b1c1f7fe372637570",
+    "semantic_hash": "747f61185598a24b1c1f7fe372637570"
   },
   "src/app/(dashboard)/tu/loading.tsx": {
     "mtime": 1785758465.3420563,
@@ -1385,8 +1385,8 @@
     "semantic_hash": ""
   },
   "src/lib/actions/dapodik-actions.ts": {
-    "mtime": 1786152191.8920655,
-    "ast_hash": "d3908458388bcb69f93d8c7a440f95d3",
+    "mtime": 1786147519.494568,
+    "ast_hash": "47d968e207207466e99cb30e1325ed8d",
     "semantic_hash": ""
   },
   "src/lib/dapodik/client.ts": {
@@ -1427,21 +1427,6 @@
   "src/app/(dashboard)/tu/singkron-dapodik/_components/modal-detail-sinkron.tsx": {
     "mtime": 1786097119.5081108,
     "ast_hash": "ea74e90686d89c024633765b646563b1",
-    "semantic_hash": ""
-  },
-  "migrations/0008_add_dapodik_sync_status.sql": {
-    "mtime": 1786152124.1764617,
-    "ast_hash": "47d2388d25f68ee0bead9856998e898f",
-    "semantic_hash": ""
-  },
-  "src/components/dapodik-sync-banner.tsx": {
-    "mtime": 1786152206.8049707,
-    "ast_hash": "9112a3a5fd09819d19e254aa70c1bab5",
-    "semantic_hash": ""
-  },
-  "src/lib/dapodik-status.ts": {
-    "mtime": 1786152132.9205048,
-    "ast_hash": "8ccd3bef3858e3f0754a9c9755e146d5",
     "semantic_hash": ""
   }
 }
