@@ -3,6 +3,7 @@ import { getViewFilter } from '@/lib/view-filter';
 import { SEKOLAH_ID } from '@/lib/constants';
 import DashboardLayout from '@/components/layout/dashboard-layout';
 import SidebarTU from '@/components/layout/sidebar-tu';
+import DapodikSyncBanner from '@/components/dapodik-sync-banner';
 
 async function getSidebarData() {
   const [tahunRows]: any = await pool.query('SELECT * FROM tahun_pelajaran ORDER BY id_tahun_pelajaran DESC');
@@ -55,6 +56,7 @@ export default async function TULayout({
 
   return (
     <DashboardLayout sidebar={<SidebarTU data={sidebarData} />}>
+      <DapodikSyncBanner />
       {children}
     </DashboardLayout>
   );

@@ -441,7 +441,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "package_dependencies_ducanh2912_next_pwa",
-      "community": 99,
+      "community": 100,
       "community_name": "@ducanh2912/next-pwa",
       "norm_label": "@ducanh2912/next-pwa"
     },
@@ -452,7 +452,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "ducanh2912_next_pwa",
-      "community": 99,
+      "community": 100,
       "community_name": "@ducanh2912/next-pwa",
       "norm_label": "@ducanh2912/next-pwa"
     },
@@ -705,7 +705,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "package_dependencies_react_select",
-      "community": 92,
+      "community": 74,
       "community_name": "react-select",
       "norm_label": "react-select"
     },
@@ -716,7 +716,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "react_select",
-      "community": 92,
+      "community": 74,
       "community_name": "react-select",
       "norm_label": "react-select"
     },
@@ -749,7 +749,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "package_dependencies_xlsx",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "xlsx"
     },
@@ -760,7 +760,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "xlsx",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "xlsx"
     },
@@ -1431,8 +1431,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_a_registerroute",
-      "community": 18,
-      "community_name": "workbox-4a6e5f9b.js",
+      "community": 21,
+      "community_name": "r",
       "norm_label": ".registerroute()"
     },
     {
@@ -1453,8 +1453,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_h",
-      "community": 18,
-      "community_name": "workbox-4a6e5f9b.js",
+      "community": 21,
+      "community_name": "r",
       "norm_label": "h()"
     },
     {
@@ -1596,8 +1596,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_r_waituntil",
-      "community": 18,
-      "community_name": "workbox-4a6e5f9b.js",
+      "community": 21,
+      "community_name": "r",
       "norm_label": ".waituntil()"
     },
     {
@@ -1871,8 +1871,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_f_expireentries",
-      "community": 18,
-      "community_name": "workbox-4a6e5f9b.js",
+      "community": 17,
+      "community_name": "y",
       "norm_label": ".expireentries()"
     },
     {
@@ -1882,8 +1882,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_f_updatetimestamp",
-      "community": 18,
-      "community_name": "workbox-4a6e5f9b.js",
+      "community": 17,
+      "community_name": "y",
       "norm_label": ".updatetimestamp()"
     },
     {
@@ -2058,8 +2058,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_y_geturlstocachekeys",
-      "community": 17,
-      "community_name": "y",
+      "community": 18,
+      "community_name": "workbox-4a6e5f9b.js",
       "norm_label": ".geturlstocachekeys()"
     },
     {
@@ -2091,8 +2091,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_y_getintegrityforcachekey",
-      "community": 17,
-      "community_name": "y",
+      "community": 18,
+      "community_name": "workbox-4a6e5f9b.js",
       "norm_label": ".getintegrityforcachekey()"
     },
     {
@@ -2124,8 +2124,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_tt",
-      "community": 17,
-      "community_name": "y",
+      "community": 18,
+      "community_name": "workbox-4a6e5f9b.js",
       "norm_label": "tt"
     },
     {
@@ -2135,8 +2135,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_tt_constructor",
-      "community": 17,
-      "community_name": "y",
+      "community": 18,
+      "community_name": "workbox-4a6e5f9b.js",
       "norm_label": ".constructor()"
     },
     {
@@ -2157,8 +2157,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_constructor",
-      "community": 18,
-      "community_name": "workbox-4a6e5f9b.js",
+      "community": 17,
+      "community_name": "y",
       "norm_label": "constructor()"
     },
     {
@@ -2168,8 +2168,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "public_workbox_4a6e5f9b_deletecacheandmetadata",
-      "community": 18,
-      "community_name": "workbox-4a6e5f9b.js",
+      "community": 17,
+      "community_name": "y",
       "norm_label": "deletecacheandmetadata()"
     },
     {
@@ -2268,8 +2268,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_components_absensi_piket_client",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "absensi-piket-client.tsx"
     },
     {
@@ -2279,8 +2279,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_components_absensi_piket_client_absen_options",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "absen_options"
     },
     {
@@ -2290,8 +2290,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_components_absensi_piket_client_kelasitem",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "kelasitem"
     },
     {
@@ -2301,8 +2301,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_components_absensi_piket_client_siswaitem",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "siswaitem"
     },
     {
@@ -2312,8 +2312,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_components_absensi_piket_client_absensientry",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "absensientry"
     },
     {
@@ -2323,8 +2323,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_components_absensi_piket_client_absensipiketclient",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "absensipiketclient()"
     },
     {
@@ -2334,8 +2334,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_page",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "absensi-piket/page.tsx"
     },
     {
@@ -2345,8 +2345,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_absensi_piket_page_absensipiketpage",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "absensipiketpage()"
     },
     {
@@ -2499,7 +2499,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client",
-      "community": 55,
+      "community": 19,
       "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "cetak-rapor-guru-client.tsx"
     },
@@ -2510,7 +2510,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client_siswa",
-      "community": 55,
+      "community": 19,
       "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "siswa"
     },
@@ -2521,7 +2521,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client_kelasitem",
-      "community": 55,
+      "community": 19,
       "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "kelasitem"
     },
@@ -2532,7 +2532,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client_props",
-      "community": 55,
+      "community": 19,
       "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "props"
     },
@@ -2543,7 +2543,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client_jenisrapor",
-      "community": 55,
+      "community": 19,
       "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "jenisrapor"
     },
@@ -2554,7 +2554,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client_jenis_config",
-      "community": 55,
+      "community": 19,
       "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "jenis_config"
     },
@@ -2565,7 +2565,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client_checkbox_jenis",
-      "community": 55,
+      "community": 19,
       "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "checkbox_jenis"
     },
@@ -2577,7 +2577,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_components_cetak_rapor_guru_client_cetakraporguruclient",
       "community": 55,
-      "community_name": "cetak-rapor-guru-client.tsx",
+      "community_name": "catatan-rapor/page.tsx",
       "norm_label": "cetakraporguruclient()"
     },
     {
@@ -2588,7 +2588,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_page",
       "community": 55,
-      "community_name": "cetak-rapor-guru-client.tsx",
+      "community_name": "catatan-rapor/page.tsx",
       "norm_label": "catatan-rapor/page.tsx"
     },
     {
@@ -2599,7 +2599,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_page_walikelasrow",
       "community": 55,
-      "community_name": "cetak-rapor-guru-client.tsx",
+      "community_name": "catatan-rapor/page.tsx",
       "norm_label": "walikelasrow"
     },
     {
@@ -2610,7 +2610,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_page_siswaraporrow",
       "community": 55,
-      "community_name": "cetak-rapor-guru-client.tsx",
+      "community_name": "catatan-rapor/page.tsx",
       "norm_label": "siswaraporrow"
     },
     {
@@ -2621,7 +2621,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_rapor_page_cetakraporgurupage",
       "community": 55,
-      "community_name": "cetak-rapor-guru-client.tsx",
+      "community_name": "catatan-rapor/page.tsx",
       "norm_label": "cetakraporgurupage()"
     },
     {
@@ -2631,8 +2631,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_components_catatan_wali_client",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 19,
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "catatan-wali-client.tsx"
     },
     {
@@ -2642,8 +2642,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_components_catatan_wali_client_kelasitem",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 19,
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "kelasitem"
     },
     {
@@ -2653,8 +2653,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_components_catatan_wali_client_siswaitem",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 19,
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "siswaitem"
     },
     {
@@ -2664,8 +2664,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_components_catatan_wali_client_props",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 19,
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "props"
     },
     {
@@ -2675,8 +2675,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_components_catatan_wali_client_filterstatus",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 19,
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "filterstatus"
     },
     {
@@ -2686,8 +2686,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_components_catatan_wali_client_catatanwaliclient",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 19,
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "catatanwaliclient()"
     },
     {
@@ -2697,8 +2697,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_page",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "catatan-wali/page.tsx"
     },
     {
@@ -2708,8 +2708,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_page_kelaswalirow",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "kelaswalirow"
     },
     {
@@ -2719,8 +2719,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_page_siswacatatanrow",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "siswacatatanrow"
     },
     {
@@ -2730,8 +2730,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_catatan_wali_page_catatanwalipage",
-      "community": 74,
-      "community_name": "catatan-wali/page.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "catatanwalipage()"
     },
     {
@@ -2741,8 +2741,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_ekstra_components_guru_ekstra_detail",
-      "community": 50,
-      "community_name": "modal-nilai-eskul.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "guru-ekstra-detail.tsx"
     },
     {
@@ -2752,8 +2752,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_ekstra_components_guru_ekstra_detail_props",
-      "community": 50,
-      "community_name": "modal-nilai-eskul.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "props"
     },
     {
@@ -2851,7 +2851,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_kelas_ku_page",
-      "community": 96,
+      "community": 50,
       "community_name": "kelas-ku/page.tsx",
       "norm_label": "kelas-ku/page.tsx"
     },
@@ -2862,7 +2862,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_kelas_ku_page_getkelasku",
-      "community": 96,
+      "community": 50,
       "community_name": "kelas-ku/page.tsx",
       "norm_label": "getkelasku()"
     },
@@ -2873,7 +2873,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_kelas_ku_page_kelaskupage",
-      "community": 96,
+      "community": 50,
       "community_name": "kelas-ku/page.tsx",
       "norm_label": "kelaskupage()"
     },
@@ -2994,19 +2994,19 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_layout",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "guru/layout.tsx"
     },
     {
       "label": "GuruLayout()",
       "file_type": "code",
       "source_file": "src/app/(dashboard)/guru/layout.tsx",
-      "source_location": "L5",
+      "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_layout_gurulayout",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "gurulayout()"
     },
     {
@@ -3093,8 +3093,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_p5bk_page",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "guru/p5bk/page.tsx"
     },
     {
@@ -3104,8 +3104,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_p5bk_page_getdata",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "getdata()"
     },
     {
@@ -3115,8 +3115,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_p5bk_page_p5bkpage",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "p5bkpage()"
     },
     {
@@ -3126,8 +3126,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_page",
-      "community": 98,
-      "community_name": "guru/page.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "guru/page.tsx"
     },
     {
@@ -3137,8 +3137,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_page_getgurudashboard",
-      "community": 98,
-      "community_name": "guru/page.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "getgurudashboard()"
     },
     {
@@ -3148,8 +3148,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_page_gurudashboardpage",
-      "community": 98,
-      "community_name": "guru/page.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "gurudashboardpage()"
     },
     {
@@ -3159,7 +3159,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_components_penilaian_client",
-      "community": 82,
+      "community": 70,
       "community_name": "useToast",
       "norm_label": "penilaian-client.tsx"
     },
@@ -3170,7 +3170,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_components_penilaian_client_tab_info",
-      "community": 82,
+      "community": 70,
       "community_name": "useToast",
       "norm_label": "tab_info"
     },
@@ -3181,7 +3181,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_components_penilaian_client_buildmap",
-      "community": 82,
+      "community": 70,
       "community_name": "useToast",
       "norm_label": "buildmap()"
     },
@@ -3192,7 +3192,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_components_penilaian_client_penilaianclient",
-      "community": 82,
+      "community": 70,
       "community_name": "useToast",
       "norm_label": "penilaianclient()"
     },
@@ -3203,8 +3203,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_page",
-      "community": 14,
-      "community_name": "db.ts",
+      "community": 68,
+      "community_name": "[id_mapel_kelas]/page.tsx",
       "norm_label": "[id_mapel_kelas]/page.tsx"
     },
     {
@@ -3214,8 +3214,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_page_pageprops",
-      "community": 14,
-      "community_name": "db.ts",
+      "community": 68,
+      "community_name": "[id_mapel_kelas]/page.tsx",
       "norm_label": "pageprops"
     },
     {
@@ -3225,8 +3225,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_page_getpenilaiandata",
-      "community": 14,
-      "community_name": "db.ts",
+      "community": 68,
+      "community_name": "[id_mapel_kelas]/page.tsx",
       "norm_label": "getpenilaiandata()"
     },
     {
@@ -3236,8 +3236,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_penilaian_id_mapel_kelas_page_penilaianpage",
-      "community": 14,
-      "community_name": "db.ts",
+      "community": 68,
+      "community_name": "[id_mapel_kelas]/page.tsx",
       "norm_label": "penilaianpage()"
     },
     {
@@ -3247,8 +3247,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_piket_harian_page",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 14,
+      "community_name": "db.ts",
       "norm_label": "guru/piket-harian/page.tsx"
     },
     {
@@ -3258,8 +3258,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_piket_harian_page_getdata",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 14,
+      "community_name": "db.ts",
       "norm_label": "getdata()"
     },
     {
@@ -3269,8 +3269,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_piket_harian_page_piketharianpage",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 14,
+      "community_name": "db.ts",
       "norm_label": "piketharianpage()"
     },
     {
@@ -3346,8 +3346,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_rekap_absensi_bk_components_rekap_absensi_bk_client",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "rekap-absensi-bk-client.tsx"
     },
     {
@@ -3357,8 +3357,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_rekap_absensi_bk_components_rekap_absensi_bk_client_kelasitem",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "kelasitem"
     },
     {
@@ -3368,8 +3368,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_rekap_absensi_bk_components_rekap_absensi_bk_client_rekapitem",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "rekapitem"
     },
     {
@@ -3379,8 +3379,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_rekap_absensi_bk_components_rekap_absensi_bk_client_absen_cols",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "absen_cols"
     },
     {
@@ -3390,8 +3390,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_rekap_absensi_bk_components_rekap_absensi_bk_client_rekapabsensibkclient",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "rekapabsensibkclient()"
     },
     {
@@ -3401,8 +3401,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_rekap_absensi_bk_page",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "rekap-absensi-bk/page.tsx"
     },
     {
@@ -3412,8 +3412,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_guru_rekap_absensi_bk_page_rekapabsensibkpage",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "rekapabsensibkpage()"
     },
     {
@@ -3490,7 +3490,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_tujuan_pembelajaran_components_tp_multi_kelas_client",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "tp-multi-kelas-client.tsx"
     },
     {
@@ -3501,7 +3501,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_tujuan_pembelajaran_components_tp_multi_kelas_client_option",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "option"
     },
     {
@@ -3512,7 +3512,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_tujuan_pembelajaran_components_tp_multi_kelas_client_props",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "props"
     },
     {
@@ -3523,7 +3523,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_tujuan_pembelajaran_components_tp_multi_kelas_client_kktpinput",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "kktpinput()"
     },
     {
@@ -3534,7 +3534,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_guru_tujuan_pembelajaran_components_tp_multi_kelas_client_tpmultikelasclient",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "tpmultikelasclient()"
     },
     {
@@ -3710,7 +3710,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_nilai_page",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "nilai/page.tsx"
     },
     {
@@ -3721,7 +3721,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_nilai_page_nilaisiswapage",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "nilaisiswapage()"
     },
     {
@@ -3732,7 +3732,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_page",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "siswa/page.tsx"
     },
     {
@@ -3743,7 +3743,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_page_formattanggal",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "formattanggal()"
     },
     {
@@ -3754,7 +3754,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_page_datarow",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "datarow()"
     },
     {
@@ -3765,7 +3765,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_page_siswadashboardpage",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "siswadashboardpage()"
     },
     {
@@ -3776,7 +3776,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_presensi_page",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "presensi/page.tsx"
     },
     {
@@ -3787,7 +3787,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_presensi_page_presensisiswapage",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "presensisiswapage()"
     },
     {
@@ -3797,7 +3797,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_components_profile_form",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "siswa/profile/_components/profile-form.tsx"
     },
@@ -3808,7 +3808,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_components_profile_form_section",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "section"
     },
@@ -3819,7 +3819,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_components_profile_form_sectionheader",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "sectionheader()"
     },
@@ -3830,7 +3830,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_components_profile_form_formgrid",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "formgrid()"
     },
@@ -3841,7 +3841,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_components_profile_form_formfield",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "formfield()"
     },
@@ -3852,7 +3852,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_components_profile_form_select",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "select()"
     },
@@ -3863,7 +3863,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_components_profile_form_profileform",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "profileform()"
     },
@@ -3874,8 +3874,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_page",
-      "community": 9,
-      "community_name": "siswa/profile/_components/profile-form.tsx",
+      "community": 25,
+      "community_name": "auth.ts",
       "norm_label": "siswa/profile/page.tsx"
     },
     {
@@ -3885,8 +3885,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_page_getdata",
-      "community": 9,
-      "community_name": "siswa/profile/_components/profile-form.tsx",
+      "community": 25,
+      "community_name": "auth.ts",
       "norm_label": "getdata()"
     },
     {
@@ -3896,8 +3896,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_app_dashboard_siswa_profile_page_siswaprofilepage",
-      "community": 9,
-      "community_name": "siswa/profile/_components/profile-form.tsx",
+      "community": 25,
+      "community_name": "auth.ts",
       "norm_label": "siswaprofilepage()"
     },
     {
@@ -3963,7 +3963,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_components_anggota_kelas_client",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "anggota-kelas-client.tsx"
     },
     {
@@ -3974,7 +3974,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_components_anggota_kelas_client_columns",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "columns"
     },
     {
@@ -3985,7 +3985,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_components_anggota_kelas_client_anggotakelasclientprops",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "anggotakelasclientprops"
     },
     {
@@ -3996,7 +3996,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_components_anggota_kelas_client_anggotakelasclient",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "anggotakelasclient()"
     },
     {
@@ -4007,7 +4007,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_components_modal_transfer_anggota_kelas",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "modal-transfer-anggota-kelas.tsx"
     },
     {
@@ -4018,7 +4018,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_components_modal_transfer_anggota_kelas_modaltransferanggotakelasprops",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "modaltransferanggotakelasprops"
     },
     {
@@ -4029,7 +4029,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_components_modal_transfer_anggota_kelas_modaltransferanggotakelas",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "modaltransferanggotakelas()"
     },
     {
@@ -4039,8 +4039,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_page",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 95,
+      "community_name": "tu/anggota-kelas/page.tsx",
       "norm_label": "tu/anggota-kelas/page.tsx"
     },
     {
@@ -4050,8 +4050,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_page_getdata",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 95,
+      "community_name": "tu/anggota-kelas/page.tsx",
       "norm_label": "getdata()"
     },
     {
@@ -4061,8 +4061,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_anggota_kelas_page_anggotakelaspage",
-      "community": 32,
-      "community_name": "auth.ts",
+      "community": 95,
+      "community_name": "tu/anggota-kelas/page.tsx",
       "norm_label": "anggotakelaspage()"
     },
     {
@@ -4149,8 +4149,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_deskripsi_rapor_components_modal_hapus_deskripsi",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-hapus-deskripsi.tsx"
     },
     {
@@ -4160,8 +4160,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_deskripsi_rapor_components_modal_hapus_deskripsi_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -4215,8 +4215,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_ekstra_client",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "ekstra-client.tsx"
     },
     {
@@ -4226,8 +4226,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_ekstra_client_columns",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "columns"
     },
     {
@@ -4237,8 +4237,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_ekstra_client_ekstraclientprops",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "ekstraclientprops"
     },
     {
@@ -4248,8 +4248,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_ekstra_client_ekstraclient",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "ekstraclient()"
     },
     {
@@ -4259,8 +4259,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_anggota_eskul",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modal-anggota-eskul.tsx"
     },
     {
@@ -4270,8 +4270,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_anggota_eskul_modalanggotaeskulprops",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modalanggotaeskulprops"
     },
     {
@@ -4281,8 +4281,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_anggota_eskul_modalanggotaeskul",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modalanggotaeskul()"
     },
     {
@@ -4292,8 +4292,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_ekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modal-ekstra.tsx"
     },
     {
@@ -4303,8 +4303,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_ekstra_modalekstraprops",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modalekstraprops"
     },
     {
@@ -4314,8 +4314,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_ekstra_modalekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modalekstra()"
     },
     {
@@ -4325,8 +4325,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_hapus_ekstra",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-hapus-ekstra.tsx"
     },
     {
@@ -4336,8 +4336,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_hapus_ekstra_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -4347,8 +4347,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_hapus_ekstra_modalhapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modalhapus()"
     },
     {
@@ -4358,8 +4358,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_nilai_eskul",
-      "community": 50,
-      "community_name": "modal-nilai-eskul.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modal-nilai-eskul.tsx"
     },
     {
@@ -4369,8 +4369,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_nilai_eskul_nilairow",
-      "community": 50,
-      "community_name": "modal-nilai-eskul.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "nilairow"
     },
     {
@@ -4380,8 +4380,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_nilai_eskul_modalnilaieskulprops",
-      "community": 50,
-      "community_name": "modal-nilai-eskul.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modalnilaieskulprops"
     },
     {
@@ -4391,8 +4391,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_components_modal_nilai_eskul_modalnilaieskul",
-      "community": 50,
-      "community_name": "modal-nilai-eskul.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "modalnilaieskul()"
     },
     {
@@ -4402,8 +4402,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_page",
-      "community": 60,
-      "community_name": "tu/ekstra/page.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "tu/ekstra/page.tsx"
     },
     {
@@ -4413,8 +4413,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_page_getekstra",
-      "community": 60,
-      "community_name": "tu/ekstra/page.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getekstra()"
     },
     {
@@ -4424,8 +4424,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_page_getusers",
-      "community": 60,
-      "community_name": "tu/ekstra/page.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getusers()"
     },
     {
@@ -4435,8 +4435,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_page_getsiswa",
-      "community": 60,
-      "community_name": "tu/ekstra/page.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getsiswa()"
     },
     {
@@ -4446,8 +4446,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_page_getsiswaekstra",
-      "community": 60,
-      "community_name": "tu/ekstra/page.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getsiswaekstra()"
     },
     {
@@ -4457,8 +4457,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_ekstra_page_ekstrapage",
-      "community": 60,
-      "community_name": "tu/ekstra/page.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "ekstrapage()"
     },
     {
@@ -4490,8 +4490,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_hapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "kesiswaan/_components/modal-hapus.tsx"
     },
     {
@@ -4501,8 +4501,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_hapus_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -4512,8 +4512,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_hapus_modalhapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "modalhapus()"
     },
     {
@@ -4523,8 +4523,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_import_siswa",
-      "community": 68,
-      "community_name": "modal-import-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "modal-import-siswa.tsx"
     },
     {
@@ -4534,8 +4534,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_import_siswa_modalimportsiswaprops",
-      "community": 68,
-      "community_name": "modal-import-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "modalimportsiswaprops"
     },
     {
@@ -4545,8 +4545,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_import_siswa_column_map",
-      "community": 68,
-      "community_name": "modal-import-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "column_map"
     },
     {
@@ -4556,8 +4556,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_import_siswa_findheader",
-      "community": 68,
-      "community_name": "modal-import-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "findheader()"
     },
     {
@@ -4567,8 +4567,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_import_siswa_exceldatetoiso",
-      "community": 68,
-      "community_name": "modal-import-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "exceldatetoiso()"
     },
     {
@@ -4578,8 +4578,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_import_siswa_modalimportsiswa",
-      "community": 68,
-      "community_name": "modal-import-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "modalimportsiswa()"
     },
     {
@@ -4589,8 +4589,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "modal-siswa.tsx"
     },
     {
@@ -4600,8 +4600,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_modalsiswaprops",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "modalsiswaprops"
     },
     {
@@ -4611,8 +4611,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_section",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "section"
     },
     {
@@ -4622,8 +4622,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_sectionheader",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "sectionheader()"
     },
     {
@@ -4633,8 +4633,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_formgrid",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "formgrid()"
     },
     {
@@ -4644,8 +4644,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_formfield",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "formfield()"
     },
     {
@@ -4655,8 +4655,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_input",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "input()"
     },
     {
@@ -4666,8 +4666,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_select",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "select()"
     },
     {
@@ -4677,8 +4677,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kesiswaan_components_modal_siswa_modalsiswa",
-      "community": 33,
-      "community_name": "modal-siswa.tsx",
+      "community": 10,
+      "community_name": "siswa-client.tsx",
       "norm_label": "modalsiswa()"
     },
     {
@@ -4765,7 +4765,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_kompetensi_client",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "kompetensi-client.tsx"
     },
@@ -4776,7 +4776,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_kompetensi_client_columns",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "columns"
     },
@@ -4787,7 +4787,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_kompetensi_client_kompetensiclientprops",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "kompetensiclientprops"
     },
@@ -4798,7 +4798,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_kompetensi_client_kompetensiclient",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "kompetensiclient()"
     },
@@ -4809,8 +4809,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_modal_hapus_kompetensi",
-      "community": 8,
-      "community_name": "kompetensi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-hapus-kompetensi.tsx"
     },
     {
@@ -4820,8 +4820,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_modal_hapus_kompetensi_modalhapusprops",
-      "community": 8,
-      "community_name": "kompetensi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -4831,7 +4831,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_modal_hapus_kompetensi_modalhapus",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "modalhapus()"
     },
@@ -4842,7 +4842,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_modal_kompetensi",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "modal-kompetensi.tsx"
     },
@@ -4853,7 +4853,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_modal_kompetensi_modalkompetensiprops",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "modalkompetensiprops"
     },
@@ -4864,7 +4864,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_components_modal_kompetensi_modalkompetensi",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "modalkompetensi()"
     },
@@ -4875,7 +4875,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_page",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "kompetensi/page.tsx"
     },
@@ -4886,7 +4886,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_page_getkompetensi",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "getkompetensi()"
     },
@@ -4897,7 +4897,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_kompetensi_page_kompetensipage",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "kompetensipage()"
     },
@@ -5051,8 +5051,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_laporan_pendidikan_daftar_kumpulan_nilai_page",
-      "community": 43,
-      "community_name": "dkn-client.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "daftar-kumpulan-nilai/page.tsx"
     },
     {
@@ -5062,8 +5062,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_laporan_pendidikan_daftar_kumpulan_nilai_page_daftarkumpulannilaipage",
-      "community": 43,
-      "community_name": "dkn-client.tsx",
+      "community": 56,
+      "community_name": "getSekolahWithFilter",
       "norm_label": "daftarkumpulannilaipage()"
     },
     {
@@ -5257,7 +5257,7 @@
       "label": "getSidebarData()",
       "file_type": "code",
       "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_layout_getsidebardata",
       "community": 4,
@@ -5268,7 +5268,7 @@
       "label": "TULayout()",
       "file_type": "code",
       "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L50",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_layout_tulayout",
       "community": 4,
@@ -5348,8 +5348,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_components_modal_hapus_mapel_kelas",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-hapus-mapel-kelas.tsx"
     },
     {
@@ -5359,8 +5359,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_components_modal_hapus_mapel_kelas_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -5370,8 +5370,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_components_modal_hapus_mapel_kelas_modalhapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapus()"
     },
     {
@@ -5414,8 +5414,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_page",
-      "community": 2,
-      "community_name": "mapel-kelas-client.tsx",
+      "community": 60,
+      "community_name": "mapel-kelas/page.tsx",
       "norm_label": "mapel-kelas/page.tsx"
     },
     {
@@ -5425,8 +5425,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_page_getdata",
-      "community": 2,
-      "community_name": "mapel-kelas-client.tsx",
+      "community": 60,
+      "community_name": "mapel-kelas/page.tsx",
       "norm_label": "getdata()"
     },
     {
@@ -5436,8 +5436,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_page_getkelas",
-      "community": 2,
-      "community_name": "mapel-kelas-client.tsx",
+      "community": 60,
+      "community_name": "mapel-kelas/page.tsx",
       "norm_label": "getkelas()"
     },
     {
@@ -5447,8 +5447,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_page_getmapel",
-      "community": 2,
-      "community_name": "mapel-kelas-client.tsx",
+      "community": 60,
+      "community_name": "mapel-kelas/page.tsx",
       "norm_label": "getmapel()"
     },
     {
@@ -5458,8 +5458,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_page_getuser",
-      "community": 2,
-      "community_name": "mapel-kelas-client.tsx",
+      "community": 60,
+      "community_name": "mapel-kelas/page.tsx",
       "norm_label": "getuser()"
     },
     {
@@ -5469,8 +5469,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_kelas_page_mapelkelaspage",
-      "community": 2,
-      "community_name": "mapel-kelas-client.tsx",
+      "community": 60,
+      "community_name": "mapel-kelas/page.tsx",
       "norm_label": "mapelkelaspage()"
     },
     {
@@ -5480,8 +5480,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 8,
+      "community_name": "toast-provider.tsx",
       "norm_label": "mapel-siswa-grid.tsx"
     },
     {
@@ -5491,8 +5491,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid_kelasitem",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 8,
+      "community_name": "toast-provider.tsx",
       "norm_label": "kelasitem"
     },
     {
@@ -5502,8 +5502,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid_subject",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 8,
+      "community_name": "toast-provider.tsx",
       "norm_label": "subject"
     },
     {
@@ -5513,8 +5513,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid_student",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 8,
+      "community_name": "toast-provider.tsx",
       "norm_label": "student"
     },
     {
@@ -5524,8 +5524,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid_mapelsiswagridprops",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 8,
+      "community_name": "toast-provider.tsx",
       "norm_label": "mapelsiswagridprops"
     },
     {
@@ -5535,8 +5535,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid_headercheckbox",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 8,
+      "community_name": "toast-provider.tsx",
       "norm_label": "headercheckbox()"
     },
     {
@@ -5547,7 +5547,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid_mapelsiswagrid",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "mapelsiswagrid()"
     },
     {
@@ -5557,8 +5557,8 @@
       "source_location": "L307",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_components_mapel_siswa_grid_kelasdropdown",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 8,
+      "community_name": "toast-provider.tsx",
       "norm_label": "kelasdropdown()"
     },
     {
@@ -5568,8 +5568,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_page",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 82,
+      "community_name": "mapel-siswa/page.tsx",
       "norm_label": "mapel-siswa/page.tsx"
     },
     {
@@ -5579,8 +5579,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_page_getkelaslist",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 82,
+      "community_name": "mapel-siswa/page.tsx",
       "norm_label": "getkelaslist()"
     },
     {
@@ -5590,8 +5590,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_page_getsubjects",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 82,
+      "community_name": "mapel-siswa/page.tsx",
       "norm_label": "getsubjects()"
     },
     {
@@ -5601,8 +5601,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_page_getstudents",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 82,
+      "community_name": "mapel-siswa/page.tsx",
       "norm_label": "getstudents()"
     },
     {
@@ -5612,8 +5612,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_page_getenrollments",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 82,
+      "community_name": "mapel-siswa/page.tsx",
       "norm_label": "getenrollments()"
     },
     {
@@ -5623,8 +5623,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_siswa_page_mapelsiswapage",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 82,
+      "community_name": "mapel-siswa/page.tsx",
       "norm_label": "mapelsiswapage()"
     },
     {
@@ -5678,8 +5678,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_components_modal_hapus_mapel",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 24,
+      "community_name": "mapel-client.tsx",
       "norm_label": "modal-hapus-mapel.tsx"
     },
     {
@@ -5689,8 +5689,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_components_modal_hapus_mapel_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 24,
+      "community_name": "mapel-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -5700,8 +5700,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_mapel_components_modal_hapus_mapel_modalhapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 24,
+      "community_name": "mapel-client.tsx",
       "norm_label": "modalhapus()"
     },
     {
@@ -5789,7 +5789,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_components_naik_kelas_client",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "naik-kelas-client.tsx"
     },
     {
@@ -5800,7 +5800,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_components_naik_kelas_client_props",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "props"
     },
     {
@@ -5811,7 +5811,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_components_naik_kelas_client_naikkelasclient",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "naikkelasclient()"
     },
     {
@@ -5821,8 +5821,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_page",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 88,
+      "community_name": "naik-kelas/page.tsx",
       "norm_label": "naik-kelas/page.tsx"
     },
     {
@@ -5832,8 +5832,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_page_getdata",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 88,
+      "community_name": "naik-kelas/page.tsx",
       "norm_label": "getdata()"
     },
     {
@@ -5843,8 +5843,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_page_getkelas",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 88,
+      "community_name": "naik-kelas/page.tsx",
       "norm_label": "getkelas()"
     },
     {
@@ -5854,8 +5854,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_page_gettingkat",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 88,
+      "community_name": "naik-kelas/page.tsx",
       "norm_label": "gettingkat()"
     },
     {
@@ -5865,8 +5865,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_naik_kelas_page_naikkelaspage",
-      "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community": 88,
+      "community_name": "naik-kelas/page.tsx",
       "norm_label": "naikkelaspage()"
     },
     {
@@ -5909,8 +5909,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_organisasi_components_modal_hapus_organisasi",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-hapus-organisasi.tsx"
     },
     {
@@ -5920,8 +5920,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_organisasi_components_modal_hapus_organisasi_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -5931,8 +5931,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_organisasi_components_modal_hapus_organisasi_modalhapusorganisasi",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 23,
+      "community_name": "organisasi-client.tsx",
       "norm_label": "modalhapusorganisasi()"
     },
     {
@@ -6085,8 +6085,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_components_modal_hapus_p5bk",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-hapus-p5bk.tsx"
     },
     {
@@ -6096,8 +6096,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_components_modal_hapus_p5bk_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -6107,8 +6107,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_components_modal_hapus_p5bk_modalhapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapus()"
     },
     {
@@ -6283,8 +6283,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_page",
-      "community": 12,
-      "community_name": "p5bk-client.tsx",
+      "community": 32,
+      "community_name": "tu/p5bk/page.tsx",
       "norm_label": "tu/p5bk/page.tsx"
     },
     {
@@ -6294,8 +6294,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_page_getdata",
-      "community": 12,
-      "community_name": "p5bk-client.tsx",
+      "community": 32,
+      "community_name": "tu/p5bk/page.tsx",
       "norm_label": "getdata()"
     },
     {
@@ -6305,8 +6305,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_page_getkelas",
-      "community": 12,
-      "community_name": "p5bk-client.tsx",
+      "community": 32,
+      "community_name": "tu/p5bk/page.tsx",
       "norm_label": "getkelas()"
     },
     {
@@ -6316,8 +6316,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_page_gettema",
-      "community": 12,
-      "community_name": "p5bk-client.tsx",
+      "community": 32,
+      "community_name": "tu/p5bk/page.tsx",
       "norm_label": "gettema()"
     },
     {
@@ -6327,8 +6327,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_page_getuser",
-      "community": 12,
-      "community_name": "p5bk-client.tsx",
+      "community": 32,
+      "community_name": "tu/p5bk/page.tsx",
       "norm_label": "getuser()"
     },
     {
@@ -6338,8 +6338,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_page_getdimensitree",
-      "community": 12,
-      "community_name": "p5bk-client.tsx",
+      "community": 32,
+      "community_name": "tu/p5bk/page.tsx",
       "norm_label": "getdimensitree()"
     },
     {
@@ -6349,8 +6349,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_p5bk_page_p5bkpage",
-      "community": 12,
-      "community_name": "p5bk-client.tsx",
+      "community": 32,
+      "community_name": "tu/p5bk/page.tsx",
       "norm_label": "p5bkpage()"
     },
     {
@@ -6393,8 +6393,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_modal_hapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "pegawai/_components/modal-hapus.tsx"
     },
     {
@@ -6404,8 +6404,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_modal_hapus_modalhapusprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapusprops"
     },
     {
@@ -6415,8 +6415,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_modal_hapus_modalhapus",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalhapus()"
     },
     {
@@ -6426,8 +6426,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_modal_pegawai",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-pegawai.tsx"
     },
     {
@@ -6437,8 +6437,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_modal_pegawai_modalpegawaiprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalpegawaiprops"
     },
     {
@@ -6448,8 +6448,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_modal_pegawai_modalpegawai",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalpegawai()"
     },
     {
@@ -6459,8 +6459,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_pegawai_client",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "pegawai-client.tsx"
     },
     {
@@ -6470,8 +6470,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_pegawai_client_columns",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "columns"
     },
     {
@@ -6481,8 +6481,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_pegawai_client_pegawaiclientprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "pegawaiclientprops"
     },
     {
@@ -6492,8 +6492,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_components_pegawai_client_pegawaiclient",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "pegawaiclient()"
     },
     {
@@ -6503,8 +6503,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_page",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "pegawai/page.tsx"
     },
     {
@@ -6514,8 +6514,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_page_getpegawai",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "getpegawai()"
     },
     {
@@ -6525,8 +6525,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_page_getreferensi",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "getreferensi()"
     },
     {
@@ -6536,8 +6536,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pegawai_page_pegawaipage",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "pegawaipage()"
     },
     {
@@ -6548,7 +6548,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pengaturan_components_pengaturan_client",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "pengaturan-client.tsx"
     },
     {
@@ -6559,7 +6559,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pengaturan_components_pengaturan_client_todateinput",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "todateinput()"
     },
     {
@@ -6570,7 +6570,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pengaturan_components_pengaturan_client_props",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "props"
     },
     {
@@ -6581,7 +6581,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pengaturan_components_pengaturan_client_pengaturanclient",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "pengaturanclient()"
     },
     {
@@ -6592,7 +6592,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pengaturan_page",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "pengaturan/page.tsx"
     },
     {
@@ -6603,7 +6603,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pengaturan_page_getdata",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "getdata()"
     },
     {
@@ -6614,7 +6614,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_pengaturan_page_pengaturanpage",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "pengaturanpage()"
     },
     {
@@ -6625,7 +6625,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_components_piket_harian_client",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "piket-harian-client.tsx"
     },
     {
@@ -6636,7 +6636,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_components_piket_harian_client_days",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "days"
     },
     {
@@ -6647,7 +6647,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_components_piket_harian_client_piketharianclientprops",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "piketharianclientprops"
     },
     {
@@ -6658,7 +6658,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_components_piket_harian_client_piketharianclient",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "piketharianclient()"
     },
     {
@@ -6668,8 +6668,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_page",
-      "community": 88,
-      "community_name": "tu/piket-harian/page.tsx",
+      "community": 16,
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "tu/piket-harian/page.tsx"
     },
     {
@@ -6679,8 +6679,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_page_getdata",
-      "community": 88,
-      "community_name": "tu/piket-harian/page.tsx",
+      "community": 16,
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "getdata()"
     },
     {
@@ -6690,8 +6690,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_page_getuser",
-      "community": 88,
-      "community_name": "tu/piket-harian/page.tsx",
+      "community": 16,
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "getuser()"
     },
     {
@@ -6701,8 +6701,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_piket_harian_page_piketharianpage",
-      "community": 88,
-      "community_name": "tu/piket-harian/page.tsx",
+      "community": 16,
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "piketharianpage()"
     },
     {
@@ -6745,8 +6745,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_components_modal_import_prakerin",
-      "community": 82,
-      "community_name": "useToast",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modal-import-prakerin.tsx"
     },
     {
@@ -6756,8 +6756,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_components_modal_import_prakerin_modalimportprops",
-      "community": 82,
-      "community_name": "useToast",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalimportprops"
     },
     {
@@ -6767,8 +6767,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_components_modal_import_prakerin_column_map",
-      "community": 82,
-      "community_name": "useToast",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "column_map"
     },
     {
@@ -6778,8 +6778,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_components_modal_import_prakerin_findheader",
-      "community": 82,
-      "community_name": "useToast",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "findheader()"
     },
     {
@@ -6789,8 +6789,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_components_modal_import_prakerin_exceldatetoiso",
-      "community": 82,
-      "community_name": "useToast",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "exceldatetoiso()"
     },
     {
@@ -6800,8 +6800,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_components_modal_import_prakerin_modalimportprakerin",
-      "community": 82,
-      "community_name": "useToast",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "modalimportprakerin()"
     },
     {
@@ -6888,8 +6888,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_page",
-      "community": 5,
-      "community_name": "prakerin-client.tsx",
+      "community": 36,
+      "community_name": "tu/prakerin/page.tsx",
       "norm_label": "tu/prakerin/page.tsx"
     },
     {
@@ -6899,8 +6899,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_page_getprakerin",
-      "community": 5,
-      "community_name": "prakerin-client.tsx",
+      "community": 36,
+      "community_name": "tu/prakerin/page.tsx",
       "norm_label": "getprakerin()"
     },
     {
@@ -6910,8 +6910,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_page_getusers",
-      "community": 5,
-      "community_name": "prakerin-client.tsx",
+      "community": 36,
+      "community_name": "tu/prakerin/page.tsx",
       "norm_label": "getusers()"
     },
     {
@@ -6921,8 +6921,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_prakerin_page_prakerinpage",
-      "community": 5,
-      "community_name": "prakerin-client.tsx",
+      "community": 36,
+      "community_name": "tu/prakerin/page.tsx",
       "norm_label": "prakerinpage()"
     },
     {
@@ -7032,7 +7032,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_components_rombel_client",
       "community": 61,
-      "community_name": "rombel/page.tsx",
+      "community_name": "rombel-client.tsx",
       "norm_label": "rombel-client.tsx"
     },
     {
@@ -7043,7 +7043,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_components_rombel_client_columns",
       "community": 61,
-      "community_name": "rombel/page.tsx",
+      "community_name": "rombel-client.tsx",
       "norm_label": "columns"
     },
     {
@@ -7054,7 +7054,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_components_rombel_client_rombelclientprops",
       "community": 61,
-      "community_name": "rombel/page.tsx",
+      "community_name": "rombel-client.tsx",
       "norm_label": "rombelclientprops"
     },
     {
@@ -7065,7 +7065,7 @@
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_components_rombel_client_rombelclient",
       "community": 61,
-      "community_name": "rombel/page.tsx",
+      "community_name": "rombel-client.tsx",
       "norm_label": "rombelclient()"
     },
     {
@@ -7075,7 +7075,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_page",
-      "community": 61,
+      "community": 94,
       "community_name": "rombel/page.tsx",
       "norm_label": "rombel/page.tsx"
     },
@@ -7086,7 +7086,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_page_getrombel",
-      "community": 61,
+      "community": 94,
       "community_name": "rombel/page.tsx",
       "norm_label": "getrombel()"
     },
@@ -7097,7 +7097,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_page_getuser",
-      "community": 61,
+      "community": 94,
       "community_name": "rombel/page.tsx",
       "norm_label": "getuser()"
     },
@@ -7108,7 +7108,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_rombel_page_rombelpage",
-      "community": 61,
+      "community": 94,
       "community_name": "rombel/page.tsx",
       "norm_label": "rombelpage()"
     },
@@ -7119,8 +7119,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_modal_detail_sinkron",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "modal-detail-sinkron.tsx"
     },
     {
@@ -7130,8 +7130,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_modal_detail_sinkron_status_meta",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "status_meta"
     },
     {
@@ -7141,8 +7141,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_modal_detail_sinkron_entity_order",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "entity_order"
     },
     {
@@ -7152,8 +7152,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_modal_detail_sinkron_props",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "props"
     },
     {
@@ -7163,8 +7163,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_modal_detail_sinkron_modaldetailsinkron",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "modaldetailsinkron()"
     },
     {
@@ -7174,74 +7174,41 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "singkron-client.tsx"
     },
     {
       "label": "ENTITAS",
       "file_type": "code",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_entitas",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "entitas"
     },
     {
       "label": "Props",
       "file_type": "code",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L26",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_props",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "props"
-    },
-    {
-      "label": "PeriodeInfo",
-      "file_type": "code",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_periodeinfo",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "periodeinfo"
-    },
-    {
-      "label": "SyncPeriodeInfo",
-      "file_type": "code",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L37",
-      "_origin": "ast",
-      "id": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_syncperiodeinfo",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "syncperiodeinfo"
-    },
-    {
-      "label": "namaSemester()",
-      "file_type": "code",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L44",
-      "_origin": "ast",
-      "id": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_namasemester",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "namasemester()"
     },
     {
       "label": "SingkronClient()",
       "file_type": "code",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L46",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "singkronclient()"
     },
     {
@@ -7251,8 +7218,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_page",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "singkron-dapodik/page.tsx"
     },
     {
@@ -7262,8 +7229,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_page_getdata",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "getdata()"
     },
     {
@@ -7273,8 +7240,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_app_dashboard_tu_singkron_dapodik_page_singkrondapodikpage",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "singkrondapodikpage()"
     },
     {
@@ -7284,7 +7251,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_admin_update_route",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "update/route.ts"
     },
@@ -7295,7 +7262,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_app_api_admin_update_route_runtime",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "runtime"
     },
@@ -7306,7 +7273,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_api_admin_update_route_dynamic",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "dynamic"
     },
@@ -7317,7 +7284,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_app_api_admin_update_route_get",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "get()"
     },
@@ -7328,7 +7295,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_auth_nextauth_route",
-      "community": 32,
+      "community": 25,
       "community_name": "auth.ts",
       "norm_label": "[...nextauth]/route.ts"
     },
@@ -7340,7 +7307,7 @@
       "_origin": "ast",
       "id": "src_app_api_favicon_route",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "favicon/route.ts"
     },
     {
@@ -7351,7 +7318,7 @@
       "_origin": "ast",
       "id": "src_app_api_favicon_route_sekolah_dir",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "sekolah_dir"
     },
     {
@@ -7362,7 +7329,7 @@
       "_origin": "ast",
       "id": "src_app_api_favicon_route_get",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "get()"
     },
     {
@@ -7373,7 +7340,7 @@
       "_origin": "ast",
       "id": "src_app_api_guru_penilaian_id_mapel_kelas_route",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "[id_mapel_kelas]/route.ts"
     },
     {
@@ -7384,7 +7351,7 @@
       "_origin": "ast",
       "id": "src_app_api_guru_penilaian_id_mapel_kelas_route_entry",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "entry"
     },
     {
@@ -7395,7 +7362,7 @@
       "_origin": "ast",
       "id": "src_app_api_guru_penilaian_id_mapel_kelas_route_post",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "post()"
     },
     {
@@ -7406,7 +7373,7 @@
       "_origin": "ast",
       "id": "src_app_api_sekolah_logo_route",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "sekolah-logo/route.ts"
     },
     {
@@ -7417,7 +7384,7 @@
       "_origin": "ast",
       "id": "src_app_api_sekolah_logo_route_sekolahlogorow",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "sekolahlogorow"
     },
     {
@@ -7428,7 +7395,7 @@
       "_origin": "ast",
       "id": "src_app_api_sekolah_logo_route_get",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "get()"
     },
     {
@@ -7504,7 +7471,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_tu_kesiswaan_template_route",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "kesiswaan/template/route.ts"
     },
@@ -7515,7 +7482,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_api_tu_kesiswaan_template_route_get",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "get()"
     },
@@ -7526,7 +7493,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_api_tu_prakerin_template_route",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "prakerin/template/route.ts"
     },
@@ -7537,7 +7504,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_api_tu_prakerin_template_route_get",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "get()"
     },
@@ -7670,7 +7637,7 @@
       "_origin": "ast",
       "id": "src_app_page",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "app/page.tsx"
     },
     {
@@ -7681,30 +7648,8 @@
       "_origin": "ast",
       "id": "src_app_page_home",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "home()"
-    },
-    {
-      "label": "dapodik-sync-banner.tsx",
-      "file_type": "code",
-      "source_file": "src/components/dapodik-sync-banner.tsx",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_components_dapodik_sync_banner",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "dapodik-sync-banner.tsx"
-    },
-    {
-      "label": "DapodikSyncBanner()",
-      "file_type": "code",
-      "source_file": "src/components/dapodik-sync-banner.tsx",
-      "source_location": "L8",
-      "_origin": "ast",
-      "id": "src_components_dapodik_sync_banner_dapodiksyncbanner",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "dapodiksyncbanner()"
     },
     {
       "label": "catatan-wali-editor.tsx",
@@ -7714,7 +7659,7 @@
       "_origin": "ast",
       "id": "src_components_guru_catatan_wali_editor",
       "community": 19,
-      "community_name": "auth-guard.ts",
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "catatan-wali-editor.tsx"
     },
     {
@@ -7725,7 +7670,7 @@
       "_origin": "ast",
       "id": "src_components_guru_catatan_wali_editor_savestatus",
       "community": 19,
-      "community_name": "auth-guard.ts",
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "savestatus"
     },
     {
@@ -7736,7 +7681,7 @@
       "_origin": "ast",
       "id": "src_components_guru_catatan_wali_editor_props",
       "community": 19,
-      "community_name": "auth-guard.ts",
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "props"
     },
     {
@@ -7747,7 +7692,7 @@
       "_origin": "ast",
       "id": "src_components_guru_catatan_wali_editor_status_label",
       "community": 19,
-      "community_name": "auth-guard.ts",
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "status_label"
     },
     {
@@ -7758,7 +7703,7 @@
       "_origin": "ast",
       "id": "src_components_guru_catatan_wali_editor_status_class",
       "community": 19,
-      "community_name": "auth-guard.ts",
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "status_class"
     },
     {
@@ -7769,7 +7714,7 @@
       "_origin": "ast",
       "id": "src_components_guru_catatan_wali_editor_catatanwalieditor",
       "community": 19,
-      "community_name": "auth-guard.ts",
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "catatanwalieditor()"
     },
     {
@@ -7812,8 +7757,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_layout_sidebar_guru",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "sidebar-guru.tsx"
     },
     {
@@ -7823,8 +7768,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_components_layout_sidebar_guru_all_menu_sections",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "all_menu_sections"
     },
     {
@@ -7834,8 +7779,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "src_components_layout_sidebar_guru_getvisiblesections",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "getvisiblesections()"
     },
     {
@@ -7845,8 +7790,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "src_components_layout_sidebar_guru_getvisibleitems",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "getvisibleitems()"
     },
     {
@@ -7856,8 +7801,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_components_layout_sidebar_guru_sidebarguru",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "sidebarguru()"
     },
     {
@@ -8076,8 +8021,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_confirm_delete_modal",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "confirm-delete-modal.tsx"
     },
     {
@@ -8087,8 +8032,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_components_ui_confirm_delete_modal_confirmdeletemodalprops",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "confirmdeletemodalprops"
     },
     {
@@ -8098,8 +8043,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_components_ui_confirm_delete_modal_confirmdeletemodal",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "confirmdeletemodal()"
     },
     {
@@ -8109,7 +8054,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_toast_provider",
-      "community": 95,
+      "community": 8,
       "community_name": "toast-provider.tsx",
       "norm_label": "toast-provider.tsx"
     },
@@ -8120,7 +8065,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_components_ui_toast_provider_toastitem",
-      "community": 95,
+      "community": 8,
       "community_name": "toast-provider.tsx",
       "norm_label": "toastitem"
     },
@@ -8131,7 +8076,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_components_ui_toast_provider_toastcontexttype",
-      "community": 95,
+      "community": 8,
       "community_name": "toast-provider.tsx",
       "norm_label": "toastcontexttype"
     },
@@ -8142,7 +8087,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_components_ui_toast_provider_toastcontext",
-      "community": 95,
+      "community": 8,
       "community_name": "toast-provider.tsx",
       "norm_label": "toastcontext"
     },
@@ -8164,7 +8109,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_components_ui_toast_provider_usetoast",
-      "community": 82,
+      "community": 70,
       "community_name": "useToast",
       "norm_label": "usetoast()"
     },
@@ -8175,7 +8120,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_toast",
-      "community": 95,
+      "community": 8,
       "community_name": "toast-provider.tsx",
       "norm_label": "toast.tsx"
     },
@@ -8186,7 +8131,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_components_ui_toast_toastprops",
-      "community": 95,
+      "community": 8,
       "community_name": "toast-provider.tsx",
       "norm_label": "toastprops"
     },
@@ -8197,7 +8142,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_components_ui_toast_toast",
-      "community": 95,
+      "community": 8,
       "community_name": "toast-provider.tsx",
       "norm_label": "toast()"
     },
@@ -8209,7 +8154,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_anggota_kelas_actions",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "anggota-kelas-actions.ts"
     },
     {
@@ -8220,7 +8165,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_anggota_kelas_actions_updateanggotakelas",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "updateanggotakelas()"
     },
     {
@@ -8231,7 +8176,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_anggota_kelas_actions_deleteanggotakelas",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "deleteanggotakelas()"
     },
     {
@@ -8242,7 +8187,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_anggota_kelas_actions_bulkaddanggotakelas",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "bulkaddanggotakelas()"
     },
     {
@@ -8253,7 +8198,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_anggota_kelas_actions_bulkremoveanggotakelas",
       "community": 70,
-      "community_name": "anggota-kelas-actions.ts",
+      "community_name": "useToast",
       "norm_label": "bulkremoveanggotakelas()"
     },
     {
@@ -8263,7 +8208,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_auth_guard",
-      "community": 19,
+      "community": 54,
       "community_name": "auth-guard.ts",
       "norm_label": "auth-guard.ts"
     },
@@ -8274,7 +8219,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_lib_actions_auth_guard_requiretuadmin",
-      "community": 16,
+      "community": 6,
       "community_name": "requireTuAdmin",
       "norm_label": "requiretuadmin()"
     },
@@ -8286,7 +8231,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_auth_guard_requireguru",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "requireguru()"
     },
     {
@@ -8296,8 +8241,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_lib_actions_auth_guard_requiregurubk",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "requiregurubk()"
     },
     {
@@ -8307,7 +8252,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_lib_actions_auth_guard_requireauth",
-      "community": 19,
+      "community": 54,
       "community_name": "auth-guard.ts",
       "norm_label": "requireauth()"
     },
@@ -8318,8 +8263,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_catatan_wali_actions",
-      "community": 19,
-      "community_name": "auth-guard.ts",
+      "community": 14,
+      "community_name": "db.ts",
       "norm_label": "catatan-wali-actions.ts"
     },
     {
@@ -8329,8 +8274,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_lib_actions_catatan_wali_actions_savecatatanwaliinput",
-      "community": 19,
-      "community_name": "auth-guard.ts",
+      "community": 14,
+      "community_name": "db.ts",
       "norm_label": "savecatatanwaliinput"
     },
     {
@@ -8341,7 +8286,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_catatan_wali_actions_savecatatanwali",
       "community": 19,
-      "community_name": "auth-guard.ts",
+      "community_name": "cetak-rapor-guru-client.tsx",
       "norm_label": "savecatatanwali()"
     },
     {
@@ -8359,7 +8304,7 @@
       "label": "REVALIDATE",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L30",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_revalidate",
       "community": 31,
@@ -8370,7 +8315,7 @@
       "label": "SyncEntityResult",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L41",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_syncentityresult",
       "community": 31,
@@ -8381,7 +8326,7 @@
       "label": "getConnection()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L50",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_getconnection",
       "community": 31,
@@ -8389,65 +8334,43 @@
       "norm_label": "getconnection()"
     },
     {
-      "label": "setSyncStatus()",
-      "file_type": "code",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L61",
-      "_origin": "ast",
-      "id": "src_lib_actions_dapodik_actions_setsyncstatus",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "setsyncstatus()"
-    },
-    {
       "label": "getDapodikConfig()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L76",
+      "source_location": "L60",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_getdapodikconfig",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 6,
+      "community_name": "requireTuAdmin",
       "norm_label": "getdapodikconfig()"
     },
     {
       "label": "saveDapodikConfig()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L94",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_savedapodikconfig",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "savedapodikconfig()"
     },
     {
       "label": "testDapodikConnection()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L121",
+      "source_location": "L105",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_testdapodikconnection",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "testdapodikconnection()"
-    },
-    {
-      "label": "cekPeriodeDapodik()",
-      "file_type": "code",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L141",
-      "_origin": "ast",
-      "id": "src_lib_actions_dapodik_actions_cekperiodedapodik",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "cekperiodedapodik()"
     },
     {
       "label": "writeLog()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L187",
+      "source_location": "L125",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_writelog",
       "community": 31,
@@ -8458,7 +8381,7 @@
       "label": "DetailRow",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L199",
+      "source_location": "L137",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_detailrow",
       "community": 31,
@@ -8469,7 +8392,7 @@
       "label": "flushDetail()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L201",
+      "source_location": "L139",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_flushdetail",
       "community": 31,
@@ -8480,7 +8403,7 @@
       "label": "addDetail()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L213",
+      "source_location": "L151",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_adddetail",
       "community": 31,
@@ -8491,7 +8414,7 @@
       "label": "findKkIdByMatch()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L217",
+      "source_location": "L155",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_findkkidbymatch",
       "community": 31,
@@ -8502,7 +8425,7 @@
       "label": "SyncContext",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L222",
+      "source_location": "L160",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_synccontext",
       "community": 31,
@@ -8513,7 +8436,7 @@
       "label": "syncDapodik()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L233",
+      "source_location": "L171",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_syncdapodik",
       "community": 31,
@@ -8521,36 +8444,25 @@
       "norm_label": "syncdapodik()"
     },
     {
-      "label": "getDapodikSyncStatusAction()",
-      "file_type": "code",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L861",
-      "_origin": "ast",
-      "id": "src_lib_actions_dapodik_actions_getdapodiksyncstatusaction",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "getdapodiksyncstatusaction()"
-    },
-    {
       "label": "DapodikLogDetailRow",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L865",
+      "source_location": "L725",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_dapodiklogdetailrow",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "dapodiklogdetailrow"
     },
     {
       "label": "getDapodikLogDetail()",
       "file_type": "code",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L872",
+      "source_location": "L732",
       "_origin": "ast",
       "id": "src_lib_actions_dapodik_actions_getdapodiklogdetail",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
+      "community": 92,
+      "community_name": "singkron-client.tsx",
       "norm_label": "getdapodiklogdetail()"
     },
     {
@@ -8593,8 +8505,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "ekstra-actions.ts"
     },
     {
@@ -8604,8 +8516,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_updateekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "updateekstra()"
     },
     {
@@ -8615,8 +8527,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_deleteekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "deleteekstra()"
     },
     {
@@ -8626,8 +8538,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_updatepembinaekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "updatepembinaekstra()"
     },
     {
@@ -8637,8 +8549,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_canmanageeskul",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "canmanageeskul()"
     },
     {
@@ -8648,8 +8560,8 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_addsiswaekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "addsiswaekstra()"
     },
     {
@@ -8659,8 +8571,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_removesiswaekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "removesiswaekstra()"
     },
     {
@@ -8670,8 +8582,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_updatesiswaekstra",
-      "community": 7,
-      "community_name": "ekstra-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "updatesiswaekstra()"
     },
     {
@@ -8681,8 +8593,8 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "src_lib_actions_ekstra_actions_bulkupdatesiswaekstra",
-      "community": 50,
-      "community_name": "modal-nilai-eskul.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "bulkupdatesiswaekstra()"
     },
     {
@@ -8692,8 +8604,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_guru_actions",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "guru-actions.ts"
     },
     {
@@ -8703,8 +8615,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_lib_actions_guru_actions_gurutugas",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "gurutugas"
     },
     {
@@ -8714,8 +8626,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_lib_actions_guru_actions_getgurutugas",
-      "community": 94,
-      "community_name": "sidebar-guru.tsx",
+      "community": 4,
+      "community_name": "tu/layout.tsx",
       "norm_label": "getgurutugas()"
     },
     {
@@ -8725,7 +8637,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_kompetensi_actions",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "kompetensi-actions.ts"
     },
@@ -8736,7 +8648,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_lib_actions_kompetensi_actions_updatekompetensi",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "updatekompetensi()"
     },
@@ -8747,7 +8659,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_lib_actions_kompetensi_actions_deletekompetensi",
-      "community": 8,
+      "community": 33,
       "community_name": "kompetensi-client.tsx",
       "norm_label": "deletekompetensi()"
     },
@@ -8869,7 +8781,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_mapel_siswa_actions",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "mapel-siswa-actions.ts"
     },
     {
@@ -8880,7 +8792,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_mapel_siswa_actions_updatemapelsiswa",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "updatemapelsiswa()"
     },
     {
@@ -8891,7 +8803,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_mapel_siswa_actions_togglemapelsiswa",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "togglemapelsiswa()"
     },
     {
@@ -8902,7 +8814,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_mapel_siswa_actions_togglemapelsiswabatch",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "togglemapelsiswabatch()"
     },
     {
@@ -8913,7 +8825,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_mapel_siswa_actions_deletemapelsiswa",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "deletemapelsiswa()"
     },
     {
@@ -8924,7 +8836,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_naik_kelas_actions",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "naik-kelas-actions.ts"
     },
     {
@@ -8935,7 +8847,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_naik_kelas_actions_getinfopromosi",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "getinfopromosi()"
     },
     {
@@ -8946,7 +8858,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_naik_kelas_actions_updatenaikkelas",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "updatenaikkelas()"
     },
     {
@@ -8957,7 +8869,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_naik_kelas_actions_promotekelas",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "promotekelas()"
     },
     {
@@ -8968,7 +8880,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_naik_kelas_actions_promoteallkelas",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "promoteallkelas()"
     },
     {
@@ -9121,8 +9033,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_pegawai_actions",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "pegawai-actions.ts"
     },
     {
@@ -9132,8 +9044,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_lib_actions_pegawai_actions_updatepegawai",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "updatepegawai()"
     },
     {
@@ -9143,8 +9055,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_lib_actions_pegawai_actions_deletepegawai",
-      "community": 29,
-      "community_name": "deskripsi-client.tsx",
+      "community": 5,
+      "community_name": "prakerin-client.tsx",
       "norm_label": "deletepegawai()"
     },
     {
@@ -9155,7 +9067,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_pengaturan_actions",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "pengaturan-actions.ts"
     },
     {
@@ -9166,7 +9078,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_pengaturan_actions_savepengaturan",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "savepengaturan()"
     },
     {
@@ -9177,7 +9089,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_pengaturan_actions_addtahunpelajaran",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "addtahunpelajaran()"
     },
     {
@@ -9188,7 +9100,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_pengaturan_actions_deletetahunpelajaran",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "deletetahunpelajaran()"
     },
     {
@@ -9199,7 +9111,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_piket_harian_actions",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "piket-harian-actions.ts"
     },
     {
@@ -9210,7 +9122,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_piket_harian_actions_updatepiketharian",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "updatepiketharian()"
     },
     {
@@ -9221,7 +9133,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_piket_harian_actions_deletepiketharian",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "deletepiketharian()"
     },
     {
@@ -9232,7 +9144,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_piket_harian_actions_addpiketharian",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "addpiketharian()"
     },
     {
@@ -9243,7 +9155,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_piket_harian_actions_deletepiketharianbyhariuser",
       "community": 16,
-      "community_name": "requireTuAdmin",
+      "community_name": "piket-harian-client.tsx",
       "norm_label": "deletepiketharianbyhariuser()"
     },
     {
@@ -9297,8 +9209,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "presensi-actions.ts"
     },
     {
@@ -9308,8 +9220,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_cekpikethariini",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "cekpikethariini()"
     },
     {
@@ -9319,8 +9231,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_getkelaslist",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getkelaslist()"
     },
     {
@@ -9330,8 +9242,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_getsiswakelas",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getsiswakelas()"
     },
     {
@@ -9341,8 +9253,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_cekabsensihariini",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "cekabsensihariini()"
     },
     {
@@ -9352,8 +9264,8 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_savepresensiharian",
-      "community": 36,
-      "community_name": "absensi-piket-client.tsx",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "savepresensiharian()"
     },
     {
@@ -9363,8 +9275,8 @@
       "source_location": "L138",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_getkelaslistforbk",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getkelaslistforbk()"
     },
     {
@@ -9374,8 +9286,8 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_getrekapabsensibk",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "getrekapabsensibk()"
     },
     {
@@ -9385,8 +9297,8 @@
       "source_location": "L188",
       "_origin": "ast",
       "id": "src_lib_actions_presensi_actions_updatepresensiinline",
-      "community": 51,
-      "community_name": "presensi-actions.ts",
+      "community": 54,
+      "community_name": "auth-guard.ts",
       "norm_label": "updatepresensiinline()"
     },
     {
@@ -9507,7 +9419,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_rombel_actions",
       "community": 61,
-      "community_name": "rombel/page.tsx",
+      "community_name": "rombel-client.tsx",
       "norm_label": "rombel-actions.ts"
     },
     {
@@ -9518,7 +9430,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_rombel_actions_updatewalikelas",
       "community": 61,
-      "community_name": "rombel/page.tsx",
+      "community_name": "rombel-client.tsx",
       "norm_label": "updatewalikelas()"
     },
     {
@@ -9627,8 +9539,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_actions_siswa_profile_actions",
-      "community": 9,
-      "community_name": "siswa/profile/_components/profile-form.tsx",
+      "community": 25,
+      "community_name": "auth.ts",
       "norm_label": "siswa-profile-actions.ts"
     },
     {
@@ -9638,7 +9550,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_lib_actions_siswa_profile_actions_resolvetingkat",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "resolvetingkat()"
     },
@@ -9649,7 +9561,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_lib_actions_siswa_profile_actions_updatesiswaprofile",
-      "community": 9,
+      "community": 93,
       "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "updatesiswaprofile()"
     },
@@ -9661,7 +9573,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "tp-actions.ts"
     },
     {
@@ -9672,7 +9584,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_formatdisplayorder",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "formatdisplayorder()"
     },
     {
@@ -9683,7 +9595,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_getnextdisplayindex",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "getnextdisplayindex()"
     },
     {
@@ -9694,7 +9606,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_createkode",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "createkode()"
     },
     {
@@ -9705,7 +9617,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_getkodenext",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "getkodenext()"
     },
     {
@@ -9716,7 +9628,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_addtujuanmulti",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "addtujuanmulti()"
     },
     {
@@ -9727,7 +9639,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_updatetujuanmulti",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "updatetujuanmulti()"
     },
     {
@@ -9738,7 +9650,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_updatetujuansingle",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "updatetujuansingle()"
     },
     {
@@ -9749,7 +9661,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_deletetujuanbykode",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "deletetujuanbykode()"
     },
     {
@@ -9760,7 +9672,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_gettpfrompreviousyear",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "gettpfrompreviousyear()"
     },
     {
@@ -9771,7 +9683,7 @@
       "_origin": "ast",
       "id": "src_lib_actions_tp_actions_copytujuan",
       "community": 54,
-      "community_name": "requireGuru",
+      "community_name": "auth-guard.ts",
       "norm_label": "copytujuan()"
     },
     {
@@ -9781,7 +9693,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_auth",
-      "community": 32,
+      "community": 25,
       "community_name": "auth.ts",
       "norm_label": "auth.ts"
     },
@@ -9792,7 +9704,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_lib_auth_staffauthrow",
-      "community": 32,
+      "community": 25,
       "community_name": "auth.ts",
       "norm_label": "staffauthrow"
     },
@@ -9803,7 +9715,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_lib_auth_studentauthrow",
-      "community": 32,
+      "community": 25,
       "community_name": "auth.ts",
       "norm_label": "studentauthrow"
     },
@@ -9814,7 +9726,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_lib_auth_handlers_signin_signout_auth",
-      "community": 32,
+      "community": 25,
       "community_name": "auth.ts",
       "norm_label": "{ handlers, signin, signout, auth }"
     },
@@ -9826,7 +9738,7 @@
       "_origin": "ast",
       "id": "src_lib_constants",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "constants.ts"
     },
     {
@@ -9837,7 +9749,7 @@
       "_origin": "ast",
       "id": "src_lib_constants_sekolah_id",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "sekolah_id"
     },
     {
@@ -9848,41 +9760,8 @@
       "_origin": "ast",
       "id": "src_lib_constants_jabatan",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "jabatan"
-    },
-    {
-      "label": "dapodik-status.ts",
-      "file_type": "code",
-      "source_file": "src/lib/dapodik-status.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_lib_dapodik_status",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "dapodik-status.ts"
-    },
-    {
-      "label": "DapodikSyncStatus",
-      "file_type": "code",
-      "source_file": "src/lib/dapodik-status.ts",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "src_lib_dapodik_status_dapodiksyncstatus",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "dapodiksyncstatus"
-    },
-    {
-      "label": "getDapodikSyncStatus()",
-      "file_type": "code",
-      "source_file": "src/lib/dapodik-status.ts",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "src_lib_dapodik_status_getdapodiksyncstatus",
-      "community": 31,
-      "community_name": "dapodik-actions.ts",
-      "norm_label": "getdapodiksyncstatus()"
     },
     {
       "label": "client.ts",
@@ -10375,8 +10254,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "pelengkap-pdfmake.ts"
     },
     {
@@ -10386,8 +10265,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_page_width",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "page_width"
     },
     {
@@ -10397,8 +10276,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_page_height",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "page_height"
     },
     {
@@ -10408,8 +10287,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_page_margins",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "page_margins"
     },
     {
@@ -10419,8 +10298,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_upload_directory",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "upload_directory"
     },
     {
@@ -10430,8 +10309,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_borderlesslayout",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "borderlesslayout"
     },
     {
@@ -10441,8 +10320,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_identityboxlayout",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "identityboxlayout"
     },
     {
@@ -10452,8 +10331,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_transfertablelayout",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "transfertablelayout"
     },
     {
@@ -10463,8 +10342,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_notelayout",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "notelayout"
     },
     {
@@ -10474,8 +10353,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_displayvalue",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "displayvalue()"
     },
     {
@@ -10485,8 +10364,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_formattanggal",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "formattanggal()"
     },
     {
@@ -10496,8 +10375,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_imagedatauri",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "imagedatauri()"
     },
     {
@@ -10507,8 +10386,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_provincelogo",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "provincelogo()"
     },
     {
@@ -10518,8 +10397,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_fixedimage",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "fixedimage()"
     },
     {
@@ -10529,8 +10408,8 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_schoollogocontent",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "schoollogocontent()"
     },
     {
@@ -10540,8 +10419,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_identitybox",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "identitybox()"
     },
     {
@@ -10551,8 +10430,8 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_pageheading",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "pageheading()"
     },
     {
@@ -10562,8 +10441,8 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_informationrow",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "informationrow()"
     },
     {
@@ -10573,8 +10452,8 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_informationtable",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "informationtable()"
     },
     {
@@ -10584,8 +10463,8 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_approvalblock",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "approvalblock()"
     },
     {
@@ -10595,8 +10474,8 @@
       "source_location": "L233",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_buildcover",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "buildcover()"
     },
     {
@@ -10606,8 +10485,8 @@
       "source_location": "L302",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_buildschoolpage",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "buildschoolpage()"
     },
     {
@@ -10617,8 +10496,8 @@
       "source_location": "L334",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_buildstudentpage",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "buildstudentpage()"
     },
     {
@@ -10628,8 +10507,8 @@
       "source_location": "L405",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_transfersignaturecell",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "transfersignaturecell()"
     },
     {
@@ -10639,8 +10518,8 @@
       "source_location": "L416",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_buildtransferpage",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "buildtransferpage()"
     },
     {
@@ -10650,8 +10529,8 @@
       "source_location": "L479",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_createpelengkaprapordefinition",
-      "community": 0,
-      "community_name": "mm",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "createpelengkaprapordefinition()"
     },
     {
@@ -10661,8 +10540,8 @@
       "source_location": "L522",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_pdfmake_generatepelengkapraporpdf",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 7,
+      "community_name": "pelengkap-pdfmake.ts",
       "norm_label": "generatepelengkapraporpdf()"
     },
     {
@@ -10672,8 +10551,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_template",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "pelengkap-template.ts"
     },
     {
@@ -10683,8 +10562,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_template_pelengkapsekolahinfo",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "pelengkapsekolahinfo"
     },
     {
@@ -10694,8 +10573,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_template_pelengkapsiswainfo",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "pelengkapsiswainfo"
     },
     {
@@ -10705,8 +10584,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_template_value",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "value()"
     },
     {
@@ -10716,8 +10595,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_template_formattanggal",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "formattanggal()"
     },
     {
@@ -10727,8 +10606,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_template_inforow",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "inforow()"
     },
     {
@@ -10738,8 +10617,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_pelengkap_template_generatepelengkapraporhtml",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "generatepelengkapraporhtml()"
     },
     {
@@ -10793,8 +10672,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_rapor_template_escapehtml",
-      "community": 3,
-      "community_name": "cetak-rapor/route.ts",
+      "community": 51,
+      "community_name": "pelengkap-template.ts",
       "norm_label": "escapehtml()"
     },
     {
@@ -11310,8 +11189,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "tengah-semester-pdfmake.ts"
     },
     {
@@ -11321,8 +11200,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_page_size",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "page_size"
     },
     {
@@ -11332,8 +11211,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_page_margins",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "page_margins"
     },
     {
@@ -11343,8 +11222,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_right_information_value_width",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "right_information_value_width"
     },
     {
@@ -11354,8 +11233,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_right_information_width",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "right_information_width"
     },
     {
@@ -11365,8 +11244,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_borderlesslayout",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "borderlesslayout"
     },
     {
@@ -11376,8 +11255,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_borderedlayout",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "borderedlayout"
     },
     {
@@ -11387,8 +11266,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_displayvalue",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "displayvalue()"
     },
     {
@@ -11398,8 +11277,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_getpredikat",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "getpredikat()"
     },
     {
@@ -11409,8 +11288,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_informationside",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "informationside()"
     },
     {
@@ -11420,8 +11299,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_studentinformation",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "studentinformation()"
     },
     {
@@ -11431,8 +11310,8 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_divider",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "divider()"
     },
     {
@@ -11442,8 +11321,8 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_subjecttable",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "subjecttable()"
     },
     {
@@ -11453,8 +11332,8 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_attendancetable",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "attendancetable()"
     },
     {
@@ -11464,8 +11343,8 @@
       "source_location": "L230",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_academicnote",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "academicnote()"
     },
     {
@@ -11475,8 +11354,8 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_signaturearea",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "signaturearea()"
     },
     {
@@ -11486,8 +11365,8 @@
       "source_location": "L309",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_studentfooter",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "studentfooter()"
     },
     {
@@ -11497,8 +11376,8 @@
       "source_location": "L350",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_studentcontent",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "studentcontent()"
     },
     {
@@ -11508,8 +11387,8 @@
       "source_location": "L382",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_createtengahsemesterrapordefinition",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "createtengahsemesterrapordefinition()"
     },
     {
@@ -11519,8 +11398,8 @@
       "source_location": "L417",
       "_origin": "ast",
       "id": "src_lib_pdf_templates_tengah_semester_pdfmake_generatetengahsemesterraporpdf",
-      "community": 0,
-      "community_name": "mm",
+      "community": 9,
+      "community_name": "tengah-semester-pdfmake.ts",
       "norm_label": "generatetengahsemesterraporpdf()"
     },
     {
@@ -11619,7 +11498,7 @@
       "_origin": "ast",
       "id": "src_lib_sekolah_helper",
       "community": 25,
-      "community_name": "sekolah-helper.ts",
+      "community_name": "auth.ts",
       "norm_label": "sekolah-helper.ts"
     },
     {
@@ -11630,7 +11509,7 @@
       "_origin": "ast",
       "id": "src_lib_sekolah_helper_getsekolahaktif",
       "community": 6,
-      "community_name": "mapel-siswa-grid.tsx",
+      "community_name": "requireTuAdmin",
       "norm_label": "getsekolahaktif()"
     },
     {
@@ -11651,8 +11530,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_lib_siswa_portal_data",
-      "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community": 25,
+      "community_name": "auth.ts",
       "norm_label": "siswa-portal-data.ts"
     },
     {
@@ -11662,8 +11541,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_lib_siswa_portal_data_siswaportalcontext",
-      "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community": 25,
+      "community_name": "auth.ts",
       "norm_label": "siswaportalcontext"
     },
     {
@@ -11674,7 +11553,7 @@
       "_origin": "ast",
       "id": "src_lib_siswa_portal_data_getsiswaportalcontext",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "getsiswaportalcontext()"
     },
     {
@@ -11685,7 +11564,7 @@
       "_origin": "ast",
       "id": "src_lib_siswa_portal_data_getnilaisiswa",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "getnilaisiswa()"
     },
     {
@@ -11696,7 +11575,7 @@
       "_origin": "ast",
       "id": "src_lib_siswa_portal_data_getpresensisiswa",
       "community": 30,
-      "community_name": "siswa-portal-data.ts",
+      "community_name": "siswa/page.tsx",
       "norm_label": "getpresensisiswa()"
     },
     {
@@ -11707,7 +11586,7 @@
       "_origin": "ast",
       "id": "src_lib_swal",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "swal.ts"
     },
     {
@@ -11718,7 +11597,7 @@
       "_origin": "ast",
       "id": "src_lib_swal_confirmalert",
       "community": 93,
-      "community_name": "confirmAlert",
+      "community_name": "siswa/profile/_components/profile-form.tsx",
       "norm_label": "confirmalert()"
     },
     {
@@ -15215,7 +15094,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L343",
+      "source_location": "L236",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -19301,35 +19180,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/guru/layout.tsx",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_guru_layout",
       "target": "src_app_dashboard_guru_layout_gurulayout",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/guru/layout.tsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_guru_layout",
-      "target": "src_components_dapodik_sync_banner",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/guru/layout.tsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_guru_layout",
-      "target": "src_components_dapodik_sync_banner_dapodiksyncbanner",
       "confidence_score": 1.0
     },
     {
@@ -24803,7 +24658,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_layout",
@@ -24814,35 +24669,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L50",
+      "source_location": "L49",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_layout",
       "target": "src_app_dashboard_tu_layout_tulayout",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_layout",
-      "target": "src_components_dapodik_sync_banner",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_layout",
-      "target": "src_components_dapodik_sync_banner_dapodiksyncbanner",
       "confidence_score": 1.0
     },
     {
@@ -24958,7 +24789,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_layout_getsidebardata",
@@ -24970,7 +24801,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/layout.tsx",
-      "source_location": "L55",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_layout_tulayout",
@@ -29941,7 +29772,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L15",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
@@ -29965,7 +29796,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L15",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
@@ -29976,7 +29807,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
@@ -29987,29 +29818,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L44",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
-      "target": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_namasemester",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L31",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
-      "target": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_periodeinfo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
@@ -30020,22 +29829,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L46",
+      "source_location": "L30",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
       "target": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L37",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
-      "target": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_syncperiodeinfo",
       "confidence_score": 1.0
     },
     {
@@ -30072,18 +29870,6 @@
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
       "target": "src_lib_actions_dapodik_actions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client",
-      "target": "src_lib_actions_dapodik_actions_cekperiodedapodik",
       "confidence_score": 1.0
     },
     {
@@ -30186,21 +29972,9 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L315",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
-      "target": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_namasemester",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L48",
+      "source_location": "L32",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
@@ -30212,19 +29986,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L105",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
-      "target": "src_lib_actions_dapodik_actions_cekperiodedapodik"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L155",
+      "source_location": "L122",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
@@ -30236,7 +29998,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L78",
+      "source_location": "L59",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
@@ -30248,7 +30010,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L132",
+      "source_location": "L100",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
@@ -30260,7 +30022,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L89",
+      "source_location": "L70",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
@@ -30272,7 +30034,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/(dashboard)/tu/singkron-dapodik/_components/singkron-client.tsx",
-      "source_location": "L120",
+      "source_location": "L89",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_dashboard_tu_singkron_dapodik_components_singkron_client_singkronclient",
@@ -31766,53 +31528,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src/components/dapodik-sync-banner.tsx",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_dapodik_sync_banner",
-      "target": "src_components_dapodik_sync_banner_dapodiksyncbanner",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/dapodik-sync-banner.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_dapodik_sync_banner",
-      "target": "src_lib_actions_dapodik_actions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/dapodik-sync-banner.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_dapodik_sync_banner",
-      "target": "src_lib_actions_dapodik_actions_getdapodiksyncstatusaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/dapodik-sync-banner.tsx",
-      "source_location": "L15",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_dapodik_sync_banner_dapodiksyncbanner",
-      "target": "src_lib_actions_dapodik_actions_getdapodiksyncstatusaction"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "src/components/guru/catatan-wali-editor.tsx",
       "source_location": "L33",
       "weight": 1.0,
@@ -32843,19 +32558,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L142",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions_cekperiodedapodik",
-      "target": "src_lib_actions_auth_guard_requiretuadmin"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L77",
+      "source_location": "L61",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_getdapodikconfig",
@@ -32867,7 +32570,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L873",
+      "source_location": "L733",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_getdapodiklogdetail",
@@ -32879,7 +32582,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L95",
+      "source_location": "L79",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_savedapodikconfig",
@@ -32891,7 +32594,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L234",
+      "source_location": "L172",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -32903,7 +32606,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L122",
+      "source_location": "L106",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_testdapodikconnection",
@@ -34135,7 +33838,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L213",
+      "source_location": "L151",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34146,18 +33849,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L141",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions",
-      "target": "src_lib_actions_dapodik_actions_cekperiodedapodik",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L865",
+      "source_location": "L725",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34168,7 +33860,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L199",
+      "source_location": "L137",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34179,7 +33871,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L217",
+      "source_location": "L155",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34190,7 +33882,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L201",
+      "source_location": "L139",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34201,7 +33893,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L50",
+      "source_location": "L49",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34212,7 +33904,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L76",
+      "source_location": "L60",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34223,7 +33915,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L872",
+      "source_location": "L732",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34234,18 +33926,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L861",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions",
-      "target": "src_lib_actions_dapodik_actions_getdapodiksyncstatusaction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L30",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34256,7 +33937,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L94",
+      "source_location": "L78",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34267,18 +33948,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L61",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions",
-      "target": "src_lib_actions_dapodik_actions_setsyncstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L222",
+      "source_location": "L160",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34289,7 +33959,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L233",
+      "source_location": "L171",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34300,7 +33970,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L41",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34311,7 +33981,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L121",
+      "source_location": "L105",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34322,7 +33992,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L187",
+      "source_location": "L125",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34358,7 +34028,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34370,7 +34040,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34382,7 +34052,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34394,7 +34064,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34406,7 +34076,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34418,7 +34088,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34430,7 +34100,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34442,7 +34112,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34454,7 +34124,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34466,7 +34136,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34478,7 +34148,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34490,7 +34160,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34502,7 +34172,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34514,7 +34184,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34526,7 +34196,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34538,7 +34208,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34550,7 +34220,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
@@ -34562,35 +34232,11 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions",
       "target": "src_lib_dapodik_mapper_resolveagama",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions",
-      "target": "src_lib_dapodik_status",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions",
-      "target": "src_lib_dapodik_status_getdapodiksyncstatus",
       "confidence_score": 1.0
     },
     {
@@ -34610,19 +34256,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L146",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions_cekperiodedapodik",
-      "target": "src_lib_actions_dapodik_actions_getconnection",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L242",
+      "source_location": "L180",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34634,7 +34268,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L126",
+      "source_location": "L110",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_testdapodikconnection",
@@ -34646,31 +34280,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L243",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions_syncdapodik",
-      "target": "src_lib_actions_dapodik_actions_setsyncstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L149",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions_cekperiodedapodik",
-      "target": "src_lib_dapodik_mapper_parsesemesterid"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L393",
+      "source_location": "L283",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34682,7 +34292,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L394",
+      "source_location": "L284",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34694,7 +34304,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L384",
+      "source_location": "L274",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34706,7 +34316,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L218",
+      "source_location": "L156",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_findkkidbymatch",
@@ -34718,7 +34328,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L449",
+      "source_location": "L337",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34731,7 +34341,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L507",
+      "source_location": "L394",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34743,7 +34353,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L412",
+      "source_location": "L301",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34755,7 +34365,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L532",
+      "source_location": "L418",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34767,7 +34377,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L411",
+      "source_location": "L300",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34779,7 +34389,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L446",
+      "source_location": "L334",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34791,7 +34401,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L736",
+      "source_location": "L613",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34803,7 +34413,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L499",
+      "source_location": "L386",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34815,7 +34425,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L790",
+      "source_location": "L666",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34827,7 +34437,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L374",
+      "source_location": "L264",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34839,7 +34449,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L592",
+      "source_location": "L477",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34851,7 +34461,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L322",
+      "source_location": "L215",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34863,7 +34473,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L255",
+      "source_location": "L190",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
@@ -34875,23 +34485,11 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L539",
+      "source_location": "L425",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_lib_actions_dapodik_actions_syncdapodik",
       "target": "src_lib_dapodik_mapper_resolveagama"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/actions/dapodik-actions.ts",
-      "source_location": "L862",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_actions_dapodik_actions_getdapodiksyncstatusaction",
-      "target": "src_lib_dapodik_status_getdapodiksyncstatus"
     },
     {
       "relation": "contains",
@@ -37281,40 +36879,6 @@
       "_origin": "ast",
       "source": "src_proxy",
       "target": "src_lib_constants_jabatan",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/dapodik-status.ts",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_dapodik_status",
-      "target": "src_lib_dapodik_status_dapodiksyncstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/dapodik-status.ts",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_dapodik_status",
-      "target": "src_lib_dapodik_status_getdapodiksyncstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/dapodik-status.ts",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_lib_dapodik_status",
-      "target": "src_lib_db",
       "confidence_score": 1.0
     },
     {

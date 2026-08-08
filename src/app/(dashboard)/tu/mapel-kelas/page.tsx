@@ -14,7 +14,7 @@ async function getData() {
       JOIN mapel m ON mk.id_mapel = m.id_mapel
       LEFT JOIN users u ON mk.id_user = u.id_user
       WHERE mk.tahun = ? AND mk.semester = ?
-      ORDER BY mk.id_mapel_kelas DESC
+      ORDER BY k.nama_kelas ASC, m.urut ASC, m.nama_mapel ASC
     `, [sekolah.tahun, sekolah.semester]);
     return rows;
   } catch (error) {
