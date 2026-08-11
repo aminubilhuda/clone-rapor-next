@@ -206,17 +206,17 @@ export async function updateSiswa(formData: FormData) {
           alamat, alamat_orang_tua,
           nama_wali, alamat_wali, pekerjaan_wali, kontak_wali,
           jurusan, terima_tingkat, terima_kelas, sekolah_asal,
-          terima_tanggal, jenis_siswa, username, password, aktif
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+          terima_tanggal, jenis_siswa, username, password, pass, foto, aktif
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
         [namaSiswa, nikPd, nkk, nis, nisn,
-          tempatLahir, tanggalLahir, kelamin, agama,
+          tempatLahir, tanggalLahir || '1970-01-01', kelamin, agama,
           kontakSiswa, hubKeluarga, jumlahSaudara, anakKe,
           namaAyah, nikAyah, tahunAyah, pendidikanAyah, pekerjaanAyah, kontakAyah,
           namaIbu, nikIbu, tahunIbu, pendidikanIbu, pekerjaanIbu, kontakIbu,
           alamat, alamatOrtu,
           namaWali, alamatWali, pekerjaanWali, kontakWali,
           jurusan, (await resolveTingkat(terimaKelas)) ?? terimaTingkat, terimaKelas, sekolahAsal,
-          terimaTanggal, jenisSiswa, username, hashedPassword]
+          terimaTanggal, jenisSiswa, username, hashedPassword, '', '']
       );
     } else {
       // Edit mode: check username duplicate
@@ -257,7 +257,7 @@ export async function updateSiswa(formData: FormData) {
         'jurusan = ?', 'terima_tingkat = ?', 'terima_kelas = ?', 'sekolah_asal = ?',
         'terima_tanggal = ?', 'jenis_siswa = ?', 'username = ?',
       ];
-      const values: any[] = [namaSiswa, nikPd, nkk, nis, nisn, tempatLahir, tanggalLahir, kelamin, agama, kontakSiswa, hubKeluarga, jumlahSaudara, anakKe, namaAyah, nikAyah, tahunAyah, pendidikanAyah, pekerjaanAyah, kontakAyah, namaIbu, nikIbu, tahunIbu, pendidikanIbu, pekerjaanIbu, kontakIbu, alamat, alamatOrtu, namaWali, alamatWali, pekerjaanWali, kontakWali, jurusan, (await resolveTingkat(terimaKelas)) ?? terimaTingkat, terimaKelas, sekolahAsal, terimaTanggal, jenisSiswa, username];
+      const values: any[] = [namaSiswa, nikPd, nkk, nis, nisn, tempatLahir, tanggalLahir || '1970-01-01', kelamin, agama, kontakSiswa, hubKeluarga, jumlahSaudara, anakKe, namaAyah, nikAyah, tahunAyah, pendidikanAyah, pekerjaanAyah, kontakAyah, namaIbu, nikIbu, tahunIbu, pendidikanIbu, pekerjaanIbu, kontakIbu, alamat, alamatOrtu, namaWali, alamatWali, pekerjaanWali, kontakWali, jurusan, (await resolveTingkat(terimaKelas)) ?? terimaTingkat, terimaKelas, sekolahAsal, terimaTanggal, jenisSiswa, username];
 
       if (hashedPassword) {
         fields.push('password = ?');
@@ -364,7 +364,7 @@ export async function importSiswa(rows: {
     const existingId = (r.nis && existingNisToId.get(r.nis)) || (r.nisn && existingNisnToId.get(r.nisn)) || null;
 
     try {
-      if (existingId) {
+      if (existingId && existingId > 0) {
         // UPDATE — password hanya diupdate jika diisi
         const pwClause = r.password ? ', password = ?' : '';
         const pwVal = r.password ? [await bcrypt.hash(r.password, 10)] : [];
@@ -385,38 +385,38 @@ export async function importSiswa(rows: {
             r.nama_siswa,
             r.nik_pd || null,
             r.nkk || null,
-            r.nis || null,
-            r.nisn || null,
-            r.tempat_lahir || null,
-            r.tanggal_lahir || null,
+            r.nis || '',
+            r.nisn || '',
+            r.tempat_lahir || '',
+            r.tanggal_lahir || '1970-01-01',
             r.kelamin || null,
             r.agama || null,
-            r.kontak_siswa || null,
+            r.kontak_siswa || '',
             r.hub_keluarga || null,
             r.jumlah_saudara || 0,
             r.anak_ke || 0,
-            r.nama_ayah || null,
+            r.nama_ayah || '',
             r.nik_ayah || null,
             r.tahun_ayah || 0,
-            r.pendidikan_ayah || null,
-            r.pekerjaan_ayah || null,
-            r.kontak_ayah || null,
-            r.nama_ibu || null,
+            r.pendidikan_ayah || '',
+            r.pekerjaan_ayah || '',
+            r.kontak_ayah || '',
+            r.nama_ibu || '',
             r.nik_ibu || null,
             r.tahun_ibu || 0,
-            r.pendidikan_ibu || null,
-            r.pekerjaan_ibu || null,
-            r.kontak_ibu || null,
-            r.alamat || null,
-            r.alamat_orang_tua || null,
-            r.nama_wali || null,
-            r.alamat_wali || null,
-            r.pekerjaan_wali || null,
-            r.kontak_wali || null,
-            r.jurusan || null,
+            r.pendidikan_ibu || '',
+            r.pekerjaan_ibu || '',
+            r.kontak_ibu || '',
+            r.alamat || '',
+            r.alamat_orang_tua || '',
+            r.nama_wali || '',
+            r.alamat_wali || '',
+            r.pekerjaan_wali || '',
+            r.kontak_wali || '',
+            r.jurusan || 0,
             terimaTingkat,
-            r.terima_kelas || null,
-            r.sekolah_asal || null,
+            r.terima_kelas || '',
+            r.sekolah_asal || '',
             r.terima_tanggal || null,
             r.jenis_siswa || 1,
             r.username,
@@ -439,48 +439,50 @@ export async function importSiswa(rows: {
             alamat, alamat_orang_tua,
             nama_wali, alamat_wali, pekerjaan_wali, kontak_wali,
             jurusan, terima_tingkat, terima_kelas, sekolah_asal,
-            terima_tanggal, jenis_siswa, username, password, aktif
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+            terima_tanggal, jenis_siswa, username, password, pass, foto, aktif
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
           [
             r.nama_siswa,
             r.nik_pd || null,
             r.nkk || null,
-            r.nis || null,
-            r.nisn || null,
-            r.tempat_lahir || null,
-            r.tanggal_lahir || null,
+            r.nis || '',
+            r.nisn || '',
+            r.tempat_lahir || '',
+            r.tanggal_lahir || '1970-01-01',
             r.kelamin || null,
             r.agama || null,
-            r.kontak_siswa || null,
+            r.kontak_siswa || '',
             r.hub_keluarga || null,
             r.jumlah_saudara || 0,
             r.anak_ke || 0,
-            r.nama_ayah || null,
+            r.nama_ayah || '',
             r.nik_ayah || null,
             r.tahun_ayah || 0,
-            r.pendidikan_ayah || null,
-            r.pekerjaan_ayah || null,
-            r.kontak_ayah || null,
-            r.nama_ibu || null,
+            r.pendidikan_ayah || '',
+            r.pekerjaan_ayah || '',
+            r.kontak_ayah || '',
+            r.nama_ibu || '',
             r.nik_ibu || null,
             r.tahun_ibu || 0,
-            r.pendidikan_ibu || null,
-            r.pekerjaan_ibu || null,
-            r.kontak_ibu || null,
-            r.alamat || null,
-            r.alamat_orang_tua || null,
-            r.nama_wali || null,
-            r.alamat_wali || null,
-            r.pekerjaan_wali || null,
-            r.kontak_wali || null,
-            r.jurusan || null,
+            r.pendidikan_ibu || '',
+            r.pekerjaan_ibu || '',
+            r.kontak_ibu || '',
+            r.alamat || '',
+            r.alamat_orang_tua || '',
+            r.nama_wali || '',
+            r.alamat_wali || '',
+            r.pekerjaan_wali || '',
+            r.kontak_wali || '',
+            r.jurusan || 0,
             terimaTingkat,
-            r.terima_kelas || null,
-            r.sekolah_asal || null,
+            r.terima_kelas || '',
+            r.sekolah_asal || '',
             r.terima_tanggal || null,
             r.jenis_siswa || 1,
             r.username,
             hashedPassword,
+            '',
+            '',
           ]
         );
         // Tambah ke map agar tidak duplikat dalam batch yang sama
@@ -489,7 +491,7 @@ export async function importSiswa(rows: {
         inserted++;
       }
     } catch (e: any) {
-      errors.push(`Baris ${i + 1} (${r.nama_siswa}): Gagal menyimpan data`);
+      errors.push(`Baris ${i + 1} (${r.nama_siswa}): ${e?.message || 'Gagal menyimpan data'}`);
     }
   }
 
