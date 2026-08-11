@@ -42,6 +42,7 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
     return semuaSiswa.filter((s: any) =>
       !allAnggotaIds.has(s.id_siswa) && (
         !q || s.nama_siswa.toLowerCase().includes(q) || s.nisn?.toLowerCase().includes(q)
+          || s.terima_kelas?.toLowerCase().includes(q)
       )
     );
   }, [semuaSiswa, allAnggotaIds, leftSearch]);
@@ -95,7 +96,7 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
     if (result.success) {
       const added = ids.map((id) => {
         const s = semuaSiswa.find((x: any) => x.id_siswa === id);
-        return { id_siswa: id, id_siswa_kelas: 0, id_kelas: kelas.id_kelas, nama_siswa: s?.nama_siswa || '', nisn: s?.nisn || '' };
+        return { id_siswa: id, id_siswa_kelas: 0, id_kelas: kelas.id_kelas, nama_siswa: s?.nama_siswa || '', nisn: s?.nisn || '', terima_kelas: s?.terima_kelas || '' };
       });
       setRightData((prev) => [...prev, ...added]);
       showToast(`${ids.length} anggota berhasil ditambahkan!`, 'success');
@@ -152,13 +153,13 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
         />
         <span className="text-xs text-[#6B7280] whitespace-nowrap">{items.length}</span>
       </div>
-      <div className="h-64 overflow-y-auto">
+      <div className="h-[60vh] overflow-y-auto">
         {items.length === 0 ? (
           <div className="flex items-center justify-center h-full text-sm text-[#6B7280]">
             {isLeft ? 'Semua siswa sudah jadi anggota' : 'Belum ada anggota'}
           </div>
         ) : (
-          items.map((item: any) => {
+          items.map((item: any, idx: number) => {
             const id = item.id_siswa;
             const isChecked = checked.has(id);
             return (
@@ -172,9 +173,10 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
                   onChange={() => onToggle(id)}
                   className="accent-[#DC2626] w-3.5 h-3.5 cursor-pointer"
                 />
+                <span className="text-xs text-[#6B7280] w-6 text-right shrink-0">{idx + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-[#1A1A2E] truncate">{item.nama_siswa}</div>
-                  <div className="text-xs text-[#6B7280]">{item.nisn || '-'}</div>
+                  <div className="text-xs text-[#6B7280]">{item.nisn || '-'}{item.terima_kelas ? ` · ${item.terima_kelas}` : ''}</div>
                 </div>
               </label>
             );
@@ -189,7 +191,7 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-4xl mx-4 animate-modal-in border border-[rgba(0,0,0,0.04)]">
+      <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-6xl mx-4 animate-modal-in border border-[rgba(0,0,0,0.04)]">
         <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
           <h3 className="text-lg font-semibold text-[#1A1A2E]">
             Tambah Anggota — {kelas.nama_kelas}

@@ -172,7 +172,18 @@ export default function ProfileForm({
               <FormField label="Tanggal Lahir">
                 <input name="tanggal_lahir" type="date" defaultValue={(() => {
                   if (!siswa?.tanggal_lahir) return '';
-                  try { const d = new Date(siswa.tanggal_lahir + 'T00:00:00'); if (isNaN(d.getTime())) return ''; return d.toISOString().split('T')[0]; } catch { return ''; }
+                  const raw = siswa.tanggal_lahir;
+                  if (typeof raw === 'string') {
+                    const m = raw.match(/^\d{4}-\d{2}-\d{2}/);
+                    if (m) return m[0];
+                  }
+                  try {
+                    const d = new Date(raw);
+                    if (!isNaN(d.getTime())) {
+                      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                    }
+                  } catch {}
+                  return '';
                 })()} className={inputCls} />
               </FormField>
               <FormField label="Jumlah Saudara">
@@ -288,7 +299,18 @@ export default function ProfileForm({
             <FormField label="Tanggal Terima">
               <input name="terima_tanggal" type="date" defaultValue={(() => {
                 if (!siswa?.terima_tanggal) return '';
-                try { const d = new Date(siswa.terima_tanggal + 'T00:00:00'); if (isNaN(d.getTime())) return ''; return d.toISOString().split('T')[0]; } catch { return ''; }
+                const raw = siswa.terima_tanggal;
+                if (typeof raw === 'string') {
+                  const m = raw.match(/^\d{4}-\d{2}-\d{2}/);
+                  if (m) return m[0];
+                }
+                try {
+                  const d = new Date(raw);
+                  if (!isNaN(d.getTime())) {
+                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                  }
+                } catch {}
+                return '';
               })()} className={inputCls} />
             </FormField>
             <FormField label="Sekolah Asal">

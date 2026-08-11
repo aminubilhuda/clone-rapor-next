@@ -91,12 +91,19 @@ function excelDateToISO(value: any): string | null {
   }
   if (typeof value === 'string') {
     const cleaned = value.replace(/\s+/g, ' ').trim();
-    // DD/MM/YYYY or DD-MM-YYYY
-    const parts = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if (parts) return `${parts[3]}-${parts[2].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+    // DD/MM/YYYY or DD-MM-YYYY (4-digit year)
+    const parts4 = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (parts4) return `${parts4[3]}-${parts4[2].padStart(2, '0')}-${parts4[1].padStart(2, '0')}`;
+    // DD/MM/YY or DD-MM-YY (2-digit year)
+    const parts2 = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/);
+    if (parts2) {
+      const yy = parseInt(parts2[3], 10);
+      const yyyy = yy > 50 ? 1900 + yy : 2000 + yy;
+      return `${yyyy}-${parts2[2].padStart(2, '0')}-${parts2[1].padStart(2, '0')}`;
+    }
     // YYYY-MM-DD or YYYY/MM/DD
-    const parts2 = cleaned.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-    if (parts2) return `${parts2[1]}-${parts2[2].padStart(2, '0')}-${parts2[3].padStart(2, '0')}`;
+    const partsY = cleaned.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if (partsY) return `${partsY[1]}-${partsY[2].padStart(2, '0')}-${partsY[3].padStart(2, '0')}`;
     const d = new Date(cleaned);
     if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
   }
