@@ -59,11 +59,26 @@ const COLUMN_MAP: { keys: string[]; field: string }[] = [
   { keys: ['password *', 'password', 'pass', 'pwd'], field: 'password' },
 ];
 
+const normHeader = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
 function findHeader(headers: string[], keys: string[]): string | null {
-  const lower = headers.map(h => h.toLowerCase().trim());
+  // Pass 1: exact match (normalized, ignores * / spasi / underscore)
   for (const key of keys) {
-    const idx = lower.findIndex(h => h === key || h.includes(key) || key.includes(h));
-    if (idx >= 0) return headers[idx];
+    const nk = normHeader(key);
+    if (!nk) continue;
+    for (const h of headers) {
+      if (normHeader(h) === nk) return h;
+    }
+  }
+  // Pass 2: semua token key harus ada sebagai token utuh di header
+  // (mencegah false-match seperti 'nisn'/'jenis kelamin' menangkap 'NIS')
+  for (const key of keys) {
+    const tokens = normHeader(key).split(' ').filter(Boolean);
+    if (tokens.length === 0) continue;
+    for (const h of headers) {
+      const headerTokens = new Set(normHeader(h).split(' ').filter(Boolean));
+      if (headerTokens.size > 0 && tokens.every(t => headerTokens.has(t))) return h;
+    }
   }
   return null;
 }
@@ -344,7 +359,18 @@ export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, 
                   Download Template
                 </a>
               </div>
-              <label className="flex flex-col items-center justify-center border-2 border-dashed border-[rgba(0,0,0,0.12)] rounded-xl p-8 cursor-pointer hover:border-[#DC2626]/40 transition-colors bg-[#F8F9FB]">
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => !loading && fileRef.current?.click()}
+                onKeyDown={(e) => {
+                  if ((e.key === 'Enter' || e.key === ' ') && !loading) {
+                    e.preventDefault();
+                    fileRef.current?.click();
+                  }
+                }}
+                className="flex flex-col items-center justify-center border-2 border-dashed border-[rgba(0,0,0,0.12)] rounded-xl p-8 cursor-pointer hover:border-[#DC2626]/40 transition-colors bg-[#F8F9FB]"
+              >
                 <svg className="w-8 h-8 text-[#6B7280] mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
@@ -352,7 +378,7 @@ export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, 
                   {loading ? 'Membaca file...' : 'Klik untuk pilih file'}
                 </span>
                 <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={handleFile} disabled={loading} className="hidden" />
-              </label>
+              </div>
             </>
           ) : (
             <>
