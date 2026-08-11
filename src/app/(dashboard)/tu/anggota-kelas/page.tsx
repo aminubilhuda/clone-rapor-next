@@ -16,7 +16,7 @@ async function getData() {
         GROUP BY k.id_kelas, k.nama_kelas
         ORDER BY k.nama_kelas ASC
       `, [sekolah.tahun, sekolah.semester]),
-      pool.query('SELECT id_siswa, nama_siswa, nisn, terima_kelas FROM siswa WHERE deleted_at IS NULL ORDER BY nama_siswa ASC'),
+      pool.query('SELECT id_siswa, nama_siswa, nisn, terima_kelas FROM siswa WHERE deleted_at IS NULL AND aktif = 1 ORDER BY nama_siswa ASC'),
       pool.query(`
         SELECT sk.id_siswa_kelas, sk.id_kelas, sk.id_siswa, s.nama_siswa, s.nisn
         FROM siswa_kelas sk
