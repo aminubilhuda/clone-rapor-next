@@ -1,0 +1,33 @@
+{
+    "results": 1,
+    "id": "sekolah_id",
+    "start": 0,
+    "limit": 20,
+    "rows": {
+        "sekolah_id": "cf2412fa-b739-40a8-b47d-6887288c68d9",
+        "nama": "SMKS ABDI NEGARA TUBAN",
+        "nss": "344050601009",
+        "npsn": "20505005",
+        "bentuk_pendidikan_id": 15,
+        "bentuk_pendidikan_id_str": "SMK",
+        "status_sekolah": "2",
+        "status_sekolah_str": "Swasta",
+        "alamat_jalan": "JL. DR. WAHIDIN SUDIROHUSODO NO.798 SIDOREJO TUBAN",
+        "rt": "5",
+        "rw": "1",
+        "kode_wilayah": "050613AG",
+        "kode_pos": "62318",
+        "nomor_telepon": "03568832043",
+        "nomor_fax": "0356327640",
+        "email": "smk.abdinegara@gmail.com",
+        "website": "http://www.smkabdinegara.sch.id",
+        "is_sks": false,
+        "lintang": "-6.900500000000",
+        "bujur": "112.049000000000",
+        "dusun": "-",
+        "desa_kelurahan": "Sidorejo",
+        "kecamatan": "Kec. Tuban",
+        "kabupaten_kota": "Kab. Tuban",
+        "provinsi": "Prov. Jawa Timur"
+    }
+}

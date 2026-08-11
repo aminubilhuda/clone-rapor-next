@@ -45,7 +45,7 @@ Setelah selesai perubahan code (apapun), jalankan 3 langkah ini secara berurutan
 
 1. **Build** — `npm run build` sampai 0 error
 2. **Restart dev server** — `taskkill /F /IM node.exe`, lalu start ulang `npm run dev`, tunggu 8 detik
-3. **Browser MCP test** — login (admin/admin123), screenshot halaman yang diubah, verifikasi tidak ada error visual atau console error
+3. **Browser MCP test** — login (abdira/abdira), screenshot halaman yang diubah, verifikasi tidak ada error visual atau console error
 
 ## graphify
 

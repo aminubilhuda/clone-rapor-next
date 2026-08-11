@@ -68,11 +68,31 @@ export function resolveTingkatId(tingkatPendidikanId: string | null): number | n
   return null;
 }
 
+/** Normalisasi nilai tanggal DAPODIK ("2025-07-14 00:00:00" → "2025-07-14") */
+export function normTanggal(s: string): string {
+  const t = String(s || '').trim();
+  return t ? t.slice(0, 10) : '';
+}
+
 export function norm(s: string): string {
   return String(s || '')
     .toLowerCase()
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/**
+ * Kunci nama PTK untuk pencocokan dengan data lokal. DAPODIK umumnya tidak
+ * menyertakan gelar akademik, sedangkan nama lokal sering memuat gelar depan
+ * atau belakang. Gelar hanya dihapus untuk pencocokan; nama tampilan lokal
+ * tetap dipertahankan.
+ */
+export function normNamaPtk(s: string): string {
+  let nama = String(s || '').trim();
+  nama = nama.replace(/^(?:dr|dra|drs|prof|ir|h|hj)\.?\s+/i, '');
+  nama = nama.replace(/,.+$/, '');
+  nama = nama.replace(/\s+(?:s|m|a|d)\.?\s*[a-z]{1,6}\.?$/i, '');
+  return norm(nama.replace(/[.]/g, ''));
 }
 
 const STOP_WORDS = new Set(['dan', 'di', 'yang', 'untuk', 'pada', 'dalam', 'dengan', 'dari', 'ke', 'atau']);
@@ -112,6 +132,7 @@ export function jurusanMatch(dapodikNama: string, lokalNama: string, lokalDeskri
 /* ---------- Entities ---------- */
 
 export interface MappedSekolah {
+  sekolahId: string;
   npsn: string;
   nama: string;
   alamat: string;
@@ -122,11 +143,23 @@ export interface MappedSekolah {
   kabupaten: string;
   provinsi: string;
   website: string;
+  nss: string;
+  statusSekolah: string;
+  alamatJalan: string;
+  rt: string;
+  rw: string;
+  kodeWilayah: string;
+  kodePos: string;
+  nomorFax: string;
+  isSks: number;
+  lintang: string;
+  bujur: string;
 }
 
 export function mapSekolah(raw: any): MappedSekolah | null {
   if (!raw || typeof raw !== 'object') return null;
   return {
+    sekolahId: String(raw.sekolah_id || ''),
     npsn: String(raw.npsn || ''),
     nama: String(raw.nama || ''),
     alamat: String(raw.alamat_jalan || ''),
@@ -137,11 +170,23 @@ export function mapSekolah(raw: any): MappedSekolah | null {
     kabupaten: stripPrefix(String(raw.kabupaten_kota || '')),
     provinsi: stripPrefix(String(raw.provinsi || '')),
     website: String(raw.website || ''),
+    nss: String(raw.nss || ''),
+    statusSekolah: String(raw.status_sekolah_str || raw.status_sekolah || ''),
+    alamatJalan: String(raw.alamat_jalan || ''),
+    rt: String(raw.rt || ''),
+    rw: String(raw.rw || ''),
+    kodeWilayah: String(raw.kode_wilayah || ''),
+    kodePos: String(raw.kode_pos || ''),
+    nomorFax: String(raw.nomor_fax || ''),
+    isSks: Number(raw.is_sks) || 0,
+    lintang: String(raw.lintang || ''),
+    bujur: String(raw.bujur || ''),
   };
 }
 
 export interface MappedJurusan {
   nama: string;
+  jurusanId: string;
 }
 
 export function mapJurusan(rombels: any[]): MappedJurusan[] {
@@ -150,10 +195,9 @@ export function mapJurusan(rombels: any[]): MappedJurusan[] {
   for (const r of rombels) {
     if (r.jenis_rombel_str !== 'Kelas') continue;
     const nama = String(r.jurusan_id_str || '').trim();
-    if (nama && !seen.has(norm(nama))) {
-      seen.add(norm(nama));
-      out.push({ nama });
-    }
+    if (!nama || seen.has(norm(nama))) continue;
+    seen.add(norm(nama));
+    out.push({ nama, jurusanId: String(r.jurusan_id || '') });
   }
   return out;
 }
@@ -162,6 +206,10 @@ export interface MappedKelas {
   nama: string;
   tingkatId: number | null;
   jurusanNama: string | null;
+  rombelId: string;
+  kurikulumId: number | null;
+  jurusanId: string;
+  ptkWaliId: string;
 }
 
 export function mapKelas(rombels: any[]): MappedKelas[] {
@@ -170,18 +218,25 @@ export function mapKelas(rombels: any[]): MappedKelas[] {
   for (const r of rombels) {
     if (r.jenis_rombel_str !== 'Kelas') continue;
     const nama = String(r.nama || '').trim();
-    if (!nama || seen.has(norm(nama))) continue;
-    seen.add(norm(nama));
+    const rombelId = String(r.rombongan_belajar_id || '');
+    const key = rombelId || norm(nama);
+    if (!nama || seen.has(key)) continue;
+    seen.add(key);
     out.push({
       nama,
       tingkatId: resolveTingkatId(r.tingkat_pendidikan_id),
       jurusanNama: r.jurusan_id_str ? String(r.jurusan_id_str) : null,
+      rombelId,
+      kurikulumId: r.kurikulum_id ? Number(r.kurikulum_id) : null,
+      jurusanId: String(r.jurusan_id || ''),
+      ptkWaliId: String(r.ptk_id || ''),
     });
   }
   return out;
 }
 
 export interface MappedGuru {
+  ptkId: string;
   nik: string;
   nama: string;
   kelamin: number;
@@ -203,6 +258,7 @@ export function mapGuru(gtks: any[], agamaMap: Map<string, number>): MappedGuru[
     if (seen.has(ptkId)) continue;
     seen.add(ptkId);
     out.push({
+      ptkId,
       nik: String(g.nik || ''),
       nama: String(g.nama || '').trim(),
       kelamin: resolveKelamin(g.jenis_kelamin),
@@ -213,7 +269,7 @@ export function mapGuru(gtks: any[], agamaMap: Map<string, number>): MappedGuru[
       kepegawaian: resolveKepegawaian(g.status_kepegawaian_id_str),
       ijazah: resolvePendidikan(g.pendidikan_terakhir),
       tempatLahir: String(g.tempat_lahir || ''),
-      tanggalLahir: String(g.tanggal_lahir || ''),
+      tanggalLahir: normTanggal(g.tanggal_lahir),
     });
     // lookup agama map supaya resolver konsisten
     if (g.agama_id_str) {
@@ -225,6 +281,9 @@ export function mapGuru(gtks: any[], agamaMap: Map<string, number>): MappedGuru[
 }
 
 export interface MappedSiswa {
+  pesertaDidikId: string;
+  registrasiId: string;
+  anggotaRombelId: string;
   nisn: string;
   nis: string;
   nik: string;
@@ -234,6 +293,10 @@ export interface MappedSiswa {
   kelamin: number;
   agama: string | null;
   kontak: string;
+  email: string;
+  tinggiBadan: number | null;
+  beratBadan: number | null;
+  kebutuhanKhusus: string;
   namaAyah: string;
   pekerjaanAyah: string;
   namaIbu: string;
@@ -246,6 +309,7 @@ export interface MappedSiswa {
   namaRombel: string;
   tingkatId: number | null;
   jenisPendaftaran: string;
+  jenisPendaftaranId: string;
 }
 
 export function mapSiswa(pds: any[], agamaMap: Map<string, number>): MappedSiswa[] {
@@ -259,16 +323,25 @@ export function mapSiswa(pds: any[], agamaMap: Map<string, number>): MappedSiswa
       const key = String(p.agama_id_str).toLowerCase();
       if (!agamaMap.has(key)) agamaMap.set(key, Number(p.agama_id) || 1);
     }
+    const tb = Number(p.tinggi_badan);
+    const bb = Number(p.berat_badan);
     out.push({
+      pesertaDidikId,
+      registrasiId: String(p.registrasi_id || ''),
+      anggotaRombelId: String(p.anggota_rombel_id || ''),
       nisn: String(p.nisn || ''),
       nis: String(p.nipd || ''),
       nik: String(p.nik || ''),
       nama: String(p.nama || '').trim(),
       tempatLahir: String(p.tempat_lahir || ''),
-      tanggalLahir: String(p.tanggal_lahir || ''),
+      tanggalLahir: normTanggal(p.tanggal_lahir),
       kelamin: resolveKelamin(p.jenis_kelamin),
       agama: p.agama_id_str ? String(p.agama_id_str) : null,
       kontak: String(p.nomor_telepon_seluler || p.nomor_telepon_rumah || ''),
+      email: String(p.email || ''),
+      tinggiBadan: Number.isFinite(tb) && tb > 0 ? tb : null,
+      beratBadan: Number.isFinite(bb) && bb > 0 ? bb : null,
+      kebutuhanKhusus: p.kebutuhan_khusus_id_str ? String(p.kebutuhan_khusus_id_str) : 'Tidak ada',
       namaAyah: String(p.nama_ayah || ''),
       pekerjaanAyah: String(p.pekerjaan_ayah_id_str || ''),
       namaIbu: String(p.nama_ibu || ''),
@@ -277,10 +350,11 @@ export function mapSiswa(pds: any[], agamaMap: Map<string, number>): MappedSiswa
       pekerjaanWali: String(p.pekerjaan_wali_id_str || ''),
       anakKe: parseInt(p.anak_keberapa, 10) || 0,
       sekolahAsal: String(p.sekolah_asal || ''),
-      terimaTanggal: String(p.tanggal_masuk_sekolah || ''),
+      terimaTanggal: normTanggal(p.tanggal_masuk_sekolah),
       namaRombel: String(p.nama_rombel || ''),
       tingkatId: resolveTingkatId(p.tingkat_pendidikan_id),
       jenisPendaftaran: String(p.jenis_pendaftaran_id_str || ''),
+      jenisPendaftaranId: String(p.jenis_pendaftaran_id || ''),
     });
   }
   return out;
@@ -289,6 +363,8 @@ export function mapSiswa(pds: any[], agamaMap: Map<string, number>): MappedSiswa
 export interface MappedKelasWali {
   namaRombel: string;
   waliNama: string | null;
+  rombelId: string;
+  ptkWaliId: string;
 }
 
 export function mapKelasWali(rombels: any[]): MappedKelasWali[] {
@@ -300,6 +376,8 @@ export function mapKelasWali(rombels: any[]): MappedKelasWali[] {
     out.push({
       namaRombel: nama,
       waliNama: r.ptk_id_str ? String(r.ptk_id_str) : null,
+      rombelId: String(r.rombongan_belajar_id || ''),
+      ptkWaliId: String(r.ptk_id || ''),
     });
   }
   return out;
@@ -308,6 +386,9 @@ export function mapKelasWali(rombels: any[]): MappedKelasWali[] {
 export interface MappedMapel {
   nama: string;
   kelompok: number;
+  mataPelajaranId: string;
+  jurusanId: string;
+  statusKurikulum: string;
 }
 
 export function mapMapel(rombels: any[]): MappedMapel[] {
@@ -317,9 +398,17 @@ export function mapMapel(rombels: any[]): MappedMapel[] {
     if (r.jenis_rombel_str !== 'Kelas') continue;
     for (const p of r.pembelajaran || []) {
       const nama = String(p.nama_mata_pelajaran || p.mata_pelajaran_id_str || '').trim();
-      if (!nama || seen.has(norm(nama))) continue;
-      seen.add(norm(nama));
-      out.push({ nama, kelompok: resolveKelompokMapel(p.status_di_kurikulum_str) });
+      const mapelId = String(p.mata_pelajaran_id || '');
+      const key = mapelId || norm(nama);
+      if (!nama || seen.has(key)) continue;
+      seen.add(key);
+      out.push({
+        nama,
+        kelompok: resolveKelompokMapel(p.status_di_kurikulum_str),
+        mataPelajaranId: mapelId,
+        jurusanId: String(r.jurusan_id || ''),
+        statusKurikulum: String(p.status_di_kurikulum_str || ''),
+      });
     }
   }
   return out;
@@ -329,18 +418,86 @@ export interface MappedMapelKelas {
   namaRombel: string;
   mapelNama: string;
   guruNama: string | null;
+  pembelajaranId: string;
+  rombelId: string;
+  guruPtkId: string;
+  jamMengajar: number;
+  statusDiKurikulum: string;
 }
 
 export function mapMapelKelas(rombels: any[]): MappedMapelKelas[] {
   const out: MappedMapelKelas[] = [];
+  const seen = new Set<string>();
   for (const r of rombels) {
     if (r.jenis_rombel_str !== 'Kelas') continue;
     const namaRombel = String(r.nama || '').trim();
+    const rombelId = String(r.rombongan_belajar_id || '');
     if (!namaRombel) continue;
     for (const p of r.pembelajaran || []) {
       const mapelNama = String(p.nama_mata_pelajaran || p.mata_pelajaran_id_str || '').trim();
-      if (!mapelNama) continue;
-      out.push({ namaRombel, mapelNama, guruNama: p.ptk_id_str || null });
+      const pembelajaranId = String(p.pembelajaran_id || '');
+      const key = pembelajaranId || `${rombelId}:${norm(mapelNama)}`;
+      if (!mapelNama || seen.has(key)) continue;
+      seen.add(key);
+      out.push({
+        namaRombel,
+        mapelNama,
+        guruNama: p.ptk_id_str || null,
+        pembelajaranId,
+        rombelId,
+        guruPtkId: String(p.ptk_id || ''),
+        jamMengajar: Number(p.jam_mengajar_per_minggu) || 0,
+        statusDiKurikulum: String(p.status_di_kurikulum || ''),
+      });
+    }
+  }
+  return out;
+}
+
+export interface MappedPendidikanFormal {
+  riwayatId: string;
+  ptkId: string;
+  satuanPendidikan: string;
+  fakultas: string;
+  kependidikan: string;
+  tahunMasuk: string;
+  tahunLulus: string;
+  nim: string;
+  statusKuliah: string;
+  semester: string;
+  ipk: string;
+  prodi: string;
+  bidangStudi: string;
+  jenjangPendidikan: string;
+  gelarAkademik: string;
+}
+
+export function mapPendidikanFormal(gtks: any[]): MappedPendidikanFormal[] {
+  const out: MappedPendidikanFormal[] = [];
+  const seen = new Set<string>();
+  for (const g of gtks) {
+    const ptkId = String(g.ptk_id || '');
+    for (const r of g.rwy_pend_formal || []) {
+      const riwayatId = String(r.riwayat_pendidikan_formal_id || '');
+      if (!riwayatId || seen.has(riwayatId)) continue;
+      seen.add(riwayatId);
+      out.push({
+        riwayatId,
+        ptkId,
+        satuanPendidikan: String(r.satuan_pendidikan_formal || ''),
+        fakultas: String(r.fakultas || ''),
+        kependidikan: String(r.kependidikan || ''),
+        tahunMasuk: String(r.tahun_masuk || ''),
+        tahunLulus: String(r.tahun_lulus || ''),
+        nim: String(r.nim || ''),
+        statusKuliah: String(r.status_kuliah || ''),
+        semester: String(r.semester || ''),
+        ipk: String(r.ipk || ''),
+        prodi: String(r.prodi || ''),
+        bidangStudi: String(r.bidang_studi_id_str || ''),
+        jenjangPendidikan: String(r.jenjang_pendidikan_id_str || ''),
+        gelarAkademik: String(r.gelar_akademik_id_str || ''),
+      });
     }
   }
   return out;

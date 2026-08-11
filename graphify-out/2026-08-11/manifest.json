@@ -14,10 +14,30 @@
     "ast_hash": "dfa1f5f6a7037bf39dc510f30b180002",
     "semantic_hash": "dfa1f5f6a7037bf39dc510f30b180002"
   },
+  "migrations/0003_add_catatan_wali_unique.sql": {
+    "mtime": 1785758465.292088,
+    "ast_hash": "95e6f28255b096e75a6a02a7392445ed",
+    "semantic_hash": "95e6f28255b096e75a6a02a7392445ed"
+  },
+  "migrations/0004_fix_school_logo_filename.sql": {
+    "mtime": 1785758465.292149,
+    "ast_hash": "812df151855754b68a11a02b8bebed32",
+    "semantic_hash": "812df151855754b68a11a02b8bebed32"
+  },
   "migrations/abdinega_db_raporkm.sql": {
-    "mtime": 1786360940.364385,
-    "ast_hash": "d6d18e8403d689b4a8e65a9af62b818b",
-    "semantic_hash": ""
+    "mtime": 1785758465.29931,
+    "ast_hash": "6bbd139cee5b3c76294cfbda3973339d",
+    "semantic_hash": "6bbd139cee5b3c76294cfbda3973339d"
+  },
+  "migrations/add-deleted-at.sql": {
+    "mtime": 1785758465.299709,
+    "ast_hash": "1ddcd683c872701d09d350c16409e4fd",
+    "semantic_hash": "1ddcd683c872701d09d350c16409e4fd"
+  },
+  "migrations/fix-nilai-type.sql": {
+    "mtime": 1785758465.2997699,
+    "ast_hash": "93cef88e8a7bdfa51cb085b687b03cc1",
+    "semantic_hash": "93cef88e8a7bdfa51cb085b687b03cc1"
   },
   "next.config.ts": {
     "mtime": 1785760477.6527705,
@@ -35,7 +55,7 @@
     "semantic_hash": "239f3ebf717465dc636818a1a619398d"
   },
   "public/fallback-ce627215c0e4a9af.js": {
-    "mtime": 1786427796.8749042,
+    "mtime": 1786152233.978459,
     "ast_hash": "68469f9711fc1906966c7fd5d18c83bb",
     "semantic_hash": "68469f9711fc1906966c7fd5d18c83bb"
   },
@@ -45,17 +65,17 @@
     "semantic_hash": "b099dcfc364b9ee7f20f38941f3a82ca"
   },
   "public/sw.js": {
-    "mtime": 1786427796.8812754,
-    "ast_hash": "be5ed905a4e78aecdd2471d36198bab6",
+    "mtime": 1786152233.987153,
+    "ast_hash": "1a4dc0f895ae6c02c0522b4cff3f841f",
     "semantic_hash": ""
   },
   "public/swe-worker-5c72df51bb1f6ee0.js": {
-    "mtime": 1786427796.8748841,
+    "mtime": 1786152233.9784596,
     "ast_hash": "76fdd3369f623a3edcf74ce2200bfdd0",
     "semantic_hash": "76fdd3369f623a3edcf74ce2200bfdd0"
   },
   "public/workbox-4a6e5f9b.js": {
-    "mtime": 1786427796.8813846,
+    "mtime": 1786152233.9871824,
     "ast_hash": "a0e6fefa451b936daf14a7b3df12df49",
     "semantic_hash": "a0e6fefa451b936daf14a7b3df12df49"
   },
@@ -440,9 +460,9 @@
     "semantic_hash": "fd1a1d0542b978a5b14950bd05e50191"
   },
   "src/app/(dashboard)/tu/mapel-kelas/page.tsx": {
-    "mtime": 1786178033.8561487,
-    "ast_hash": "d5d3cf97ae75c57e0b7fd0377e1e2fb7",
-    "semantic_hash": ""
+    "mtime": 1785758465.3424077,
+    "ast_hash": "b683830ecbe1fed1265a37fa550aa841",
+    "semantic_hash": "b683830ecbe1fed1265a37fa550aa841"
   },
   "src/app/(dashboard)/tu/mapel-siswa/_components/mapel-siswa-grid.tsx": {
     "mtime": 1785758465.3425746,
@@ -980,8 +1000,8 @@
     "semantic_hash": "ee17fd1c97c735e9f3564e3f5251f125"
   },
   "AGENTS.md": {
-    "mtime": 1786426902.968445,
-    "ast_hash": "a1690168ea30362a6969f0a87065e870",
+    "mtime": 1785759806.3271687,
+    "ast_hash": "3c874478ef07187df6d8bfcb31c25fb2",
     "semantic_hash": ""
   },
   "cobaenv.txt": {
@@ -1339,6 +1359,11 @@
     "ast_hash": "4ff687f8a2e06ff3051e3ce8cb761fdb",
     "semantic_hash": ""
   },
+  "migrations/0006_add_dapodik_config.sql": {
+    "mtime": 1786094511.743671,
+    "ast_hash": "2a79fdbc3b5ec27d1368a2e7fdc850fb",
+    "semantic_hash": ""
+  },
   "src/app/(dashboard)/guru/rekap-absensi-bk/_components/rekap-absensi-bk-client.tsx": {
     "mtime": 1785854055.0322,
     "ast_hash": "b1bfca80416525626e106f16bcee9925",
@@ -1360,8 +1385,8 @@
     "semantic_hash": ""
   },
   "src/lib/actions/dapodik-actions.ts": {
-    "mtime": 1786427675.8138828,
-    "ast_hash": "8295f2004caa0d05d6c25387dc24348f",
+    "mtime": 1786152191.8920655,
+    "ast_hash": "d3908458388bcb69f93d8c7a440f95d3",
     "semantic_hash": ""
   },
   "src/lib/dapodik/client.ts": {
@@ -1370,8 +1395,8 @@
     "semantic_hash": ""
   },
   "src/lib/dapodik/mapper.ts": {
-    "mtime": 1786427675.805302,
-    "ast_hash": "3a39aef5301a85e5ceee3e372430e9b3",
+    "mtime": 1786094554.4907966,
+    "ast_hash": "12835225f5dc84c0569d958dd0ddd181",
     "semantic_hash": ""
   },
   "rencana-implementasi-bk.md": {
@@ -1394,9 +1419,19 @@
     "ast_hash": "44248715dac9690b5b1f74339b4da06c",
     "semantic_hash": ""
   },
+  "migrations/0007_add_dapodik_log_detail.sql": {
+    "mtime": 1786096820.5638978,
+    "ast_hash": "b0dc286349b259d81dab47f6ef0deaef",
+    "semantic_hash": ""
+  },
   "src/app/(dashboard)/tu/singkron-dapodik/_components/modal-detail-sinkron.tsx": {
     "mtime": 1786097119.5081108,
     "ast_hash": "ea74e90686d89c024633765b646563b1",
+    "semantic_hash": ""
+  },
+  "migrations/0008_add_dapodik_sync_status.sql": {
+    "mtime": 1786152124.1764617,
+    "ast_hash": "47d2388d25f68ee0bead9856998e898f",
     "semantic_hash": ""
   },
   "src/components/dapodik-sync-banner.tsx": {
@@ -1407,46 +1442,6 @@
   "src/lib/dapodik-status.ts": {
     "mtime": 1786152132.9205048,
     "ast_hash": "8ccd3bef3858e3f0754a9c9755e146d5",
-    "semantic_hash": ""
-  },
-  "endpoint-singkron-dapodik/endpoint_getGtk.json": {
-    "mtime": 1786361052.3217032,
-    "ast_hash": "0d352e71c1600b44a18f98b7f97256e0",
-    "semantic_hash": ""
-  },
-  "endpoint-singkron-dapodik/endpoint_getMataPelajaran.json": {
-    "mtime": 1786361055.8385603,
-    "ast_hash": "cbe0b93476c61d18ff16d94e428223b0",
-    "semantic_hash": ""
-  },
-  "endpoint-singkron-dapodik/endpoint_getPengguna.json": {
-    "mtime": 1786361051.324859,
-    "ast_hash": "21bd1aa43f7440f57e25012d82161458",
-    "semantic_hash": ""
-  },
-  "endpoint-singkron-dapodik/endpoint_getPesertaDidik.json": {
-    "mtime": 1786361054.318403,
-    "ast_hash": "5a15f5127bce104504e8d76ceda4fe79",
-    "semantic_hash": ""
-  },
-  "endpoint-singkron-dapodik/endpoint_getRombonganBelajar.json": {
-    "mtime": 1786361053.314969,
-    "ast_hash": "f9469078d084baf8ab51a39225a9c19b",
-    "semantic_hash": ""
-  },
-  "endpoint-singkron-dapodik/endpoint_getSekolah.json": {
-    "mtime": 1786361050.416949,
-    "ast_hash": "28a985da6bb86a4da42acfd6b9b90f45",
-    "semantic_hash": ""
-  },
-  "migrations/0002_add_dapodik_uuid_columns.sql": {
-    "mtime": 1786365278.0838695,
-    "ast_hash": "f25759ac884085254b8698a8b7335677",
-    "semantic_hash": ""
-  },
-  "migrations/0009_merge_dapodik_ptk_duplicates.sql": {
-    "mtime": 1786427737.9033625,
-    "ast_hash": "246ffd673c7565c773ae512633e704a1",
     "semantic_hash": ""
   }
 }
