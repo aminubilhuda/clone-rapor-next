@@ -45,7 +45,7 @@ async function getStudents(kelasId: number, tahun: number, semester: number) {
       SELECT s.id_siswa, s.nama_siswa, s.nisn, a.agama AS nama_agama
       FROM siswa_kelas sk
       JOIN siswa s ON sk.id_siswa = s.id_siswa
-      JOIN agama a ON s.agama = a.id_agama
+      LEFT JOIN agama a ON s.agama = a.id_agama
       WHERE sk.id_kelas = ? AND sk.tahun = ? AND sk.semester = ? AND sk.status = 1 AND s.deleted_at IS NULL AND s.aktif = 1
       ORDER BY s.nama_siswa ASC
     `, [kelasId, tahun, semester]);
