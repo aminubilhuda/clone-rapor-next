@@ -55,6 +55,26 @@ export async function saveProyekKokurikuler(formData: FormData) {
 }
 
 /**
+ * Update pembina (id_user) for a proyek_kelas inline.
+ */
+export async function updatePembinaKokurikuler(idProyekKelas: number, idUser: number | null) {
+  const authResult = await requireTuAdmin();
+  if (authResult.error) return { success: false, error: authResult.error } as const;
+
+  try {
+    await pool.query(
+      'UPDATE proyek_kelas SET id_user = ? WHERE id_proyek_kelas = ?',
+      [idUser ? Number(idUser) : null, idProyekKelas]
+    );
+    revalidatePath('/tu/kokurikuler');
+    return { success: true } as const;
+  } catch (e: any) {
+    console.error('Update pembina error:', e);
+    return { success: false, error: 'Gagal memperbarui pembina' } as const;
+  }
+}
+
+/**
  * Copy a proyek_kelas along with its tujuan to target classes.
  */
 export async function copyProyekKokurikuler(formData: FormData) {
