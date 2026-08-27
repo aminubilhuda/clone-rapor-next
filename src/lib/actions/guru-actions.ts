@@ -1,7 +1,7 @@
 'use server';
 
-import { requireGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { requireGuru } from '@/lib/actions/auth-guard';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 
 export interface GuruTugas {
@@ -69,13 +69,11 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
         [idUser, tahun, semester]
       ),
       pool.query(
-        `SELECT 1 FROM proyek_kelas WHERE id_user = ? AND tahun = ? AND semester = ? LIMIT 1`,
+        `SELECT 1 FROM proyek_kelas WHERE id_user = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL LIMIT 1`,
         [idUser, tahun, semester]
       ),
       pool.query(
-        `SELECT 1 FROM nilai_kokurikuler nk
-         JOIN proyek_kelas pk ON nk.id_proyek_kelas = pk.id_proyek_kelas
-         WHERE pk.id_user = ? AND nk.tahun = ? AND nk.semester = ? LIMIT 1`,
+        `SELECT 1 FROM proyek_kelas WHERE id_user = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL LIMIT 1`,
         [idUser, tahun, semester]
       ),
     ]);
