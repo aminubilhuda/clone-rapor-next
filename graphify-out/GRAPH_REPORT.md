@@ -1,16 +1,16 @@
 # Graph Report - clone-rapor-next  (2026-08-25)
 
 ## Corpus Check
-- 248 files · ~2,111,928 words
+- 249 files · ~2,112,965 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1378 nodes · 2945 edges · 100 communities (77 shown, 23 thin omitted)
+- 1382 nodes · 2959 edges · 100 communities (78 shown, 22 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 48 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2e934b9d`
+- Built from commit: `0120beac`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - cetak-rapor/route.ts
 - tu/layout.tsx
 - prakerin-client.tsx
-- mapel-siswa-grid.tsx
+- requireTuAdmin
 - ekstra-client.tsx
 - pelengkap-pdfmake.ts
 - kokurikuler-actions.ts
@@ -29,7 +29,7 @@
 - compilerOptions
 - p5bk-client.tsx
 - a
-- db.ts
+- cetak-rapor-guru-client.tsx
 - devDependencies
 - auth-guard.ts
 - y
@@ -39,32 +39,32 @@
 - r
 - index.ts
 - organisasi-client.tsx
-- apiError
+- db.ts
 - mapel-client.tsx
 - (dashboard)/profile/_components/profile-form.tsx
 - daftar-rapor/page.tsx
 - Rapor Semester Identity Max Layout
-- auth.ts
+- tp-actions.ts
 - siswa-portal-data.ts
 - dapodik-actions.ts
 - kompetensi-client.tsx
 - pegawai-client.tsx
 - manifest.json
 - rombel/page.tsx
-- confirm-delete-modal.tsx
+- useToast
 - Rencana Implementasi Modul Bimbingan Konseling (BK) — v2.1
 - laporan-pendidikan/page.tsx
 - package.json
-- [id]/page.tsx
+- naik-kelas-client.tsx
 - fallback-ce627215c0e4a9af.js
 - tu/page.tsx
 - dkn-client.tsx
 - v
 - buku-induk/page.tsx
 - lager-nilai-kelas/page.tsx
-- piket-harian-client.tsx
+- modal-nilai-eskul.tsx
 - Laporan Hasil Belajar
-- guru/anggota-kelas/page.tsx
+- modal-nilai-p5bk.tsx
 - tu/p5bk/page.tsx
 - getSekolahWithFilter
 - AGENTS.md
@@ -75,25 +75,25 @@
 - E-R App Icon 192x192
 - [[...path]]/route.ts
 - login/page.tsx
-- react-select
-- app/layout.tsx
+- tu/ekstra/page.tsx
+- mapel-siswa/page.tsx
 - pwa.d.ts
 - ecosystem.config.js
 - next.config.ts
 - File Icon SVG
 - opencode.json
 - README.md
-- useToast
+- toast-provider.tsx
 - eslint.config.mjs
-- requireTuAdmin
+- anggota-kelas-actions.ts
 - next
-- tu/kokurikuler/page.tsx
+- profil-actions.ts
 - react-dom
-- cetak-rapor-guru-client.tsx
+- catatan-wali/page.tsx
 - graphify.js
 - postcss.config.mjs
 - Next.js Logo SVG
-- [id_mapel_kelas]/page.tsx
+- tujuan-pembelajaran/page.tsx
 - Environment Variables
 - Database Migrations
 - Offline Page
@@ -102,16 +102,16 @@
 - { GET, POST }
 - tu/prakerin/page.tsx
 - idb
-- kelas-ku/page.tsx
+- update/route.ts
 - @ducanh2912/next-pwa
-- sekolah-helper.ts
+- react
 - naik-kelas/page.tsx
 - SMK Abdi Negara Tuban School Logo Duplicate 3
 
 ## God Nodes (most connected - your core abstractions)
 1. `getSekolahWithFilter()` - 106 edges
-2. `requireTuAdmin()` - 104 edges
-3. `useToast()` - 67 edges
+2. `requireTuAdmin()` - 101 edges
+3. `useToast()` - 69 edges
 4. `mm()` - 37 edges
 5. `apiError()` - 36 edges
 6. `apiSuccess()` - 33 edges
@@ -145,7 +145,7 @@
 - **Mid-Semester Report Card Variants** — output_pdf_rapor-tengah-semester-layout-final-page-1_png, output_pdf_rapor-tengah-semester-long-class-page-1_png, output_pdf_rapor-tengah-semester-pdfmake_png [EXTRACTED 1.00]
 - **E-R Application Icon Set** — public_apple-touch-icon_png, public_icons_icon-192x192_png, public_icons_icon-512x512_png, public_icons_icon-maskable-512x512_png [INFERRED 0.95]
 
-## Communities (100 total, 23 thin omitted)
+## Communities (100 total, 22 thin omitted)
 
 ### Community 0 - "mm"
 Cohesion: 0.19
@@ -164,52 +164,52 @@ Cohesion: 0.13
 Nodes (34): buildFooterTemplate(), POST(), tglIndo(), VALID_JENIS, wrapHtmlForPrint(), generateRaporHTML(), JENIS_LABELS, JenisRapor (+26 more)
 
 ### Community 4 - "tu/layout.tsx"
-Cohesion: 0.08
-Nodes (24): POST(), getSidebarData(), TULayout(), DashboardLayout(), DashboardLayoutProps, menus, SidebarSiswa(), isParent() (+16 more)
+Cohesion: 0.07
+Nodes (32): POST(), getSidebarData(), TULayout(), DapodikSyncBanner(), DashboardLayout(), DashboardLayoutProps, ALL_MENU_SECTIONS, getVisibleItems() (+24 more)
 
 ### Community 5 - "prakerin-client.tsx"
-Cohesion: 0.15
-Nodes (15): ModalHapus(), ModalHapusProps, COLUMN_MAP, excelDateToISO(), findHeader(), ModalImportPrakerin(), ModalImportProps, ModalPrakerin() (+7 more)
+Cohesion: 0.29
+Nodes (8): ModalPrakerin(), ModalPrakerinProps, COLUMNS, PrakerinClient(), PrakerinClientProps, deletePrakerin(), importPrakerin(), updatePrakerin()
 
-### Community 6 - "mapel-siswa-grid.tsx"
-Cohesion: 0.13
-Nodes (21): KelasItem, MapelSiswaGrid(), MapelSiswaGridProps, Student, Subject, getEnrollments(), getKelasList(), getStudents() (+13 more)
+### Community 6 - "requireTuAdmin"
+Cohesion: 0.15
+Nodes (15): xlsx, GET(), GET(), KelasItem, MapelSiswaGrid(), MapelSiswaGridProps, Student, Subject (+7 more)
 
 ### Community 7 - "ekstra-client.tsx"
-Cohesion: 0.11
-Nodes (24): GuruEkstraDetail(), Props, COLUMNS, EkstraClient(), EkstraClientProps, ModalAnggotaEskul(), ModalAnggotaEskulProps, ModalEkstra() (+16 more)
+Cohesion: 0.20
+Nodes (13): COLUMNS, EkstraClient(), EkstraClientProps, ModalAnggotaEskul(), ModalAnggotaEskulProps, ModalEkstra(), ModalEkstraProps, addSiswaEkstra() (+5 more)
 
 ### Community 8 - "pelengkap-pdfmake.ts"
 Cohesion: 0.16
 Nodes (26): approvalBlock(), borderlessLayout, buildCover(), buildSchoolPage(), buildStudentPage(), buildTransferPage(), createPelengkapRaporDefinition(), displayValue() (+18 more)
 
 ### Community 9 - "kokurikuler-actions.ts"
-Cohesion: 0.22
-Nodes (17): COLUMNS, KokurikulerClient(), KokurikulerClientProps, OPSI_NILAI, KokurikulerEditClient(), KokurikulerEditClientProps, copyProyekKokurikuler(), deleteKokurikulerProyek() (+9 more)
+Cohesion: 0.07
+Nodes (44): GuruKokurikulerClient(), GuruKokurikulerClientProps, OPSI_NILAI, ModalHapus(), ModalHapusProps, COLUMNS, KokurikulerClient(), KokurikulerClientProps (+36 more)
 
 ### Community 10 - "siswa-client.tsx"
-Cohesion: 0.10
-Nodes (22): COLUMN_MAP, excelDateToISO(), findHeader(), ModalImportSiswa(), ModalImportSiswaProps, normHeader(), ModalSiswa(), ModalSiswaProps (+14 more)
+Cohesion: 0.09
+Nodes (24): ModalHapus(), ModalHapusProps, COLUMN_MAP, excelDateToISO(), findHeader(), ModalImportSiswa(), ModalImportSiswaProps, normHeader() (+16 more)
 
 ### Community 11 - "compilerOptions"
 Cohesion: 0.07
 Nodes (28): dom, dom.iterable, esnext, **/*.mts, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts, node_modules (+20 more)
 
 ### Community 12 - "p5bk-client.tsx"
-Cohesion: 0.15
-Nodes (18): ModalNilaiP5BK(), ModalNilaiP5BKProps, NilaiData, OPSI_NILAI, ProyekNilai, SiswaNilai, SubElemenItem, ModalP5BK() (+10 more)
+Cohesion: 0.27
+Nodes (11): ModalP5BK(), ModalP5BKProps, COLUMNS, P5BKClient(), P5BKClientProps, deleteP5BK(), generateKode(), getDataNilaiP5BK() (+3 more)
 
-### Community 14 - "db.ts"
-Cohesion: 0.11
-Nodes (10): SEKOLAH_DIR, Entry, SekolahLogoRow, CetakRaporGuruClient(), CetakRaporGuruPage(), SiswaRaporRow, WaliKelasRow, getData() (+2 more)
+### Community 14 - "cetak-rapor-guru-client.tsx"
+Cohesion: 0.18
+Nodes (10): CetakRaporGuruClient(), CHECKBOX_JENIS, JENIS_CONFIG, JenisRapor, KelasItem, Props, Siswa, CetakRaporGuruPage() (+2 more)
 
 ### Community 15 - "devDependencies"
 Cohesion: 0.11
 Nodes (19): eslint, eslint-config-next, devDependencies, eslint, eslint-config-next, tailwindcss, @tailwindcss/postcss, @types/node (+11 more)
 
 ### Community 16 - "auth-guard.ts"
-Cohesion: 0.09
-Nodes (39): ABSEN_OPTIONS, AbsensiEntry, AbsensiPiketClient(), KelasItem, SiswaItem, AbsensiPiketPage(), ABSEN_COLS, KelasItem (+31 more)
+Cohesion: 0.16
+Nodes (20): ABSEN_OPTIONS, AbsensiEntry, AbsensiPiketClient(), KelasItem, SiswaItem, AbsensiPiketPage(), ABSEN_COLS, KelasItem (+12 more)
 
 ### Community 17 - "y"
 Cohesion: 0.14
@@ -239,13 +239,13 @@ Nodes (16): @auth/core/jwt, JWT, Kelas, KelasWali, KepalaSekolah, Mapel, MapelKe
 Cohesion: 0.17
 Nodes (17): ModalAnggotaOrganisasi(), ModalAnggotaProps, ModalOrganisasi(), ModalOrganisasiProps, COLUMNS, OrganisasiClient(), OrganisasiClientProps, getOrganisasi() (+9 more)
 
-### Community 24 - "apiError"
-Cohesion: 0.08
-Nodes (60): OPTIONS(), POST(), runtime, GET(), OPTIONS(), runtime, GET(), OPTIONS() (+52 more)
+### Community 24 - "db.ts"
+Cohesion: 0.06
+Nodes (71): SEKOLAH_DIR, Entry, SekolahLogoRow, OPTIONS(), POST(), runtime, GET(), OPTIONS() (+63 more)
 
 ### Community 25 - "mapel-client.tsx"
-Cohesion: 0.23
-Nodes (11): COLUMNS, MapelClient(), MapelClientProps, ModalMapel(), ModalMapelProps, getKelompok(), getMapel(), MapelPage() (+3 more)
+Cohesion: 0.18
+Nodes (13): COLUMNS, MapelClient(), MapelClientProps, ModalHapus(), ModalHapusProps, ModalMapel(), ModalMapelProps, getKelompok() (+5 more)
 
 ### Community 26 - "(dashboard)/profile/_components/profile-form.tsx"
 Cohesion: 0.22
@@ -259,9 +259,9 @@ Nodes (11): CHECKBOX_JENIS, DaftarRaporClient(), JENIS_CONFIG, JenisRapor, Props
 Cohesion: 0.24
 Nodes (10): Rapor Semester Identity Max Layout, Rapor Semester Identity Shifted Layout, Rapor Semester Page 1 - Subject Grades, Rapor Semester Page 2 - Extracurricular and Attendance, Rapor Semester Page 3 - Signatures and Decision, Rapor Semester Subject Middle Layout, Rapor Tengah Semester Final Layout, Rapor Tengah Semester Long Class Layout (+2 more)
 
-### Community 29 - "auth.ts"
-Cohesion: 0.15
-Nodes (10): getData(), PiketHarianPage(), getData(), SiswaProfilePage(), getProfil(), ProfilPage(), { handlers, signIn, signOut, auth }, StaffAuthRow (+2 more)
+### Community 29 - "tp-actions.ts"
+Cohesion: 0.28
+Nodes (13): Option, Props, TPMultiKelasClient(), addTujuanMulti(), copyTujuan(), createKode(), deleteTujuanByKode(), formatDisplayOrder() (+5 more)
 
 ### Community 30 - "siswa-portal-data.ts"
 Cohesion: 0.27
@@ -269,7 +269,7 @@ Nodes (8): NilaiSiswaPage(), formatTanggal(), SiswaDashboardPage(), PresensiSisw
 
 ### Community 31 - "dapodik-actions.ts"
 Cohesion: 0.05
-Nodes (72): ENTITY_ORDER, ModalDetailSinkron(), Props, STATUS_META, ENTITAS, namaSemester(), PeriodeInfo, Props (+64 more)
+Nodes (69): ENTITY_ORDER, ModalDetailSinkron(), Props, STATUS_META, ENTITAS, namaSemester(), PeriodeInfo, Props (+61 more)
 
 ### Community 32 - "kompetensi-client.tsx"
 Cohesion: 0.19
@@ -284,12 +284,12 @@ Cohesion: 0.18
 Nodes (10): background_color, description, display, icons, name, orientation, scope, short_name (+2 more)
 
 ### Community 35 - "rombel/page.tsx"
-Cohesion: 0.83
-Nodes (3): getRombel(), getUser(), RombelPage()
+Cohesion: 0.31
+Nodes (7): COLUMNS, RombelClient(), RombelClientProps, getRombel(), getUser(), RombelPage(), updateWaliKelas()
 
-### Community 36 - "confirm-delete-modal.tsx"
-Cohesion: 0.14
-Nodes (12): ModalHapus(), ModalHapusProps, ModalHapus(), ModalHapusProps, ModalHapus(), ModalHapusProps, ModalHapusOrganisasi(), ModalHapusProps (+4 more)
+### Community 36 - "useToast"
+Cohesion: 0.27
+Nodes (9): buildMap(), PenilaianClient(), TAB_INFO, COLUMN_MAP, excelDateToISO(), findHeader(), ModalImportPrakerin(), ModalImportProps (+1 more)
 
 ### Community 37 - "Rencana Implementasi Modul Bimbingan Konseling (BK) — v2.1"
 Cohesion: 0.05
@@ -303,9 +303,9 @@ Nodes (8): Kelas, LegerClient(), LegerRow, NilaiKelas, getKelas(), getLeger(), g
 Cohesion: 0.22
 Nodes (8): name, private, scripts, build, dev, lint, start, version
 
-### Community 40 - "[id]/page.tsx"
-Cohesion: 0.43
-Nodes (7): getDimensi(), getKelas(), getProyekDetail(), getTujuanList(), getUsers(), KokurikulerEditPage(), PageProps
+### Community 40 - "naik-kelas-client.tsx"
+Cohesion: 0.53
+Nodes (7): NaikKelasClient(), Props, getInfoPromosi(), promoteAllKelas(), promoteKelas(), updateNaikKelas(), getSekolahAktif()
 
 ### Community 41 - "fallback-ce627215c0e4a9af.js"
 Cohesion: 0.36
@@ -327,25 +327,25 @@ Nodes (5): BukuIndukGuruClient(), BukuIndukGuruClientProps, SECTIONS, SiswaBukuI
 Cohesion: 0.33
 Nodes (5): LegerGuruClient(), LegerRow, NilaiKelas, RekapPresensi, LegerNilaiGuruPage()
 
-### Community 47 - "piket-harian-client.tsx"
-Cohesion: 0.24
-Nodes (10): DAYS, PiketHarianClient(), PiketHarianClientProps, getData(), getUser(), PiketHarianPage(), addPiketHarian(), deletePiketHarian() (+2 more)
+### Community 47 - "modal-nilai-eskul.tsx"
+Cohesion: 0.32
+Nodes (6): GuruEkstraDetail(), Props, ModalNilaiEskul(), ModalNilaiEskulProps, NilaiRow, bulkUpdateSiswaEkstra()
 
 ### Community 48 - "Laporan Hasil Belajar"
 Cohesion: 0.33
 Nodes (6): Capaian Kompetensi, Ekstrakurikuler, Kokurikuler, Laporan Hasil Belajar, Mata Pelajaran, Laporan Hasil Belajar (pdfmake)
 
-### Community 49 - "guru/anggota-kelas/page.tsx"
-Cohesion: 0.40
-Nodes (4): AnggotaKelasGuruClient(), AnggotaKelasGuruClientProps, COLUMNS, AnggotaKelasGuruPage()
+### Community 49 - "modal-nilai-p5bk.tsx"
+Cohesion: 0.25
+Nodes (7): ModalNilaiP5BK(), ModalNilaiP5BKProps, NilaiData, OPSI_NILAI, ProyekNilai, SiswaNilai, SubElemenItem
 
 ### Community 50 - "tu/p5bk/page.tsx"
 Cohesion: 0.52
 Nodes (6): getData(), getDimensiTree(), getKelas(), getTema(), getUser(), P5BKPage()
 
 ### Community 51 - "getSekolahWithFilter"
-Cohesion: 0.14
-Nodes (19): CatatanWaliPage(), KelasWaliRow, SiswaCatatanRow, EkstraPage(), getDetail(), getList(), getSiswa(), getSiswaEkstra() (+11 more)
+Cohesion: 0.08
+Nodes (36): AnggotaKelasGuruClient(), AnggotaKelasGuruClientProps, COLUMNS, AnggotaKelasGuruPage(), EkstraPage(), getDetail(), getList(), getSiswa() (+28 more)
 
 ### Community 52 - "AGENTS.md"
 Cohesion: 0.50
@@ -356,8 +356,8 @@ Cohesion: 0.50
 Nodes (3): deploy.sh script, load_env(), db-migrate.sh script
 
 ### Community 54 - "mapel-kelas-client.tsx"
-Cohesion: 0.08
-Nodes (30): ProfileForm(), Section, COLUMNS, MapelKelasClient(), MapelKelasClientProps, ModalHapus(), ModalHapusProps, ModalMapelKelas() (+22 more)
+Cohesion: 0.07
+Nodes (36): ProfileForm(), Section, COLUMNS, MapelKelasClient(), MapelKelasClientProps, ModalMapelKelas(), ModalMapelKelasProps, getData() (+28 more)
 
 ### Community 55 - "deskripsi-client.tsx"
 Cohesion: 0.19
@@ -371,9 +371,13 @@ Nodes (5): Anggota, Organisasi, OrganisasiGuruClient(), OrganisasiGuruClientProp
 Cohesion: 0.67
 Nodes (4): E-R App Icon Apple Touch, E-R App Icon 192x192, E-R App Icon 512x512, E-R App Icon Maskable 512x512
 
-### Community 61 - "app/layout.tsx"
-Cohesion: 0.38
-Nodes (4): generateMetadata(), getLogoFilename(), viewport, ServiceWorkerRegister()
+### Community 60 - "tu/ekstra/page.tsx"
+Cohesion: 0.60
+Nodes (5): EkstraPage(), getEkstra(), getSiswa(), getSiswaEkstra(), getUsers()
+
+### Community 61 - "mapel-siswa/page.tsx"
+Cohesion: 0.60
+Nodes (5): getEnrollments(), getKelasList(), getStudents(), getSubjects(), MapelSiswaPage()
 
 ### Community 65 - "File Icon SVG"
 Cohesion: 1.00
@@ -387,25 +391,25 @@ Nodes (3): plugin, $schema, .opencode/plugins/graphify.js
 Cohesion: 0.50
 Nodes (3): Deploy on Vercel, Getting Started, Learn More
 
-### Community 68 - "useToast"
-Cohesion: 0.11
-Nodes (21): buildMap(), PenilaianClient(), TAB_INFO, AnggotaKelasClient(), AnggotaKelasClientProps, COLUMNS, ProfilForm(), ProfilFormProps (+13 more)
+### Community 68 - "toast-provider.tsx"
+Cohesion: 0.17
+Nodes (10): generateMetadata(), getLogoFilename(), viewport, ServiceWorkerRegister(), ToastContext, ToastContextType, ToastItem, ToastProvider() (+2 more)
 
-### Community 70 - "requireTuAdmin"
-Cohesion: 0.18
-Nodes (14): xlsx, dynamic, GET(), runtime, GET(), GET(), ModalTransferAnggotaKelas(), ModalTransferAnggotaKelasProps (+6 more)
+### Community 70 - "anggota-kelas-actions.ts"
+Cohesion: 0.24
+Nodes (9): AnggotaKelasClient(), AnggotaKelasClientProps, COLUMNS, ModalTransferAnggotaKelas(), ModalTransferAnggotaKelasProps, bulkAddAnggotaKelas(), bulkRemoveAnggotaKelas(), deleteAnggotaKelas() (+1 more)
 
-### Community 72 - "tu/kokurikuler/page.tsx"
-Cohesion: 0.70
-Nodes (4): getData(), getKelas(), getUsers(), KokurikulerPage()
+### Community 72 - "profil-actions.ts"
+Cohesion: 0.53
+Nodes (4): ProfilForm(), ProfilFormProps, saveFile(), updateProfil()
 
-### Community 74 - "cetak-rapor-guru-client.tsx"
-Cohesion: 0.12
-Nodes (17): CHECKBOX_JENIS, JENIS_CONFIG, JenisRapor, KelasItem, Props, Siswa, CatatanWaliClient(), FilterStatus (+9 more)
+### Community 74 - "catatan-wali/page.tsx"
+Cohesion: 0.13
+Nodes (15): CatatanWaliClient(), FilterStatus, KelasItem, Props, SiswaItem, CatatanWaliPage(), KelasWaliRow, SiswaCatatanRow (+7 more)
 
-### Community 82 - "[id_mapel_kelas]/page.tsx"
-Cohesion: 0.67
-Nodes (3): getPenilaianData(), PageProps, PenilaianPage()
+### Community 82 - "tujuan-pembelajaran/page.tsx"
+Cohesion: 0.60
+Nodes (4): getDetail(), getOptions(), PageProps, TujuanPembelajaranPage()
 
 ### Community 88 - "pelengkap-template.ts"
 Cohesion: 0.54
@@ -415,33 +419,33 @@ Nodes (7): formatTanggal(), generatePelengkapRaporHTML(), infoRow(), PelengkapSe
 Cohesion: 0.83
 Nodes (3): getPrakerin(), getUsers(), PrakerinPage()
 
-### Community 97 - "sekolah-helper.ts"
-Cohesion: 0.16
-Nodes (9): getGuruDashboard(), GuruDashboardPage(), getData(), PrakerinPage(), COLUMNS, RekapPresensiGuruClient(), RekapPresensiGuruClientProps, RekapPresensiGuruPage() (+1 more)
+### Community 94 - "update/route.ts"
+Cohesion: 0.50
+Nodes (3): dynamic, GET(), runtime
 
 ### Community 99 - "naik-kelas/page.tsx"
 Cohesion: 0.70
 Nodes (4): getData(), getKelas(), getTingkat(), NaikKelasPage()
 
 ## Knowledge Gaps
-- **385 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `fs`, `env`, `eslintConfig` (+380 more)
+- **387 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `fs`, `env`, `eslintConfig` (+382 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `k()` connect `workbox-4a6e5f9b.js` to `siswa-client.tsx`, `a`, `dapodik-actions.ts`?**
   _High betweenness centrality (0.088) - this node is a cross-community bridge._
-- **Why does `getSekolahWithFilter()` connect `getSekolahWithFilter` to `cetak-rapor/route.ts`, `tu/layout.tsx`, `prakerin-client.tsx`, `mapel-siswa-grid.tsx`, `ekstra-client.tsx`, `kokurikuler-actions.ts`, `siswa-client.tsx`, `p5bk-client.tsx`, `db.ts`, `auth-guard.ts`, `organisasi-client.tsx`, `daftar-rapor/page.tsx`, `auth.ts`, `rombel/page.tsx`, `laporan-pendidikan/page.tsx`, `tu/page.tsx`, `buku-induk/page.tsx`, `lager-nilai-kelas/page.tsx`, `guru/anggota-kelas/page.tsx`, `tu/p5bk/page.tsx`, `mapel-kelas-client.tsx`, `guru/organisasi/page.tsx`, `useToast`, `requireTuAdmin`, `tu/kokurikuler/page.tsx`, `cetak-rapor-guru-client.tsx`, `[id_mapel_kelas]/page.tsx`, `tu/prakerin/page.tsx`, `kelas-ku/page.tsx`, `sekolah-helper.ts`, `naik-kelas/page.tsx`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
-- **Why does `useToast()` connect `useToast` to `kompetensi-client.tsx`, `pegawai-client.tsx`, `integrasi-api-client.tsx`, `prakerin-client.tsx`, `requireTuAdmin`, `ekstra-client.tsx`, `mapel-siswa-grid.tsx`, `kokurikuler-actions.ts`, `siswa-client.tsx`, `p5bk-client.tsx`, `piket-harian-client.tsx`, `auth-guard.ts`, `organisasi-client.tsx`, `mapel-kelas-client.tsx`, `deskripsi-client.tsx`, `mapel-client.tsx`, `(dashboard)/profile/_components/profile-form.tsx`, `dapodik-actions.ts`?**
-  _High betweenness centrality (0.077) - this node is a cross-community bridge._
+- **Why does `getSekolahWithFilter()` connect `getSekolahWithFilter` to `cetak-rapor/route.ts`, `tu/layout.tsx`, `prakerin-client.tsx`, `kokurikuler-actions.ts`, `siswa-client.tsx`, `p5bk-client.tsx`, `cetak-rapor-guru-client.tsx`, `auth-guard.ts`, `organisasi-client.tsx`, `daftar-rapor/page.tsx`, `tp-actions.ts`, `rombel/page.tsx`, `laporan-pendidikan/page.tsx`, `tu/page.tsx`, `buku-induk/page.tsx`, `lager-nilai-kelas/page.tsx`, `tu/p5bk/page.tsx`, `mapel-kelas-client.tsx`, `guru/organisasi/page.tsx`, `tu/ekstra/page.tsx`, `mapel-siswa/page.tsx`, `anggota-kelas-actions.ts`, `profil-actions.ts`, `catatan-wali/page.tsx`, `tujuan-pembelajaran/page.tsx`, `tu/prakerin/page.tsx`, `naik-kelas/page.tsx`?**
+  _High betweenness centrality (0.073) - this node is a cross-community bridge._
+- **Why does `useToast()` connect `useToast` to `integrasi-api-client.tsx`, `prakerin-client.tsx`, `requireTuAdmin`, `ekstra-client.tsx`, `kokurikuler-actions.ts`, `siswa-client.tsx`, `p5bk-client.tsx`, `auth-guard.ts`, `organisasi-client.tsx`, `mapel-client.tsx`, `(dashboard)/profile/_components/profile-form.tsx`, `tp-actions.ts`, `dapodik-actions.ts`, `kompetensi-client.tsx`, `pegawai-client.tsx`, `rombel/page.tsx`, `naik-kelas-client.tsx`, `modal-nilai-eskul.tsx`, `mapel-kelas-client.tsx`, `deskripsi-client.tsx`, `toast-provider.tsx`, `anggota-kelas-actions.ts`, `profil-actions.ts`?**
+  _High betweenness centrality (0.064) - this node is a cross-community bridge._
 - **What connects `$schema`, `.opencode/plugins/graphify.js`, `fs` to the rest of the system?**
-  _385 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _387 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Rapor Semester (Semester Report Card)` be split into smaller, more focused modules?**
   _Cohesion score 0.05725490196078432 - nodes in this community are weakly interconnected._
 - **Should `cetak-rapor/route.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.12550607287449392 - nodes in this community are weakly interconnected._
 - **Should `tu/layout.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.08408408408408409 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06826241134751773 - nodes in this community are weakly interconnected._

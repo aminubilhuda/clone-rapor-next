@@ -1,6 +1,6 @@
 'use server';
 
-import { requireTuAdmin } from '@/lib/actions/auth-guard';
+import { requireTuAdmin, requireAuth } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
@@ -47,6 +47,7 @@ export async function saveProyekKokurikuler(formData: FormData) {
       );
     }
     revalidatePath('/tu/kokurikuler');
+    revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
   } catch (e: any) {
     console.error('Save proyek kokurikuler error:', e);
@@ -67,6 +68,7 @@ export async function updatePembinaKokurikuler(idProyekKelas: number, idUser: nu
       [idUser ? Number(idUser) : null, idProyekKelas]
     );
     revalidatePath('/tu/kokurikuler');
+    revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
   } catch (e: any) {
     console.error('Update pembina error:', e);
@@ -138,6 +140,7 @@ export async function copyProyekKokurikuler(formData: FormData) {
     }
 
     revalidatePath('/tu/kokurikuler');
+    revalidatePath('/guru/kokurikuler');
     return { success: true, count: targetKelasIds.length } as const;
   } catch (e: any) {
     console.error('Copy proyek kokurikuler error:', e);
@@ -158,6 +161,7 @@ export async function deleteKokurikulerProyek(id: number) {
     await pool.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [id]);
     await pool.query('DELETE FROM proyek_kelas WHERE id_proyek_kelas = ?', [id]);
     revalidatePath('/tu/kokurikuler');
+    revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
   } catch (e: any) {
     console.error('Delete proyek error:', e);
@@ -169,7 +173,7 @@ export async function deleteKokurikulerProyek(id: number) {
  * Get all proyek_tujuan rows for a given proyek_kelas.
  */
 export async function getTujuanByProyek(idProyek: number) {
-  const authResult = await requireTuAdmin();
+  const authResult = await requireAuth();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
@@ -218,6 +222,7 @@ export async function saveTujuan(formData: FormData) {
     }
     revalidatePath('/tu/kokurikuler');
     revalidatePath(`/tu/kokurikuler/${idProyekKelas}`);
+    revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
   } catch (e: any) {
     console.error('Save tujuan error:', e);
@@ -248,6 +253,7 @@ export async function updateTujuanInline(
     );
     revalidatePath('/tu/kokurikuler');
     if (idProyekKelas) revalidatePath(`/tu/kokurikuler/${idProyekKelas}`);
+    revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
   } catch (e: any) {
     console.error('Update tujuan inline error:', e);
@@ -267,6 +273,7 @@ export async function deleteTujuan(id: number, idProyekKelas?: number) {
     await pool.query('DELETE FROM proyek_tujuan WHERE id_proyek_tujuan = ?', [id]);
     revalidatePath('/tu/kokurikuler');
     if (idProyekKelas) revalidatePath(`/tu/kokurikuler/${idProyekKelas}`);
+    revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
   } catch (e: any) {
     console.error('Delete tujuan error:', e);
@@ -276,9 +283,10 @@ export async function deleteTujuan(id: number, idProyekKelas?: number) {
 
 /**
  * Get data for nilai kokurikuler modal: siswa list + tujuan list + existing nilai.
+ * Accessible by both TU Admin and Guru.
  */
 export async function getDataNilaiKokurikuler(idProyek: number) {
-  const authResult = await requireTuAdmin();
+  const authResult = await requireAuth();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
@@ -337,9 +345,10 @@ export async function getDataNilaiKokurikuler(idProyek: number) {
 
 /**
  * Save nilai kokurikuler (batch upsert).
+ * Accessible by both TU Admin and Guru.
  */
 export async function saveNilaiKokurikuler(formData: FormData) {
-  const authResult = await requireTuAdmin();
+  const authResult = await requireAuth();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idProyek = Number(formData.get('id_proyek_kelas'));
@@ -403,6 +412,7 @@ export async function saveNilaiKokurikuler(formData: FormData) {
     }
 
     revalidatePath('/tu/kokurikuler');
+    revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
   } catch (e: any) {
     console.error('Save nilai error:', e);
