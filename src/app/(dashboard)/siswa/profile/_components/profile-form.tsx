@@ -279,10 +279,11 @@ export default function ProfileForm({
             />
           </FormField>
 
-          <FormField label="No. Telepon / WhatsApp Siswa">
+          <FormField label="No. Telepon / WhatsApp Siswa" required>
             <input
               name="kontak_siswa"
               defaultValue={siswa?.kontak_siswa ?? ''}
+              required
               className={inputCls}
               placeholder="Contoh: 08123456789"
             />
@@ -357,10 +358,11 @@ export default function ProfileForm({
           />
           <div className={sections['data-pribadi'] ? 'space-y-4 pt-3' : 'hidden'}>
             <FormGrid>
-              <FormField label="Tempat Lahir">
+              <FormField label="Tempat Lahir" required>
                 <input
                   name="tempat_lahir"
                   defaultValue={siswa?.tempat_lahir ?? ''}
+                  required
                   className={inputCls}
                   placeholder="Kota / Kabupaten lahir"
                 />
@@ -422,21 +424,23 @@ export default function ProfileForm({
                 />
               </FormField>
 
-              <FormField label="Anak Ke-">
+              <FormField label="Anak Ke-" required>
                 <input
                   name="anak_ke"
                   type="number"
                   min="0"
+                  required
                   defaultValue={siswa?.anak_ke ?? 0}
                   className={inputCls}
                 />
               </FormField>
 
-              <FormField label="Jumlah Saudara">
+              <FormField label="Jumlah Saudara" required>
                 <input
                   name="jumlah_saudara"
                   type="number"
                   min="0"
+                  required
                   defaultValue={siswa?.jumlah_saudara ?? 0}
                   className={inputCls}
                 />
@@ -452,20 +456,22 @@ export default function ProfileForm({
               </FormField>
             </FormGrid>
 
-            <FormField label="Alamat Tempat Tinggal Siswa">
+            <FormField label="Alamat Tempat Tinggal Siswa" required>
               <textarea
                 name="alamat"
                 rows={2}
+                required
                 defaultValue={siswa?.alamat ?? ''}
                 className={inputCls}
                 placeholder="Alamat lengkap siswa saat ini"
               />
             </FormField>
 
-            <FormField label="Alamat Orang Tua">
+            <FormField label="Alamat Orang Tua" required>
               <textarea
                 name="alamat_orang_tua"
                 rows={2}
+                required
                 defaultValue={siswa?.alamat_orang_tua ?? ''}
                 className={inputCls}
                 placeholder="Alamat lengkap orang tua"
@@ -483,22 +489,23 @@ export default function ProfileForm({
           />
           <div className={sections['data-ayah'] ? 'space-y-4 pt-3' : 'hidden'}>
             <FormGrid>
-              <FormField label="Nama Ayah">
-                <input name="nama_ayah" defaultValue={siswa?.nama_ayah ?? ''} className={inputCls} />
+              <FormField label="Nama Ayah" required>
+                <input name="nama_ayah" defaultValue={siswa?.nama_ayah ?? ''} required className={inputCls} />
               </FormField>
               <FormField label="NIK Ayah">
                 <input name="nik_ayah" defaultValue={siswa?.nik_ayah ?? ''} className={inputCls} />
               </FormField>
-              <FormField label="Tahun Lahir Ayah">
+              <FormField label="Tahun Lahir Ayah" required>
                 <input
                   name="tahun_ayah"
                   type="number"
                   min="0"
+                  required
                   defaultValue={siswa?.tahun_ayah ?? 0}
                   className={inputCls}
                 />
               </FormField>
-              <FormField label="Pendidikan Ayah">
+              <FormField label="Pendidikan Ayah" required>
                 <Select
                   name="pendidikan_ayah"
                   defaultValue={siswa?.pendidikan_ayah ?? ''}
@@ -507,11 +514,11 @@ export default function ProfileForm({
                   valueKey="id_pendidikan"
                 />
               </FormField>
-              <FormField label="Pekerjaan Ayah">
-                <input name="pekerjaan_ayah" defaultValue={siswa?.pekerjaan_ayah ?? ''} className={inputCls} />
+              <FormField label="Pekerjaan Ayah" required>
+                <input name="pekerjaan_ayah" defaultValue={siswa?.pekerjaan_ayah ?? ''} required className={inputCls} />
               </FormField>
-              <FormField label="No. Telepon / HP Ayah">
-                <input name="kontak_ayah" defaultValue={siswa?.kontak_ayah ?? ''} className={inputCls} />
+              <FormField label="No. Telepon / HP Ayah" required>
+                <input name="kontak_ayah" defaultValue={siswa?.kontak_ayah ?? ''} required className={inputCls} />
               </FormField>
             </FormGrid>
           </div>
@@ -526,22 +533,23 @@ export default function ProfileForm({
           />
           <div className={sections['data-ibu'] ? 'space-y-4 pt-3' : 'hidden'}>
             <FormGrid>
-              <FormField label="Nama Ibu">
-                <input name="nama_ibu" defaultValue={siswa?.nama_ibu ?? ''} className={inputCls} />
+              <FormField label="Nama Ibu" required>
+                <input name="nama_ibu" defaultValue={siswa?.nama_ibu ?? ''} required className={inputCls} />
               </FormField>
               <FormField label="NIK Ibu">
                 <input name="nik_ibu" defaultValue={siswa?.nik_ibu ?? ''} className={inputCls} />
               </FormField>
-              <FormField label="Tahun Lahir Ibu">
+              <FormField label="Tahun Lahir Ibu" required>
                 <input
                   name="tahun_ibu"
                   type="number"
                   min="0"
+                  required
                   defaultValue={siswa?.tahun_ibu ?? 0}
                   className={inputCls}
                 />
               </FormField>
-              <FormField label="Pendidikan Ibu">
+              <FormField label="Pendidikan Ibu" required>
                 <Select
                   name="pendidikan_ibu"
                   defaultValue={siswa?.pendidikan_ibu ?? ''}
@@ -550,11 +558,11 @@ export default function ProfileForm({
                   valueKey="id_pendidikan"
                 />
               </FormField>
-              <FormField label="Pekerjaan Ibu">
-                <input name="pekerjaan_ibu" defaultValue={siswa?.pekerjaan_ibu ?? ''} className={inputCls} />
+              <FormField label="Pekerjaan Ibu" required>
+                <input name="pekerjaan_ibu" defaultValue={siswa?.pekerjaan_ibu ?? ''} required className={inputCls} />
               </FormField>
-              <FormField label="No. Telepon / HP Ibu">
-                <input name="kontak_ibu" defaultValue={siswa?.kontak_ibu ?? ''} className={inputCls} />
+              <FormField label="No. Telepon / HP Ibu" required>
+                <input name="kontak_ibu" defaultValue={siswa?.kontak_ibu ?? ''} required className={inputCls} />
               </FormField>
             </FormGrid>
           </div>

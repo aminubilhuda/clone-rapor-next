@@ -16,11 +16,11 @@ export async function updateSiswaProfile(formData: FormData) {
 
   // Editable Student Fields
   const username = (formData.get('username') as string)?.trim();
-  const kontakSiswa = (formData.get('kontak_siswa') as string)?.trim() || null;
-  const alamat = (formData.get('alamat') as string)?.trim() || null;
-  const alamatOrtu = (formData.get('alamat_orang_tua') as string)?.trim() || null;
+  const kontakSiswa = (formData.get('kontak_siswa') as string)?.trim() || '';
+  const alamat = (formData.get('alamat') as string)?.trim() || '';
+  const alamatOrtu = (formData.get('alamat_orang_tua') as string)?.trim() || '';
 
-  const tempatLahir = (formData.get('tempat_lahir') as string)?.trim() || null;
+  const tempatLahir = (formData.get('tempat_lahir') as string)?.trim() || '';
   const tanggalLahirRaw = (formData.get('tanggal_lahir') as string)?.trim();
   const tanggalLahir = tanggalLahirRaw || '1970-01-01';
 
@@ -37,28 +37,28 @@ export async function updateSiswaProfile(formData: FormData) {
   const anakKe = anakKeRaw ? Number(anakKeRaw) : 0;
 
   // Data Ayah
-  const namaAyah = (formData.get('nama_ayah') as string)?.trim() || null;
+  const namaAyah = (formData.get('nama_ayah') as string)?.trim() || '';
   const nikAyah = (formData.get('nik_ayah') as string)?.trim() || null;
   const tahunAyahRaw = formData.get('tahun_ayah') as string;
   const tahunAyah = tahunAyahRaw ? Number(tahunAyahRaw) : 0;
-  const pendidikanAyah = (formData.get('pendidikan_ayah') as string)?.trim() || null;
-  const pekerjaanAyah = (formData.get('pekerjaan_ayah') as string)?.trim() || null;
-  const kontakAyah = (formData.get('kontak_ayah') as string)?.trim() || null;
+  const pendidikanAyah = (formData.get('pendidikan_ayah') as string)?.trim() || '';
+  const pekerjaanAyah = (formData.get('pekerjaan_ayah') as string)?.trim() || '';
+  const kontakAyah = (formData.get('kontak_ayah') as string)?.trim() || '';
 
   // Data Ibu
-  const namaIbu = (formData.get('nama_ibu') as string)?.trim() || null;
+  const namaIbu = (formData.get('nama_ibu') as string)?.trim() || '';
   const nikIbu = (formData.get('nik_ibu') as string)?.trim() || null;
   const tahunIbuRaw = formData.get('tahun_ibu') as string;
   const tahunIbu = tahunIbuRaw ? Number(tahunIbuRaw) : 0;
-  const pendidikanIbu = (formData.get('pendidikan_ibu') as string)?.trim() || null;
-  const pekerjaanIbu = (formData.get('pekerjaan_ibu') as string)?.trim() || null;
-  const kontakIbu = (formData.get('kontak_ibu') as string)?.trim() || null;
+  const pendidikanIbu = (formData.get('pendidikan_ibu') as string)?.trim() || '';
+  const pekerjaanIbu = (formData.get('pekerjaan_ibu') as string)?.trim() || '';
+  const kontakIbu = (formData.get('kontak_ibu') as string)?.trim() || '';
 
   // Data Wali
-  const namaWali = (formData.get('nama_wali') as string)?.trim() || null;
-  const alamatWali = (formData.get('alamat_wali') as string)?.trim() || null;
-  const pekerjaanWali = (formData.get('pekerjaan_wali') as string)?.trim() || null;
-  const kontakWali = (formData.get('kontak_wali') as string)?.trim() || null;
+  const namaWali = (formData.get('nama_wali') as string)?.trim() || '';
+  const alamatWali = (formData.get('alamat_wali') as string)?.trim() || '';
+  const pekerjaanWali = (formData.get('pekerjaan_wali') as string)?.trim() || '';
+  const kontakWali = (formData.get('kontak_wali') as string)?.trim() || '';
 
   // Password Change
   const newPassword = (formData.get('new_password') as string)?.trim();
