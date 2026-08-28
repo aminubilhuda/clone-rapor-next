@@ -68,6 +68,10 @@ export async function updateSiswaProfile(formData: FormData) {
     return { success: false, error: 'Username wajib diisi' } as const;
   }
 
+  if (!tanggalLahirRaw) {
+    return { success: false, error: 'Tanggal lahir tidak boleh kosong' } as const;
+  }
+
   if (newPassword) {
     if (newPassword.length < 4) {
       return { success: false, error: 'Password baru minimal 4 karakter' } as const;
@@ -166,6 +170,13 @@ export async function updateSiswaProfile(formData: FormData) {
     console.error('Error updateSiswaProfile:', e);
     if (e.code === 'ER_DUP_ENTRY') {
       return { success: false, error: 'Username sudah digunakan di sistem' } as const;
+    }
+    if (
+      e?.message?.includes('tanggal_lahir') ||
+      e?.sqlMessage?.includes('tanggal_lahir') ||
+      (e?.code === 'ER_BAD_NULL_ERROR' && e?.sqlMessage?.includes('tanggal_lahir'))
+    ) {
+      return { success: false, error: 'Tanggal lahir tidak boleh kosong' } as const;
     }
     return { success: false, error: e?.message || 'Gagal menyimpan data profil' } as const;
   }

@@ -114,6 +114,18 @@ export default function ProfileForm({
     e.preventDefault();
     const form = e.currentTarget;
 
+    const username = (form.elements.namedItem('username') as HTMLInputElement)?.value?.trim();
+    if (!username) {
+      showToast('Username wajib diisi!', 'error');
+      return;
+    }
+
+    const tanggalLahir = (form.elements.namedItem('tanggal_lahir') as HTMLInputElement)?.value?.trim();
+    if (!tanggalLahir) {
+      showToast('Tanggal lahir tidak boleh kosong!', 'error');
+      return;
+    }
+
     const newPw = (form.elements.namedItem('new_password') as HTMLInputElement)?.value?.trim();
     const confirmPw = (form.elements.namedItem('confirm_password') as HTMLInputElement)?.value?.trim();
 
@@ -169,8 +181,8 @@ export default function ProfileForm({
         </div>
       )}
 
-      {/* Top Header & Actions Bar (Always Visible at the Top) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-4 sm:px-6 sm:py-4 premium-shadow border border-[rgba(0,0,0,0.04)] sticky top-2 z-20 backdrop-blur-md bg-white/95">
+      {/* Top Header & Actions Bar (Static at the top of the form, not floating) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-4 sm:px-6 sm:py-4 premium-shadow border border-[rgba(0,0,0,0.04)]">
         <div>
           <h1 className="text-xl font-bold text-[#1A1A2E]">Profil Saya</h1>
           <p className="text-xs text-[#6B7280]">
@@ -354,10 +366,11 @@ export default function ProfileForm({
                 />
               </FormField>
 
-              <FormField label="Tanggal Lahir">
+              <FormField label="Tanggal Lahir" required>
                 <input
                   name="tanggal_lahir"
                   type="date"
+                  required
                   defaultValue={(() => {
                     if (!siswa?.tanggal_lahir) return '';
                     const raw = siswa.tanggal_lahir;
