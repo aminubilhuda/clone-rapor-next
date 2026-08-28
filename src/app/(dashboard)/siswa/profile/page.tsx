@@ -8,6 +8,10 @@ async function getData() {
   const session = await auth();
   if (!session?.user?.id_siswa || session.user.jabatan !== JABATAN.SISWA) redirect('/login');
 
+  const [sekolahRows]: any = await pool.query('SELECT tahun, semester FROM sekolah LIMIT 1');
+  const tahun = sekolahRows[0]?.tahun || 0;
+  const semester = sekolahRows[0]?.semester || 0;
+
   const [siswaRows]: any = await pool.query(`
     SELECT
       s.id_siswa, s.nama_siswa, s.nik_pd, s.nkk,
@@ -20,14 +24,21 @@ async function getData() {
       s.nama_wali, s.alamat_wali, s.pekerjaan_wali, s.kontak_wali,
       s.terima_tingkat, s.sekolah_asal, s.terima_tanggal,
       s.username, s.foto, s.jenis_siswa,
-      jk.jenis_kelamin, a.agama,
-      kk.kompetensi_keahlian
+      jk.jenis_kelamin, a.agama as nama_agama,
+      kk.kompetensi_keahlian,
+      COALESCE(k.nama_kelas, 'Belum Bergabung') as kelas_aktif
     FROM siswa s
     LEFT JOIN jenis_kelamin jk ON s.kelamin = jk.id_jenis_kelamin
     LEFT JOIN agama a ON s.agama = a.id_agama
     LEFT JOIN kompetensi_keahlian kk ON s.jurusan = kk.id_kompetensi_keahlian
+    LEFT JOIN (
+      SELECT id_siswa, id_kelas FROM siswa_kelas
+      WHERE tahun = ? AND semester = ? AND deleted_at IS NULL
+      GROUP BY id_siswa
+    ) sk ON s.id_siswa = sk.id_siswa
+    LEFT JOIN kelas k ON sk.id_kelas = k.id_kelas
     WHERE s.id_siswa = ? AND s.aktif = 1 AND s.deleted_at IS NULL
-  `, [session.user.id_siswa]);
+  `, [tahun, semester, session.user.id_siswa]);
 
   if (!siswaRows[0]) redirect('/login');
 
@@ -55,14 +66,7 @@ export default async function SiswaProfilePage() {
   const data = await getData();
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1A1A2E]">Profil Saya</h1>
-        <p className="mt-1 text-sm text-[#6B7280]">
-          Perbarui data diri Anda. Semua perubahan akan disimpan di sistem.
-        </p>
-      </div>
-
+    <div className="mx-auto max-w-4xl pb-16">
       <ProfileForm
         siswa={data.siswa}
         refKelamin={data.refKelamin}

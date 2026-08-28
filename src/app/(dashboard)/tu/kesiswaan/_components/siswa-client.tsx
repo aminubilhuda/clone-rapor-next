@@ -8,6 +8,7 @@ import { confirmAlert } from '@/lib/swal';
 import ModalSiswa from './modal-siswa';
 import ModalHapus from './modal-hapus';
 import ModalImportSiswa from './modal-import-siswa';
+import ModalExportSiswa from './modal-export-siswa';
 
 const COLUMNS = [
   { key: 'id_siswa', label: 'ID' },
@@ -36,9 +37,10 @@ interface SiswaClientProps {
   refHubKeluarga: any[];
   refJenisSiswa: any[];
   refPendidikan: any[];
+  refKelas?: any[];
 }
 
-export default function SiswaClient({ siswa, total, page, perPage, search, refKelamin, refAgama, refJurusan, refTingkat, refHubKeluarga, refJenisSiswa, refPendidikan }: SiswaClientProps) {
+export default function SiswaClient({ siswa, total, page, perPage, search, refKelamin, refAgama, refJurusan, refTingkat, refHubKeluarga, refJenisSiswa, refPendidikan, refKelas = [] }: SiswaClientProps) {
   const { showToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -47,6 +49,7 @@ export default function SiswaClient({ siswa, total, page, perPage, search, refKe
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
   const [modalImport, setModalImport] = useState(false);
+  const [modalExport, setModalExport] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(total / perPage));
@@ -115,6 +118,12 @@ export default function SiswaClient({ siswa, total, page, perPage, search, refKe
         <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between">
           <h5 className="font-semibold text-[#1A1A2E]">Daftar Siswa</h5>
           <div className="flex items-center gap-2">
+            <button onClick={() => setModalExport(true)} className="bg-white text-emerald-600 border border-emerald-600/30 px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-50 active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-sm">
+              <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export Excel
+            </button>
             <button onClick={handleBulkGenerate} className="bg-white text-[#DC2626] border border-[#DC2626]/30 px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#DC2626]/5 active:scale-[0.98] transition-all flex items-center gap-1.5">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -254,6 +263,13 @@ export default function SiswaClient({ siswa, total, page, perPage, search, refKe
         refJenisSiswa={refJenisSiswa}
         refPendidikan={refPendidikan}
         onImport={importSiswa}
+      />
+
+      <ModalExportSiswa
+        open={modalExport}
+        onClose={() => setModalExport(false)}
+        refKelas={refKelas}
+        currentSearch={searchInput}
       />
     </>
   );

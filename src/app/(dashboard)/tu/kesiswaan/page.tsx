@@ -14,10 +14,11 @@ async function getReferensi() {
     const [hubKeluarga]: any = await pool.query('SELECT * FROM hubungan_keluarga WHERE deleted_at IS NULL');
     const [jenisSiswa]: any = await pool.query('SELECT * FROM jenis_siswa WHERE deleted_at IS NULL');
     const [pendidikan]: any = await pool.query('SELECT * FROM pendidikan WHERE deleted_at IS NULL');
-    return { kelamin, agama, jurusan, tingkat, hubKeluarga, jenisSiswa, pendidikan };
+    const [kelas]: any = await pool.query('SELECT id_kelas, nama_kelas FROM kelas WHERE deleted_at IS NULL ORDER BY nama_kelas ASC');
+    return { kelamin, agama, jurusan, tingkat, hubKeluarga, jenisSiswa, pendidikan, kelas };
   } catch (error) {
     console.error('Referensi fetch error:', error);
-    return { kelamin: [], agama: [], jurusan: [], tingkat: [], hubKeluarga: [], jenisSiswa: [], pendidikan: [] };
+    return { kelamin: [], agama: [], jurusan: [], tingkat: [], hubKeluarga: [], jenisSiswa: [], pendidikan: [], kelas: [] };
   }
 }
 
@@ -56,6 +57,7 @@ export default async function KesiswaanPage({
         refHubKeluarga={ref.hubKeluarga}
         refJenisSiswa={ref.jenisSiswa}
         refPendidikan={ref.pendidikan}
+        refKelas={ref.kelas}
       />
     </div>
   );
