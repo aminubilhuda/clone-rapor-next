@@ -33,6 +33,7 @@ const pageTitles: Record<string, string> = {
   '/guru/catatan-rapor': 'Daftar Rapor',
   '/siswa': 'Dashboard Siswa',
   '/siswa/profile': 'Profil Saya',
+  '/siswa/akun': 'Akun & Keamanan',
   '/siswa/nilai': 'Nilai Saya',
   '/siswa/presensi': 'Presensi Saya',
 };
