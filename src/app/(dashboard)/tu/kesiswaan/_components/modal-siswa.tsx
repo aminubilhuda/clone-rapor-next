@@ -219,7 +219,8 @@ export default function ModalSiswa({
                   </FormField>
                   <FormField label="Jurusan">
                     <select name="jurusan" defaultValue={siswa?.jurusan ?? ''} className={selectCls}>
-                      {refJurusan.map((j: any) => (
+                      <option value="">Pilih Jurusan...</option>
+                      {refJurusan?.map((j: any) => (
                         <option key={j.id_kompetensi_keahlian} value={j.id_kompetensi_keahlian}>{j.kompetensi_keahlian}</option>
                       ))}
                     </select>

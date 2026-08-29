@@ -111,6 +111,12 @@ export default function ProfileForm({
   const { showToast } = useToast();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [selectedJurusan, setSelectedJurusan] = useState<string | number>(siswa?.jurusan ?? '');
+
+  const activeJurusanName =
+    refJurusan?.find((j: any) => String(j.id_kompetensi_keahlian) === String(selectedJurusan))?.kompetensi_keahlian ||
+    siswa?.kompetensi_keahlian ||
+    '-';
 
   const [sections, setSections] = useState<Record<Section, boolean>>({
     'data-pribadi': true,
@@ -265,7 +271,7 @@ export default function ProfileForm({
           </div>
           <div className="bg-[#F8F9FB] rounded-xl p-3 border border-[rgba(0,0,0,0.04)]">
             <span className="text-gray-500 block mb-1">Jurusan Terdaftar</span>
-            <span className="font-semibold text-sm text-[#1A1A2E]">{siswa?.kompetensi_keahlian || '-'}</span>
+            <span className="font-semibold text-sm text-[#1A1A2E]">{activeJurusanName}</span>
           </div>
           <div className="bg-[#F8F9FB] rounded-xl p-3 border border-[rgba(0,0,0,0.04)]">
             <span className="text-gray-500 block mb-1">NISN (Permanen)</span>
@@ -403,8 +409,13 @@ export default function ProfileForm({
               </FormField>
 
               <FormField label="Kompetensi Keahlian / Jurusan">
-                <select name="jurusan" defaultValue={siswa?.jurusan ?? ''} className={selectCls}>
-                  <option value="">Pilih...</option>
+                <select
+                  name="jurusan"
+                  value={selectedJurusan}
+                  onChange={(e) => setSelectedJurusan(e.target.value)}
+                  className={selectCls}
+                >
+                  <option value="">Pilih Jurusan...</option>
                   {refJurusan?.map((j: any) => (
                     <option key={j.id_kompetensi_keahlian} value={j.id_kompetensi_keahlian}>
                       {j.kompetensi_keahlian}
