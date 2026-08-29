@@ -128,6 +128,28 @@ export default function ProfileForm({
 
   const toggleSection = (s: Section) => setSections((prev) => ({ ...prev, [s]: !prev[s] }));
 
+  const scrollToField = (fieldId: string) => {
+    const el = document.getElementById(fieldId);
+    if (el) {
+      // Open the parent accordion section if collapsed
+      const sectionContainer = el.closest('[data-section]');
+      if (sectionContainer) {
+        const sectionKey = sectionContainer.getAttribute('data-section') as Section;
+        if (sectionKey && !sections[sectionKey]) {
+          setSections((prev) => ({ ...prev, [sectionKey]: true }));
+          // Wait for DOM to update after accordion opens
+          setTimeout(() => {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.focus();
+          }, 150);
+          return;
+        }
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.focus();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -135,12 +157,20 @@ export default function ProfileForm({
     const namaSiswa = (form.elements.namedItem('nama_siswa') as HTMLInputElement)?.value?.trim();
     if (!namaSiswa) {
       showToast('Nama siswa wajib diisi!', 'error');
+      scrollToField('field-nama_siswa');
       return;
     }
 
     const tanggalLahir = (form.elements.namedItem('tanggal_lahir') as HTMLInputElement)?.value?.trim();
     if (!tanggalLahir) {
       showToast('Tanggal lahir tidak boleh kosong!', 'error');
+      scrollToField('field-tanggal_lahir');
+      return;
+    }
+
+    if (!selectedJurusan) {
+      showToast('Jurusan / Kompetensi Keahlian wajib diisi!', 'error');
+      scrollToField('field-jurusan');
       return;
     }
 
@@ -283,7 +313,7 @@ export default function ProfileForm({
       {/* 2. Accordions for Biodata */}
       <div className="bg-white rounded-2xl premium-shadow border border-[rgba(0,0,0,0.04)] p-6 space-y-4">
         {/* ============ DATA IDENTITAS & PRIBADI SISWA ============ */}
-        <div>
+        <div data-section="data-pribadi">
           <SectionHeader
             label="Data Identitas & Pribadi Siswa"
             isOpen={sections['data-pribadi']}
@@ -293,6 +323,7 @@ export default function ProfileForm({
             <FormGrid>
               <FormField label="Nama Lengkap Siswa" required>
                 <input
+                  id="field-nama_siswa"
                   name="nama_siswa"
                   defaultValue={siswa?.nama_siswa ?? ''}
                   required
@@ -364,6 +395,7 @@ export default function ProfileForm({
 
               <FormField label="Tanggal Lahir" required>
                 <input
+                  id="field-tanggal_lahir"
                   name="tanggal_lahir"
                   type="date"
                   required
@@ -408,8 +440,9 @@ export default function ProfileForm({
                 </select>
               </FormField>
 
-              <FormField label="Kompetensi Keahlian / Jurusan">
+              <FormField label="Kompetensi Keahlian / Jurusan" required>
                 <select
+                  id="field-jurusan"
                   name="jurusan"
                   value={selectedJurusan}
                   onChange={(e) => setSelectedJurusan(e.target.value)}
