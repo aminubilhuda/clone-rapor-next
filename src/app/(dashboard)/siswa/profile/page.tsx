@@ -16,7 +16,8 @@ async function getData() {
     SELECT
       s.id_siswa, s.nama_siswa, s.nik_pd, s.nkk,
       s.nis, s.nisn, s.terima_kelas,
-      s.tempat_lahir, s.tanggal_lahir, s.kelamin, s.agama, s.jurusan,
+      s.tempat_lahir, s.tanggal_lahir, s.kelamin, s.agama,
+      COALESCE(s.jurusan, k.id_kompetensi_keahlian) as jurusan,
       s.kontak_siswa, s.hub_keluarga, s.jumlah_saudara, s.anak_ke,
       s.nama_ayah, s.nik_ayah, s.tahun_ayah, s.pendidikan_ayah, s.pekerjaan_ayah, s.kontak_ayah,
       s.nama_ibu, s.nik_ibu, s.tahun_ibu, s.pendidikan_ibu, s.pekerjaan_ibu, s.kontak_ibu,
@@ -30,13 +31,13 @@ async function getData() {
     FROM siswa s
     LEFT JOIN jenis_kelamin jk ON s.kelamin = jk.id_jenis_kelamin
     LEFT JOIN agama a ON s.agama = a.id_agama
-    LEFT JOIN kompetensi_keahlian kk ON s.jurusan = kk.id_kompetensi_keahlian
     LEFT JOIN (
       SELECT id_siswa, id_kelas FROM siswa_kelas
       WHERE tahun = ? AND semester = ? AND deleted_at IS NULL
       GROUP BY id_siswa
     ) sk ON s.id_siswa = sk.id_siswa
     LEFT JOIN kelas k ON sk.id_kelas = k.id_kelas
+    LEFT JOIN kompetensi_keahlian kk ON kk.id_kompetensi_keahlian = COALESCE(s.jurusan, k.id_kompetensi_keahlian)
     WHERE s.id_siswa = ? AND s.aktif = 1 AND s.deleted_at IS NULL
   `, [tahun, semester, session.user.id_siswa]);
 
@@ -44,7 +45,7 @@ async function getData() {
 
   const [kelamin]: any = await pool.query('SELECT * FROM jenis_kelamin');
   const [agama]: any = await pool.query('SELECT * FROM agama');
-  const [jurusan]: any = await pool.query('SELECT * FROM kompetensi_keahlian');
+  const [jurusan]: any = await pool.query('SELECT * FROM kompetensi_keahlian WHERE deleted_at IS NULL ORDER BY kompetensi_keahlian ASC');
   const [tingkat]: any = await pool.query('SELECT * FROM tingkat WHERE deleted_at IS NULL');
   const [hubKeluarga]: any = await pool.query('SELECT * FROM hubungan_keluarga WHERE deleted_at IS NULL');
   const [jenisSiswa]: any = await pool.query('SELECT * FROM jenis_siswa WHERE deleted_at IS NULL');

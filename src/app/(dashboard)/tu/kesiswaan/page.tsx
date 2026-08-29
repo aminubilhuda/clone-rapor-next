@@ -9,7 +9,7 @@ async function getReferensi() {
   try {
     const [kelamin]: any = await pool.query('SELECT * FROM jenis_kelamin');
     const [agama]: any = await pool.query('SELECT * FROM agama');
-    const [jurusan]: any = await pool.query('SELECT * FROM kompetensi_keahlian');
+    const [jurusan]: any = await pool.query('SELECT * FROM kompetensi_keahlian WHERE deleted_at IS NULL ORDER BY kompetensi_keahlian ASC');
     const [tingkat]: any = await pool.query('SELECT * FROM tingkat WHERE deleted_at IS NULL');
     const [hubKeluarga]: any = await pool.query('SELECT * FROM hubungan_keluarga WHERE deleted_at IS NULL');
     const [jenisSiswa]: any = await pool.query('SELECT * FROM jenis_siswa WHERE deleted_at IS NULL');

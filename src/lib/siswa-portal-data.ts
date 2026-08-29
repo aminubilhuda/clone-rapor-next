@@ -64,7 +64,7 @@ export async function getSiswaPortalContext(): Promise<SiswaPortalContext> {
       AND sk.deleted_at IS NULL
      LEFT JOIN kelas k ON k.id_kelas = sk.id_kelas
      LEFT JOIN kompetensi_keahlian kk
-       ON kk.id_kompetensi_keahlian = COALESCE(k.id_kompetensi_keahlian, s.jurusan)
+       ON kk.id_kompetensi_keahlian = COALESCE(s.jurusan, k.id_kompetensi_keahlian)
      LEFT JOIN jenis_kelamin jk ON jk.id_jenis_kelamin = s.kelamin
      LEFT JOIN agama a ON a.id_agama = s.agama
      WHERE s.id_siswa = ? AND s.aktif = 1 AND s.deleted_at IS NULL
