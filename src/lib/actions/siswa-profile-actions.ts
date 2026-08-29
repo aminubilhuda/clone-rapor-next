@@ -16,7 +16,7 @@ export async function updateSiswaProfile(formData: FormData) {
 
   // 1. Data Identitas & Pribadi Siswa
   const namaSiswa = (formData.get('nama_siswa') as string)?.trim();
-  const nis = (formData.get('nis') as string)?.trim() || null;
+  const nis = (formData.get('nis') as string)?.trim() || '';
   const nikPd = (formData.get('nik_pd') as string)?.trim() || null;
   const nkk = (formData.get('nkk') as string)?.trim() || null;
   const kontakSiswa = (formData.get('kontak_siswa') as string)?.trim() || '';
@@ -84,7 +84,7 @@ export async function updateSiswaProfile(formData: FormData) {
 
   try {
     // Check NIS duplicate against other students
-    if (nis) {
+    if (nis && nis !== '0') {
       const [nisDup]: any = await pool.query(
         `SELECT id_siswa FROM siswa WHERE nis = ? AND id_siswa != ? AND deleted_at IS NULL`,
         [nis, idSiswa]
