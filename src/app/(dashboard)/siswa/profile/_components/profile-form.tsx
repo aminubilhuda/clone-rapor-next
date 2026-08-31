@@ -9,14 +9,14 @@ import { confirmAlert } from '@/lib/swal';
 
 function SectionCard({ label, icon, color, children }: { label: string; icon: React.ReactNode; color: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-[rgba(0,0,0,0.06)] overflow-hidden">
-      <div className={`flex items-center gap-2.5 px-4 py-3 ${color} border-b border-[rgba(0,0,0,0.04)]`}>
-        <div className="w-6 h-6 flex items-center justify-center text-[#1A1A2E]/60 shrink-0">
+    <div className="rounded-2xl border border-[rgba(0,0,0,0.06)] bg-white overflow-hidden shadow-sm">
+      <div className={`flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 ${color} border-b border-[rgba(0,0,0,0.04)]`}>
+        <div className="w-6 h-6 flex items-center justify-center text-[#1A1A2E]/70 shrink-0">
           {icon}
         </div>
-        <span className="text-sm font-semibold text-[#1A1A2E]">{label}</span>
+        <span className="text-sm font-bold text-[#1A1A2E]">{label}</span>
       </div>
-      <div className="p-4">
+      <div className="p-3.5 sm:p-5">
         {children}
       </div>
     </div>
@@ -24,7 +24,7 @@ function SectionCard({ label, icon, color, children }: { label: string; icon: Re
 }
 
 function FormGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>;
+  return <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">{children}</div>;
 }
 
 function FormField({
@@ -40,7 +40,7 @@ function FormField({
 }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex items-center justify-between mb-1">
         <label className="block text-xs font-medium text-[#1A1A2E]/80">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
@@ -52,11 +52,11 @@ function FormField({
 }
 
 const inputCls =
-  'w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all';
+  'w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all';
 const selectCls =
-  'w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all';
+  'w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all';
 const disabledInputCls =
-  'w-full bg-gray-100/90 border border-[rgba(0,0,0,0.06)] rounded-xl px-3.5 py-2.5 text-sm text-gray-500 cursor-not-allowed select-none';
+  'w-full bg-gray-100/90 border border-[rgba(0,0,0,0.06)] rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-gray-500 cursor-not-allowed select-none';
 
 function Select({
   name,
@@ -254,24 +254,24 @@ export default function ProfileForm({
       </div>
 
       {/* Tab Switcher Pills */}
-      <div className="flex items-center gap-2 p-1.5 bg-gray-100/80 rounded-2xl w-fit border border-gray-200/50">
+      <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1.5 bg-gray-100/90 rounded-2xl w-full sm:w-fit border border-gray-200/50">
         <button
           type="button"
-          className="px-4 py-2 text-xs font-bold rounded-xl bg-white text-[#1A1A2E] shadow-sm flex items-center gap-2 transition"
+          className="px-4 py-2.5 sm:py-2 text-xs font-bold rounded-xl bg-white text-[#1A1A2E] shadow-sm flex items-center justify-center gap-2 transition active:scale-95"
         >
           <svg className="w-4 h-4 text-[#DC2626]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          Biodata Siswa
+          <span>Biodata Siswa</span>
         </button>
         <Link
           href="/siswa/akun"
-          className="px-4 py-2 text-xs font-semibold rounded-xl text-[#6B7280] hover:text-[#1A1A2E] hover:bg-white/60 flex items-center gap-2 transition"
+          className="px-4 py-2.5 sm:py-2 text-xs font-semibold rounded-xl text-[#6B7280] hover:text-[#1A1A2E] hover:bg-white/60 flex items-center justify-center gap-2 transition active:scale-95"
         >
           <svg className="w-4 h-4 text-[#6B7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          Akun & Kata Sandi
+          <span>Akun & Kata Sandi</span>
         </Link>
       </div>
 
@@ -718,8 +718,8 @@ export default function ProfileForm({
 
       </div>
 
-      {/* Bottom Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-2">
+      {/* Desktop Bottom Action Buttons */}
+      <div className="hidden lg:flex items-center justify-end gap-3 pt-2">
         <button
           type="button"
           onClick={() => router.back()}
@@ -734,6 +734,37 @@ export default function ProfileForm({
           className="px-6 py-2.5 text-sm font-medium text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-[0.98] disabled:opacity-50 transition-all shadow-sm"
         >
           {saving ? 'Menyimpan...' : 'Simpan Biodata'}
+        </button>
+      </div>
+
+      {/* Mobile Sticky Floating CTA (Positioned right above BottomNavSiswa) */}
+      <div className="fixed bottom-[58px] inset-x-0 z-30 p-3 bg-white/90 backdrop-blur-lg border-t border-[rgba(0,0,0,0.06)] lg:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)] flex items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          disabled={saving}
+          className="px-4 py-3 text-xs font-bold text-[#1A1A2E]/70 bg-gray-100/90 rounded-xl active:scale-95 transition shrink-0"
+        >
+          Kembali
+        </button>
+        <button
+          type="submit"
+          disabled={saving}
+          className="flex-1 py-3 px-4 text-sm font-bold text-white bg-[#DC2626] hover:bg-[#B91C1C] active:scale-95 rounded-xl transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {saving ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Menyimpan...</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Simpan Perubahan</span>
+            </>
+          )}
         </button>
       </div>
     </form>

@@ -117,8 +117,8 @@ export default function ModalSiswa({
     setSaving(false);
   };
 
-  const inputCls = "w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all";
-  const selectCls = "w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all";
+  const inputCls = "w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all";
+  const selectCls = "w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-base sm:text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all";
 
   const formatDate = (raw: any) => {
     if (!raw) return '';
@@ -137,30 +137,41 @@ export default function ModalSiswa({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs transition-opacity"
       onClick={(e) => { if (e.target === e.currentTarget && !saving) onClose(); }}
     >
-      <div className="bg-white rounded-2xl premium-shadow-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto animate-modal-in border border-[rgba(0,0,0,0.04)] relative">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl premium-shadow-lg w-full sm:max-w-4xl sm:mx-4 max-h-[94vh] sm:max-h-[90vh] overflow-y-auto animate-slide-up sm:animate-modal-in border border-[rgba(0,0,0,0.06)] relative flex flex-col">
+        {/* Mobile Bottom Sheet Pull Indicator */}
+        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-2.5 mb-0.5 sm:hidden shrink-0" />
+
         {saving && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 rounded-2xl backdrop-blur-sm">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/75 rounded-t-3xl sm:rounded-2xl backdrop-blur-sm">
             <div className="flex flex-col items-center gap-3">
               <div className="w-8 h-8 border-3 border-[#DC2626] border-t-transparent rounded-full animate-spin" />
               <span className="text-sm font-medium text-[#1A1A2E]">Menyimpan...</span>
             </div>
           </div>
         )}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,0,0.04)]">
-          <h3 className="text-lg font-semibold text-[#1A1A2E]">
-            {isEdit ? 'Edit Siswa' : 'Tambah Siswa'}
-          </h3>
-          <button onClick={onClose} disabled={saving} className="text-gray-400 hover:text-gray-600 transition disabled:opacity-30">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[rgba(0,0,0,0.04)] sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+          <div>
+            <h3 className="text-base sm:text-lg font-bold text-[#1A1A2E]">
+              {isEdit ? 'Edit Siswa' : 'Tambah Siswa'}
+            </h3>
+            <p className="text-[11px] text-[#6B7280] hidden sm:block">Lengkapi seluruh data biodata siswa di bawah ini</p>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition disabled:opacity-30 active:scale-95"
+            aria-label="Tutup dialog"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-between">
           <input type="hidden" name="id_siswa" value={siswa?.id_siswa ?? ''} />
 
           <div className="px-6 py-4 space-y-5">
@@ -367,16 +378,21 @@ export default function ModalSiswa({
 
           </div>
 
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-[rgba(0,0,0,0.04)] sticky bottom-0 bg-white/95 backdrop-blur-sm">
-            <button type="button" onClick={onClose} disabled={saving} className="px-4 py-2 text-sm font-medium text-[#1A1A2E]/60 bg-[#F8F9FB] rounded-xl hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.06)] active:scale-[0.98] disabled:opacity-50 transition-all">
+          <div className="flex items-center justify-end gap-2.5 px-4 sm:px-6 py-3 sm:py-4 border-t border-[rgba(0,0,0,0.04)] sticky bottom-0 bg-white/95 backdrop-blur-sm z-10 pb-safe">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+              className="flex-1 sm:flex-initial px-4 py-2.5 text-sm font-medium text-[#1A1A2E]/70 bg-[#F8F9FB] rounded-xl hover:bg-gray-100 border border-[rgba(0,0,0,0.06)] active:scale-95 disabled:opacity-50 transition-all text-center"
+            >
               Batal
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-[0.98] disabled:opacity-50 transition-all"
+              className="flex-1 sm:flex-initial px-6 py-2.5 text-sm font-semibold text-white bg-[#DC2626] rounded-xl hover:bg-[#B91C1C] active:scale-95 disabled:opacity-50 transition-all shadow-sm flex items-center justify-center gap-2"
             >
-              {saving ? 'Menyimpan...' : 'Simpan'}
+              {saving ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Siswa'}
             </button>
           </div>
         </form>
