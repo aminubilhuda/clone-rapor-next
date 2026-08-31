@@ -2,6 +2,7 @@
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
+import { normalizePhone } from '@/lib/utils/normalize-phone';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
@@ -122,7 +123,7 @@ export async function updateSiswa(formData: FormData) {
   const kelamin = kelaminRaw ? Number(kelaminRaw) : null;
   const agamaRaw = formData.get('agama') as string;
   const agama = agamaRaw ? Number(agamaRaw) : null;
-  const kontakSiswa = (formData.get('kontak_siswa') as string)?.trim() || null;
+  const kontakSiswa = normalizePhone(formData.get('kontak_siswa') as string) || null;
   const hubKeluargaRaw = formData.get('hub_keluarga') as string;
   const hubKeluarga = hubKeluargaRaw ? Number(hubKeluargaRaw) : null;
   const jumlahSaudaraRaw = formData.get('jumlah_saudara') as string;
@@ -135,20 +136,20 @@ export async function updateSiswa(formData: FormData) {
   const tahunAyah = tahunAyahRaw ? Number(tahunAyahRaw) : 0;
   const pendidikanAyah = (formData.get('pendidikan_ayah') as string)?.trim() || null;
   const pekerjaanAyah = (formData.get('pekerjaan_ayah') as string)?.trim() || null;
-  const kontakAyah = (formData.get('kontak_ayah') as string)?.trim() || null;
+  const kontakAyah = normalizePhone(formData.get('kontak_ayah') as string) || null;
   const namaIbu = (formData.get('nama_ibu') as string)?.trim() || null;
   const nikIbu = (formData.get('nik_ibu') as string)?.trim() || null;
   const tahunIbuRaw = formData.get('tahun_ibu') as string;
   const tahunIbu = tahunIbuRaw ? Number(tahunIbuRaw) : 0;
   const pendidikanIbu = (formData.get('pendidikan_ibu') as string)?.trim() || null;
   const pekerjaanIbu = (formData.get('pekerjaan_ibu') as string)?.trim() || null;
-  const kontakIbu = (formData.get('kontak_ibu') as string)?.trim() || null;
+  const kontakIbu = normalizePhone(formData.get('kontak_ibu') as string) || null;
   const alamat = (formData.get('alamat') as string)?.trim() || null;
   const alamatOrtu = (formData.get('alamat_orang_tua') as string)?.trim() || null;
   const namaWali = (formData.get('nama_wali') as string)?.trim() || null;
   const alamatWali = (formData.get('alamat_wali') as string)?.trim() || null;
   const pekerjaanWali = (formData.get('pekerjaan_wali') as string)?.trim() || null;
-  const kontakWali = (formData.get('kontak_wali') as string)?.trim() || null;
+  const kontakWali = normalizePhone(formData.get('kontak_wali') as string) || null;
   const jurusanRaw = formData.get('jurusan') as string;
   const jurusan = jurusanRaw ? Number(jurusanRaw) : null;
   const terimaTingkatRaw = formData.get('terima_tingkat') as string;
@@ -343,8 +344,17 @@ export async function importSiswa(rows: {
     if (t.tabjad) tabjadToId.set(String(t.tabjad).trim().toUpperCase(), t.id_tingkat);
   }
 
-  let inserted = 0;
-  let updated = 0;
+  // Phase 1: Validasi & kategorisasi semua baris sekaligus
+  interface PreparedRow {
+    index: number;
+    data: (typeof rows)[0];
+    existingId: number | null;
+    terimaTingkat: number | null;
+    hash?: string;
+  }
+
+  const toInsert: PreparedRow[] = [];
+  const toUpdate: PreparedRow[] = [];
   const errors: string[] = [];
 
   for (let i = 0; i < rows.length; i++) {
@@ -363,12 +373,107 @@ export async function importSiswa(rows: {
     // Cari existing by NIS atau NISN
     const existingId = (r.nis && existingNisToId.get(r.nis)) || (r.nisn && existingNisnToId.get(r.nisn)) || null;
 
-    try {
-      if (existingId && existingId > 0) {
-        // UPDATE — password hanya diupdate jika diisi
-        const pwClause = r.password ? ', password = ?' : '';
-        const pwVal = r.password ? [await bcrypt.hash(r.password, 10)] : [];
-        await pool.query(
+    if (existingId && existingId > 0) {
+      toUpdate.push({ index: i, data: r, existingId, terimaTingkat });
+    } else {
+      if (!r.password) {
+        errors.push(`Baris ${i + 1} (${r.nama_siswa}): password wajib diisi untuk siswa baru`);
+        continue;
+      }
+      toInsert.push({ index: i, data: r, existingId: null, terimaTingkat });
+    }
+  }
+
+  // Phase 2: Hash password secara paralel (chunked concurrency)
+  const HASH_CONCURRENCY = 10;
+  const needsHash: PreparedRow[] = [
+    ...toInsert,
+    ...toUpdate.filter(p => p.data.password),
+  ];
+  for (let i = 0; i < needsHash.length; i += HASH_CONCURRENCY) {
+    const chunk = needsHash.slice(i, i + HASH_CONCURRENCY);
+    await Promise.all(chunk.map(async (p) => {
+      p.hash = await bcrypt.hash(p.data.password!, 10);
+    }));
+  }
+
+  // Phase 3: Eksekusi dalam transaction
+  let inserted = 0;
+  let updated = 0;
+  const conn = await pool.getConnection();
+
+  const INSERT_SQL = `INSERT INTO siswa (
+    nama_siswa, nik_pd, nkk, nis, nisn,
+    tempat_lahir, tanggal_lahir, kelamin, agama,
+    kontak_siswa, hub_keluarga, jumlah_saudara, anak_ke,
+    nama_ayah, nik_ayah, tahun_ayah, pendidikan_ayah, pekerjaan_ayah, kontak_ayah,
+    nama_ibu, nik_ibu, tahun_ibu, pendidikan_ibu, pekerjaan_ibu, kontak_ibu,
+    alamat, alamat_orang_tua,
+    nama_wali, alamat_wali, pekerjaan_wali, kontak_wali,
+    jurusan, terima_tingkat, terima_kelas, sekolah_asal,
+    terima_tanggal, jenis_siswa, username, password, pass, foto, aktif
+  )`;
+
+  const buildInsertValues = (p: PreparedRow) => {
+    const r = p.data;
+    return [
+      r.nama_siswa, r.nik_pd || null, r.nkk || null, r.nis || '', r.nisn || '',
+      r.tempat_lahir || '', r.tanggal_lahir || '1970-01-01', r.kelamin || null, r.agama || null,
+      normalizePhone(r.kontak_siswa), r.hub_keluarga || null, r.jumlah_saudara || 0, r.anak_ke || 0,
+      r.nama_ayah || '', r.nik_ayah || null, r.tahun_ayah || 0, r.pendidikan_ayah || '', r.pekerjaan_ayah || '', normalizePhone(r.kontak_ayah),
+      r.nama_ibu || '', r.nik_ibu || null, r.tahun_ibu || 0, r.pendidikan_ibu || '', r.pekerjaan_ibu || '', normalizePhone(r.kontak_ibu),
+      r.alamat || '', r.alamat_orang_tua || '',
+      r.nama_wali || '', r.alamat_wali || '', r.pekerjaan_wali || '', normalizePhone(r.kontak_wali),
+      r.jurusan || 0, p.terimaTingkat, r.terima_kelas || '', r.sekolah_asal || '',
+      r.terima_tanggal || null, r.jenis_siswa || 1, r.username, p.hash, '', '',
+    ];
+  };
+
+  try {
+    await conn.beginTransaction();
+
+    // Batch INSERT siswa baru (chunk 50 baris per query)
+    const INSERT_CHUNK = 50;
+    const ROW_PLACEHOLDER = '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)';
+
+    for (let i = 0; i < toInsert.length; i += INSERT_CHUNK) {
+      const chunk = toInsert.slice(i, i + INSERT_CHUNK);
+      const placeholders = chunk.map(() => ROW_PLACEHOLDER).join(', ');
+      const values: any[] = [];
+      for (const p of chunk) values.push(...buildInsertValues(p));
+
+      try {
+        await conn.query(`${INSERT_SQL} VALUES ${placeholders}`, values);
+        inserted += chunk.length;
+        for (const p of chunk) {
+          if (p.data.nis) existingNisToId.set(p.data.nis, -1);
+          if (p.data.nisn) existingNisnToId.set(p.data.nisn, -1);
+        }
+      } catch {
+        // Batch gagal — fallback per-baris untuk identifikasi error
+        for (const p of chunk) {
+          try {
+            await conn.query(
+              `${INSERT_SQL} VALUES ${ROW_PLACEHOLDER}`,
+              buildInsertValues(p)
+            );
+            inserted++;
+            if (p.data.nis) existingNisToId.set(p.data.nis, -1);
+            if (p.data.nisn) existingNisnToId.set(p.data.nisn, -1);
+          } catch (e2: any) {
+            errors.push(`Baris ${p.index + 1} (${p.data.nama_siswa}): ${e2?.message || 'Gagal menyimpan data'}`);
+          }
+        }
+      }
+    }
+
+    // Individual UPDATE untuk siswa existing
+    for (const p of toUpdate) {
+      const r = p.data;
+      try {
+        const pwClause = p.hash ? ', password = ?' : '';
+        const pwVal = p.hash ? [p.hash] : [];
+        await conn.query(
           `UPDATE siswa SET
             nama_siswa = ?, nik_pd = ?, nkk = ?, nis = ?, nisn = ?,
             tempat_lahir = ?, tanggal_lahir = ?, kelamin = ?, agama = ?,
@@ -383,116 +488,31 @@ export async function importSiswa(rows: {
           WHERE id_siswa = ?`,
           [
             r.nama_siswa,
-            r.nik_pd || null,
-            r.nkk || null,
-            r.nis || '',
-            r.nisn || '',
-            r.tempat_lahir || '',
-            r.tanggal_lahir || '1970-01-01',
-            r.kelamin || null,
-            r.agama || null,
-            r.kontak_siswa || '',
-            r.hub_keluarga || null,
-            r.jumlah_saudara || 0,
-            r.anak_ke || 0,
-            r.nama_ayah || '',
-            r.nik_ayah || null,
-            r.tahun_ayah || 0,
-            r.pendidikan_ayah || '',
-            r.pekerjaan_ayah || '',
-            r.kontak_ayah || '',
-            r.nama_ibu || '',
-            r.nik_ibu || null,
-            r.tahun_ibu || 0,
-            r.pendidikan_ibu || '',
-            r.pekerjaan_ibu || '',
-            r.kontak_ibu || '',
-            r.alamat || '',
-            r.alamat_orang_tua || '',
-            r.nama_wali || '',
-            r.alamat_wali || '',
-            r.pekerjaan_wali || '',
-            r.kontak_wali || '',
-            r.jurusan || 0,
-            terimaTingkat,
-            r.terima_kelas || '',
-            r.sekolah_asal || '',
-            r.terima_tanggal || null,
-            r.jenis_siswa || 1,
-            r.username,
+            r.nik_pd || null, r.nkk || null, r.nis || '', r.nisn || '',
+            r.tempat_lahir || '', r.tanggal_lahir || '1970-01-01', r.kelamin || null, r.agama || null,
+            normalizePhone(r.kontak_siswa), r.hub_keluarga || null, r.jumlah_saudara || 0, r.anak_ke || 0,
+            r.nama_ayah || '', r.nik_ayah || null, r.tahun_ayah || 0, r.pendidikan_ayah || '', r.pekerjaan_ayah || '', normalizePhone(r.kontak_ayah),
+            r.nama_ibu || '', r.nik_ibu || null, r.tahun_ibu || 0, r.pendidikan_ibu || '', r.pekerjaan_ibu || '', normalizePhone(r.kontak_ibu),
+            r.alamat || '', r.alamat_orang_tua || '',
+            r.nama_wali || '', r.alamat_wali || '', r.pekerjaan_wali || '', normalizePhone(r.kontak_wali),
+            r.jurusan || 0, p.terimaTingkat, r.terima_kelas || '', r.sekolah_asal || '',
+            r.terima_tanggal || null, r.jenis_siswa || 1, r.username,
             ...pwVal,
-            existingId,
+            p.existingId,
           ]
         );
         updated++;
-      } else {
-        // INSERT
-        if (!r.password) { errors.push(`Baris ${i + 1} (${r.nama_siswa}): password wajib diisi untuk siswa baru`); continue; }
-        const hashedPassword = await bcrypt.hash(r.password, 10);
-        await pool.query(
-          `INSERT INTO siswa (
-            nama_siswa, nik_pd, nkk, nis, nisn,
-            tempat_lahir, tanggal_lahir, kelamin, agama,
-            kontak_siswa, hub_keluarga, jumlah_saudara, anak_ke,
-            nama_ayah, nik_ayah, tahun_ayah, pendidikan_ayah, pekerjaan_ayah, kontak_ayah,
-            nama_ibu, nik_ibu, tahun_ibu, pendidikan_ibu, pekerjaan_ibu, kontak_ibu,
-            alamat, alamat_orang_tua,
-            nama_wali, alamat_wali, pekerjaan_wali, kontak_wali,
-            jurusan, terima_tingkat, terima_kelas, sekolah_asal,
-            terima_tanggal, jenis_siswa, username, password, pass, foto, aktif
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-          [
-            r.nama_siswa,
-            r.nik_pd || null,
-            r.nkk || null,
-            r.nis || '',
-            r.nisn || '',
-            r.tempat_lahir || '',
-            r.tanggal_lahir || '1970-01-01',
-            r.kelamin || null,
-            r.agama || null,
-            r.kontak_siswa || '',
-            r.hub_keluarga || null,
-            r.jumlah_saudara || 0,
-            r.anak_ke || 0,
-            r.nama_ayah || '',
-            r.nik_ayah || null,
-            r.tahun_ayah || 0,
-            r.pendidikan_ayah || '',
-            r.pekerjaan_ayah || '',
-            r.kontak_ayah || '',
-            r.nama_ibu || '',
-            r.nik_ibu || null,
-            r.tahun_ibu || 0,
-            r.pendidikan_ibu || '',
-            r.pekerjaan_ibu || '',
-            r.kontak_ibu || '',
-            r.alamat || '',
-            r.alamat_orang_tua || '',
-            r.nama_wali || '',
-            r.alamat_wali || '',
-            r.pekerjaan_wali || '',
-            r.kontak_wali || '',
-            r.jurusan || 0,
-            terimaTingkat,
-            r.terima_kelas || '',
-            r.sekolah_asal || '',
-            r.terima_tanggal || null,
-            r.jenis_siswa || 1,
-            r.username,
-            hashedPassword,
-            '',
-            '',
-          ]
-        );
-        // Tambah ke map agar tidak duplikat dalam batch yang sama
-        if (r.nis) existingNisToId.set(r.nis, -1); // -1 placeholder
-        if (r.nisn) existingNisnToId.set(r.nisn, -1);
-        inserted++;
+      } catch (e: any) {
+        errors.push(`Baris ${p.index + 1} (${r.nama_siswa}): ${e?.message || 'Gagal menyimpan data'}`);
       }
-    } catch (e: any) {
-      errors.push(`Baris ${i + 1} (${r.nama_siswa}): ${e?.message || 'Gagal menyimpan data'}`);
     }
+
+    await conn.commit();
+  } catch (e: any) {
+    await conn.rollback();
+    return { success: false, error: 'Gagal import data: ' + (e?.message || ''), count: 0, inserted: 0, updated: 0, errors } as const;
+  } finally {
+    conn.release();
   }
 
   revalidatePath('/tu/kesiswaan');
