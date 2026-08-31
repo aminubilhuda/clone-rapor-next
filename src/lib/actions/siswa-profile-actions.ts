@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth';
 import { JABATAN } from '@/lib/constants';
 import { pool } from '@/lib/db';
+import { normalizePhone } from '@/lib/utils/normalize-phone';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
@@ -19,7 +20,7 @@ export async function updateSiswaProfile(formData: FormData) {
   const nis = (formData.get('nis') as string)?.trim() || '';
   const nikPd = (formData.get('nik_pd') as string)?.trim() || null;
   const nkk = (formData.get('nkk') as string)?.trim() || null;
-  const kontakSiswa = (formData.get('kontak_siswa') as string)?.trim() || '';
+  const kontakSiswa = normalizePhone(formData.get('kontak_siswa') as string);
   const tempatLahir = (formData.get('tempat_lahir') as string)?.trim() || '';
   const tanggalLahirRaw = (formData.get('tanggal_lahir') as string)?.trim();
   const tanggalLahir = tanggalLahirRaw || '1970-01-01';
@@ -48,7 +49,7 @@ export async function updateSiswaProfile(formData: FormData) {
   const tahunAyah = tahunAyahRaw ? Number(tahunAyahRaw) : 0;
   const pendidikanAyah = (formData.get('pendidikan_ayah') as string)?.trim() || '';
   const pekerjaanAyah = (formData.get('pekerjaan_ayah') as string)?.trim() || '';
-  const kontakAyah = (formData.get('kontak_ayah') as string)?.trim() || '';
+  const kontakAyah = normalizePhone(formData.get('kontak_ayah') as string);
 
   // 3. Data Ibu
   const namaIbu = (formData.get('nama_ibu') as string)?.trim() || '';
@@ -57,13 +58,13 @@ export async function updateSiswaProfile(formData: FormData) {
   const tahunIbu = tahunIbuRaw ? Number(tahunIbuRaw) : 0;
   const pendidikanIbu = (formData.get('pendidikan_ibu') as string)?.trim() || '';
   const pekerjaanIbu = (formData.get('pekerjaan_ibu') as string)?.trim() || '';
-  const kontakIbu = (formData.get('kontak_ibu') as string)?.trim() || '';
+  const kontakIbu = normalizePhone(formData.get('kontak_ibu') as string);
 
   // 4. Data Wali
   const namaWali = (formData.get('nama_wali') as string)?.trim() || '';
   const alamatWali = (formData.get('alamat_wali') as string)?.trim() || '';
   const pekerjaanWali = (formData.get('pekerjaan_wali') as string)?.trim() || '';
-  const kontakWali = (formData.get('kontak_wali') as string)?.trim() || '';
+  const kontakWali = normalizePhone(formData.get('kontak_wali') as string);
 
   // 5. Data Pendaftaran Masuk
   const terimaKelas = (formData.get('terima_kelas') as string)?.trim() || null;

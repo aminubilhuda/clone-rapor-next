@@ -8,8 +8,8 @@ async function getStats() {
   try {
     const sekolah = await getSekolahWithFilter();
 
-    const [userRows]: any = await pool.query('SELECT * FROM users WHERE deleted_at IS NULL');
-    const jmlGuru = userRows.length;
+    const [userRows]: any = await pool.query('SELECT COUNT(*) as count FROM users WHERE deleted_at IS NULL');
+    const jmlGuru = userRows[0].count;
 
     const [siswaKelasRows]: any = await pool.query(
       'SELECT COUNT(DISTINCT id_siswa) as count FROM siswa_kelas WHERE tahun = ? AND semester = ? AND status = 1 AND deleted_at IS NULL',
@@ -17,29 +17,29 @@ async function getStats() {
     );
     const jmlSiswa = siswaKelasRows[0].count;
 
-    const [kelasRows]: any = await pool.query('SELECT * FROM kelas');
-    const jmlKelas = kelasRows.length;
+    const [kelasRows]: any = await pool.query('SELECT COUNT(*) as count FROM kelas WHERE deleted_at IS NULL');
+    const jmlKelas = kelasRows[0].count;
 
-    const [mapelRows]: any = await pool.query('SELECT * FROM mapel');
-    const jmlMapel = mapelRows.length;
+    const [mapelRows]: any = await pool.query('SELECT COUNT(*) as count FROM mapel WHERE deleted_at IS NULL');
+    const jmlMapel = mapelRows[0].count;
 
-    const [prakerinRows]: any = await pool.query('SELECT * FROM prakerin WHERE tahun = ? AND semester = ?', [sekolah.tahun, sekolah.semester]);
-    const jmlPrakerin = prakerinRows.length;
+    const [prakerinRows]: any = await pool.query('SELECT COUNT(*) as count FROM prakerin WHERE tahun = ? AND semester = ?', [sekolah.tahun, sekolah.semester]);
+    const jmlPrakerin = prakerinRows[0].count;
 
-    const [eskulRows]: any = await pool.query('SELECT * FROM eskul');
-    const jmlEskul = eskulRows.length;
+    const [eskulRows]: any = await pool.query('SELECT COUNT(*) as count FROM eskul WHERE deleted_at IS NULL');
+    const jmlEskul = eskulRows[0].count;
 
-    const [kompetensiRows]: any = await pool.query('SELECT * FROM kompetensi_keahlian');
-    const jmlJurusan = kompetensiRows.length;
+    const [kompetensiRows]: any = await pool.query('SELECT COUNT(*) as count FROM kompetensi_keahlian WHERE deleted_at IS NULL');
+    const jmlJurusan = kompetensiRows[0].count;
 
-    const [mutasiMasukRows]: any = await pool.query('SELECT * FROM mutasi_masuk WHERE tahun = ?', [sekolah.tahun]);
-    const jmlMutasiMasuk = mutasiMasukRows.length;
+    const [mutasiMasukRows]: any = await pool.query('SELECT COUNT(*) as count FROM mutasi_masuk WHERE tahun = ?', [sekolah.tahun]);
+    const jmlMutasiMasuk = mutasiMasukRows[0].count;
 
-    const [mutasiKeluarRows]: any = await pool.query('SELECT * FROM mutasi_keluar WHERE tahun = ?', [sekolah.tahun]);
-    const jmlMutasiKeluar = mutasiKeluarRows.length;
+    const [mutasiKeluarRows]: any = await pool.query('SELECT COUNT(*) as count FROM mutasi_keluar WHERE tahun = ?', [sekolah.tahun]);
+    const jmlMutasiKeluar = mutasiKeluarRows[0].count;
 
-    const [lulusanRows]: any = await pool.query('SELECT * FROM lulusan WHERE tahun = ? AND semester = ?', [sekolah.tahun, sekolah.semester]);
-    const jmlLulusan = lulusanRows.length;
+    const [lulusanRows]: any = await pool.query('SELECT COUNT(*) as count FROM lulusan WHERE tahun = ? AND semester = ?', [sekolah.tahun, sekolah.semester]);
+    const jmlLulusan = lulusanRows[0].count;
 
     // Rapor stats
     const [rataKelasRows]: any = await pool.query(

@@ -7,25 +7,19 @@ import { useToast } from '@/components/ui/toast-provider';
 import { updateSiswaProfile } from '@/lib/actions/siswa-profile-actions';
 import { confirmAlert } from '@/lib/swal';
 
-type Section = 'data-pribadi' | 'data-ayah' | 'data-ibu' | 'data-wali' | 'data-pendaftaran';
-
-function SectionHeader({ label, isOpen, onToggle }: { label: string; isOpen: boolean; onToggle: () => void }) {
+function SectionCard({ label, icon, color, children }: { label: string; icon: React.ReactNode; color: string; children: React.ReactNode }) {
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="w-full flex items-center justify-between px-4 py-3 bg-[#F8F9FB] rounded-xl border border-[rgba(0,0,0,0.05)] hover:bg-gray-100/80 transition-colors"
-    >
-      <span className="text-sm font-semibold text-[#1A1A2E]">{label}</span>
-      <svg
-        className={`w-4 h-4 text-[#6B7280] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
+    <div className="rounded-xl border border-[rgba(0,0,0,0.06)] overflow-hidden">
+      <div className={`flex items-center gap-2.5 px-4 py-3 ${color} border-b border-[rgba(0,0,0,0.04)]`}>
+        <div className="w-6 h-6 flex items-center justify-center text-[#1A1A2E]/60 shrink-0">
+          {icon}
+        </div>
+        <span className="text-sm font-semibold text-[#1A1A2E]">{label}</span>
+      </div>
+      <div className="p-4">
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -89,6 +83,32 @@ function Select({
   );
 }
 
+const IconUser = (
+  <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+);
+const IconFather = (
+  <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+const IconMother = (
+  <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  </svg>
+);
+const IconWali = (
+  <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+  </svg>
+);
+const IconSchool = (
+  <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 7l-9-5 9-5 9 5-9 5z" />
+  </svg>
+);
+
 export default function ProfileForm({
   siswa,
   refKelamin,
@@ -118,36 +138,19 @@ export default function ProfileForm({
     siswa?.kompetensi_keahlian ||
     '-';
 
-  const [sections, setSections] = useState<Record<Section, boolean>>({
-    'data-pribadi': true,
-    'data-ayah': false,
-    'data-ibu': false,
-    'data-wali': false,
-    'data-pendaftaran': false,
-  });
-
-  const toggleSection = (s: Section) => setSections((prev) => ({ ...prev, [s]: !prev[s] }));
-
-  const scrollToField = (fieldId: string) => {
-    const el = document.getElementById(fieldId);
-    if (el) {
-      // Open the parent accordion section if collapsed
-      const sectionContainer = el.closest('[data-section]');
-      if (sectionContainer) {
-        const sectionKey = sectionContainer.getAttribute('data-section') as Section;
-        if (sectionKey && !sections[sectionKey]) {
-          setSections((prev) => ({ ...prev, [sectionKey]: true }));
-          // Wait for DOM to update after accordion opens
-          setTimeout(() => {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.focus();
-          }, 150);
-          return;
-        }
-      }
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el.focus();
+  const formatDate = (raw: any) => {
+    if (!raw) return '';
+    if (typeof raw === 'string') {
+      const m = raw.match(/^\d{4}-\d{2}-\d{2}/);
+      if (m) return m[0];
     }
+    try {
+      const d = new Date(raw);
+      if (!isNaN(d.getTime())) {
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      }
+    } catch {}
+    return '';
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -157,20 +160,20 @@ export default function ProfileForm({
     const namaSiswa = (form.elements.namedItem('nama_siswa') as HTMLInputElement)?.value?.trim();
     if (!namaSiswa) {
       showToast('Nama siswa wajib diisi!', 'error');
-      scrollToField('field-nama_siswa');
+      document.getElementById('field-nama_siswa')?.focus();
       return;
     }
 
     const tanggalLahir = (form.elements.namedItem('tanggal_lahir') as HTMLInputElement)?.value?.trim();
     if (!tanggalLahir) {
       showToast('Tanggal lahir tidak boleh kosong!', 'error');
-      scrollToField('field-tanggal_lahir');
+      document.getElementById('field-tanggal_lahir')?.focus();
       return;
     }
 
     if (!selectedJurusan) {
       showToast('Jurusan / Kompetensi Keahlian wajib diisi!', 'error');
-      scrollToField('field-jurusan');
+      document.getElementById('field-jurusan')?.focus();
       return;
     }
 
@@ -210,7 +213,7 @@ export default function ProfileForm({
         </div>
       )}
 
-      {/* Navigation Tabs Header */}
+      {/* Navigation Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-4 sm:px-6 sm:py-4 premium-shadow border border-[rgba(0,0,0,0.04)]">
         <div>
           <h1 className="text-xl font-bold text-[#1A1A2E]">Profil & Biodata Siswa</h1>
@@ -272,7 +275,7 @@ export default function ProfileForm({
         </Link>
       </div>
 
-      {/* 1. Academic Master Summary Card */}
+      {/* Academic Master Summary Card */}
       <div className="bg-white rounded-2xl premium-shadow border border-[rgba(0,0,0,0.04)] p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-[rgba(0,0,0,0.05)]">
           <div className="flex items-center gap-3">
@@ -310,16 +313,12 @@ export default function ProfileForm({
         </div>
       </div>
 
-      {/* 2. Accordions for Biodata */}
-      <div className="bg-white rounded-2xl premium-shadow border border-[rgba(0,0,0,0.04)] p-6 space-y-4">
+      {/* Form Sections - All Always Open */}
+      <div className="space-y-5">
+
         {/* ============ DATA IDENTITAS & PRIBADI SISWA ============ */}
-        <div data-section="data-pribadi">
-          <SectionHeader
-            label="Data Identitas & Pribadi Siswa"
-            isOpen={sections['data-pribadi']}
-            onToggle={() => toggleSection('data-pribadi')}
-          />
-          <div className={sections['data-pribadi'] ? 'space-y-4 pt-3' : 'hidden'}>
+        <SectionCard label="Data Identitas & Pribadi Siswa" icon={IconUser} color="bg-[#F0F4FF]">
+          <div className="space-y-4">
             <FormGrid>
               <FormField label="Nama Lengkap Siswa" required>
                 <input
@@ -399,21 +398,7 @@ export default function ProfileForm({
                   name="tanggal_lahir"
                   type="date"
                   required
-                  defaultValue={(() => {
-                    if (!siswa?.tanggal_lahir) return '';
-                    const raw = siswa.tanggal_lahir;
-                    if (typeof raw === 'string') {
-                      const m = raw.match(/^\d{4}-\d{2}-\d{2}/);
-                      if (m) return m[0];
-                    }
-                    try {
-                      const d = new Date(raw);
-                      if (!isNaN(d.getTime())) {
-                        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                      }
-                    } catch {}
-                    return '';
-                  })()}
+                  defaultValue={formatDate(siswa?.tanggal_lahir)}
                   className={inputCls}
                 />
               </FormField>
@@ -509,17 +494,13 @@ export default function ProfileForm({
               />
             </FormField>
           </div>
-        </div>
+        </SectionCard>
 
-        {/* ============ DATA AYAH ============ */}
-        <div>
-          <SectionHeader
-            label="Data Ayah Kandung"
-            isOpen={sections['data-ayah']}
-            onToggle={() => toggleSection('data-ayah')}
-          />
-          <div className={sections['data-ayah'] ? 'space-y-4 pt-3' : 'hidden'}>
-            <FormGrid>
+        {/* ============ DATA AYAH & IBU (side by side on desktop) ============ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* DATA AYAH */}
+          <SectionCard label="Data Ayah Kandung" icon={IconFather} color="bg-[#F0FDF4]">
+            <div className="space-y-4">
               <FormField label="Nama Ayah" required>
                 <input
                   name="nama_ayah"
@@ -540,10 +521,12 @@ export default function ProfileForm({
               <FormField label="Tahun Lahir Ayah">
                 <input
                   name="tahun_ayah"
-                  type="number"
-                  min="1900"
-                  max="2099"
-                  defaultValue={siswa?.tahun_ayah ?? 0}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  pattern="[0-9]{4}"
+                  defaultValue={siswa?.tahun_ayah && siswa.tahun_ayah !== 0 ? String(siswa.tahun_ayah) : ''}
+                  onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '').slice(0, 4); }}
                   className={inputCls}
                   placeholder="Contoh: 1975"
                 />
@@ -570,22 +553,15 @@ export default function ProfileForm({
                   name="kontak_ayah"
                   defaultValue={siswa?.kontak_ayah ?? ''}
                   className={inputCls}
-                  placeholder="No. HP / WhatsApp ayah"
+                  placeholder="Contoh: 085707357080"
                 />
               </FormField>
-            </FormGrid>
-          </div>
-        </div>
+            </div>
+          </SectionCard>
 
-        {/* ============ DATA IBU ============ */}
-        <div>
-          <SectionHeader
-            label="Data Ibu Kandung"
-            isOpen={sections['data-ibu']}
-            onToggle={() => toggleSection('data-ibu')}
-          />
-          <div className={sections['data-ibu'] ? 'space-y-4 pt-3' : 'hidden'}>
-            <FormGrid>
+          {/* DATA IBU */}
+          <SectionCard label="Data Ibu Kandung" icon={IconMother} color="bg-[#FFF7ED]">
+            <div className="space-y-4">
               <FormField label="Nama Ibu" required>
                 <input
                   name="nama_ibu"
@@ -606,10 +582,12 @@ export default function ProfileForm({
               <FormField label="Tahun Lahir Ibu">
                 <input
                   name="tahun_ibu"
-                  type="number"
-                  min="1900"
-                  max="2099"
-                  defaultValue={siswa?.tahun_ibu ?? 0}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  pattern="[0-9]{4}"
+                  defaultValue={siswa?.tahun_ibu && siswa.tahun_ibu !== 0 ? String(siswa.tahun_ibu) : ''}
+                  onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '').slice(0, 4); }}
                   className={inputCls}
                   placeholder="Contoh: 1980"
                 />
@@ -639,19 +617,15 @@ export default function ProfileForm({
                   placeholder="No. HP / WhatsApp ibu"
                 />
               </FormField>
-            </FormGrid>
-          </div>
+            </div>
+          </SectionCard>
         </div>
 
-        {/* ============ DATA WALI ============ */}
-        <div>
-          <SectionHeader
-            label="Data Wali (Opsional)"
-            isOpen={sections['data-wali']}
-            onToggle={() => toggleSection('data-wali')}
-          />
-          <div className={sections['data-wali'] ? 'space-y-4 pt-3' : 'hidden'}>
-            <FormGrid>
+        {/* ============ DATA WALI & PENDAFTARAN (side by side on desktop) ============ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* DATA WALI */}
+          <SectionCard label="Data Wali (Opsional)" icon={IconWali} color="bg-[#FDF4FF]">
+            <div className="space-y-4">
               <FormField label="Nama Wali">
                 <input
                   name="nama_wali"
@@ -676,28 +650,21 @@ export default function ProfileForm({
                   placeholder="No. HP / WhatsApp wali"
                 />
               </FormField>
-            </FormGrid>
-            <FormField label="Alamat Wali">
-              <textarea
-                name="alamat_wali"
-                rows={2}
-                defaultValue={siswa?.alamat_wali ?? ''}
-                className={inputCls}
-                placeholder="Alamat lengkap tempat tinggal wali"
-              />
-            </FormField>
-          </div>
-        </div>
+              <FormField label="Alamat Wali">
+                <textarea
+                  name="alamat_wali"
+                  rows={2}
+                  defaultValue={siswa?.alamat_wali ?? ''}
+                  className={inputCls}
+                  placeholder="Alamat lengkap tempat tinggal wali"
+                />
+              </FormField>
+            </div>
+          </SectionCard>
 
-        {/* ============ DATA PENDAFTARAN MASUK ============ */}
-        <div>
-          <SectionHeader
-            label="Informasi Pendaftaran & Penerimaan Masuk"
-            isOpen={sections['data-pendaftaran']}
-            onToggle={() => toggleSection('data-pendaftaran')}
-          />
-          <div className={sections['data-pendaftaran'] ? 'space-y-4 pt-3' : 'hidden'}>
-            <FormGrid>
+          {/* DATA PENDAFTARAN */}
+          <SectionCard label="Informasi Pendaftaran & Penerimaan" icon={IconSchool} color="bg-[#FFFBEB]">
+            <div className="space-y-4">
               <FormField label="Diterima di Kelas">
                 <input
                   name="terima_kelas"
@@ -724,21 +691,7 @@ export default function ProfileForm({
                 <input
                   name="terima_tanggal"
                   type="date"
-                  defaultValue={(() => {
-                    if (!siswa?.terima_tanggal) return '';
-                    const raw = siswa.terima_tanggal;
-                    if (typeof raw === 'string') {
-                      const m = raw.match(/^\d{4}-\d{2}-\d{2}/);
-                      if (m) return m[0];
-                    }
-                    try {
-                      const d = new Date(raw);
-                      if (!isNaN(d.getTime())) {
-                        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                      }
-                    } catch {}
-                    return '';
-                  })()}
+                  defaultValue={formatDate(siswa?.terima_tanggal)}
                   className={inputCls}
                 />
               </FormField>
@@ -759,9 +712,10 @@ export default function ProfileForm({
                   valueKey="id_jenis_siswa"
                 />
               </FormField>
-            </FormGrid>
-          </div>
+            </div>
+          </SectionCard>
         </div>
+
       </div>
 
       {/* Bottom Action Buttons */}
