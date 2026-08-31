@@ -28,17 +28,27 @@
   box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
 }
 
-/* Sidebar scrollbar - thin & subtle */
-aside nav::-webkit-scrollbar {
-  width: 4px;
+/* Bottom sheet slide-up animation */
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
-aside nav::-webkit-scrollbar-track {
-  background: transparent;
+.animate-slide-up {
+  animation: slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
-aside nav::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 4px;
+
+/* Safe area insets for mobile */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }
-aside nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Disable tap highlight on mobile for clean native feel */
+* {
+  -webkit-tap-highlight-color: transparent;
 }

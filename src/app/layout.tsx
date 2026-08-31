@@ -25,6 +25,10 @@ async function getLogoFilename(): Promise<string | null> {
 
 export const viewport: Viewport = {
   themeColor: '#0f172a',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
 };
 
 export async function generateMetadata(): Promise<Metadata> {
