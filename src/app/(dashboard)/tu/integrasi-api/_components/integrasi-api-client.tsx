@@ -558,7 +558,7 @@ export default function IntegrasiApiClient({ initialKeys }: IntegrasiApiClientPr
           <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
             <div>
               <h2 className="font-semibold text-gray-800">Kunci Akses API (API Keys)</h2>
-              <p className="text-xs text-gray-500">API Key digunakan pada Header <code className="bg-gray-100 px-1 py-0.5 rounded text-red-600 font-mono">X-API-KEY</code> untuk integrasi otomatis.</p>
+              <p className="text-xs text-gray-500">API Key digunakan pada Header <code className="bg-gray-100 px-1 py-0.5 rounded text-red-600 font-mono">X-API-KEY</code> untuk integrasi otomatis. Kunci disimpan sebagai hash dan hanya tampil sekali saat dibuat.</p>
             </div>
             <button
               onClick={() => {
@@ -572,6 +572,16 @@ export default function IntegrasiApiClient({ initialKeys }: IntegrasiApiClientPr
               </svg>
               Buat API Key Baru
             </button>
+          </div>
+
+          <div className="bg-blue-50/60 border border-blue-100 rounded-xl p-4 text-xs text-blue-900">
+            <p className="font-semibold mb-2">Hak akses per peran (berlaku juga untuk API Key)</p>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+              <li>• <b>super_admin / tu_admin</b>: seluruh endpoint</li>
+              <li>• <b>guru</b>: sekolah, periode, jurusan, ekskul, nilai, presensi (tulis bila piket hari ini), siswa, rombel, guru</li>
+              <li>• <b>siswa</b>: sekolah, periode, jurusan, ekskul, nilai &amp; presensi milik sendiri, detail diri sendiri</li>
+              <li>• <b>API Key</b>: mengikuti peran pada kolom <code className="font-mono">role</code> key (default <code className="font-mono">tu_admin</code>)</li>
+            </ul>
           </div>
 
           {/* Table List */}
