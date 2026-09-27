@@ -25,7 +25,7 @@ if [ -z "${DB_HOST:-}" ] || [ -z "${DB_NAME:-}" ]; then
 fi
 
 shopt -s nullglob
-files=("$MIG_DIR"/*.sql)
+files=("$MIG_DIR"/[0-9][0-9][0-9][0-9]_*.sql)
 if [ ${#files[@]} -eq 0 ]; then
   echo "==> tidak ada migrasi baru"
   exit 0

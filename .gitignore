@@ -32,6 +32,19 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+cobaenv.txt
+
+# secrets & data (never commit)
+singkron-dapodik.md
+endpoint-singkron-dapodik/
+migrations/abdinega_db_raporkm.sql
+output/
+
+# generated PWA assets
+public/sw.js
+public/workbox-*.js
+public/swe-worker-*.js
+public/fallback-*.js
 
 # vercel
 .vercel
