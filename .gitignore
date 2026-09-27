@@ -46,6 +46,11 @@ public/workbox-*.js
 public/swe-worker-*.js
 public/fallback-*.js
 
+# local tool state (never commit)
+.freebuff/
+.codex/
+.claude/
+
 # vercel
 .vercel
 
