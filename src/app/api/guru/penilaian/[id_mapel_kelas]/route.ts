@@ -63,13 +63,40 @@ export async function POST(
   };
   const config = tableConfig[tableName];
 
+  if (!Array.isArray(entries)) {
+    return NextResponse.json({ error: 'Format data nilai tidak valid' }, { status: 400 });
+  }
+
+  for (const entry of entries) {
+    const idSiswaEntry = Number(entry?.id_siswa);
+    if (!Number.isInteger(idSiswaEntry) || idSiswaEntry <= 0) {
+      return NextResponse.json({ error: 'Data siswa tidak valid pada salah satu baris nilai' }, { status: 400 });
+    }
+
+    if (config.hasIdTujuan) {
+      const idTujuanEntry = Number(entry?.id_tujuan);
+      if (!Number.isInteger(idTujuanEntry) || idTujuanEntry <= 0) {
+        return NextResponse.json(
+          { error: 'Tujuan pembelajaran wajib diisi untuk setiap baris nilai' },
+          { status: 400 }
+        );
+      }
+    }
+
+    const nilaiRaw = entry?.nilai;
+    if (nilaiRaw !== '' && nilaiRaw !== null && nilaiRaw !== undefined) {
+      const nilaiCheck = Number(nilaiRaw);
+      if (!Number.isFinite(nilaiCheck) || nilaiCheck < 0 || nilaiCheck > 100) {
+        return NextResponse.json({ error: 'Nilai harus berupa angka 0-100' }, { status: 400 });
+      }
+    }
+  }
+
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
 
     for (const entry of entries) {
-      if (!entry || entry.id_siswa === undefined || entry.id_siswa === null || isNaN(entry.id_siswa)) continue;
-      if (config.hasIdTujuan && (entry.id_tujuan === undefined || entry.id_tujuan === null || isNaN(entry.id_tujuan))) continue;
       if (entry.nilai === '') {
         let where = 'tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? AND id_siswa = ?';
         const params: any[] = [tahun, semester, idKelas, idMapel, entry.id_siswa];
@@ -194,6 +221,9 @@ export async function POST(
   } catch (err: any) {
     await conn.rollback();
     console.error('Save penilaian error:', err);
+    if (typeof err?.message === 'string' && err.message.startsWith('Nilai tidak valid')) {
+      return NextResponse.json({ error: 'Nilai harus berupa angka 0-100' }, { status: 400 });
+    }
     return NextResponse.json({ error: 'Gagal menyimpan data' }, { status: 500 });
   } finally {
     conn.release();
