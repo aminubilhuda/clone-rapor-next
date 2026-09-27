@@ -51,13 +51,20 @@ export async function saveCatatanWali(input: SaveCatatanWaliInput) {
       return { success: false, error: 'Anda tidak berhak mengubah catatan siswa ini' } as const;
     }
 
-    await pool.query(
-      `INSERT INTO catatan_wali
-         (tahun, semester, id_kelas, id_siswa, catatan, deleted_at)
-       VALUES (?, ?, ?, ?, ?, NULL)
-       ON DUPLICATE KEY UPDATE catatan = VALUES(catatan), deleted_at = NULL`,
-      [sekolah.tahun, sekolah.semester, idKelas, idSiswa, catatan]
+    const [updateResult]: any = await pool.query(
+      `UPDATE catatan_wali
+       SET catatan = ?, deleted_at = NULL
+       WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_siswa = ?`,
+      [catatan, sekolah.tahun, sekolah.semester, idKelas, idSiswa]
     );
+
+    if (updateResult.affectedRows === 0) {
+      await pool.query(
+        `INSERT INTO catatan_wali (tahun, semester, id_kelas, id_siswa, catatan, deleted_at)
+         VALUES (?, ?, ?, ?, ?, NULL)`,
+        [sekolah.tahun, sekolah.semester, idKelas, idSiswa, catatan]
+      );
+    }
 
     revalidatePath('/guru/catatan-wali');
     revalidatePath('/guru/catatan-rapor');
