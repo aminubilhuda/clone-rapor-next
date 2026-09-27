@@ -84,24 +84,52 @@ export default function PengaturanClient({ sekolah, semester, tahunPel, pembagia
     setUpdating(true)
     setUpdateLog([])
 
-    const es = new EventSource('/api/admin/update')
-    es.onmessage = (e) => {
-      try {
-        const d = JSON.parse(e.data)
-        if (d.done) {
-          es.close()
-          setUpdateLog((l) => [...l, '✅ Update selesai. Silakan muat ulang halaman (F5).'])
-          setUpdating(false)
-        } else if (d.line) {
-          setUpdateLog((l) => [...l, d.line])
-        }
-      } catch {
-        // ponytail: abaikan chunk non-JSON
+    try {
+      const res = await fetch('/api/admin/update', { method: 'POST' })
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => null)
+        setUpdateLog((l) => [...l, data?.error || 'Gagal memulai update.'])
+        setUpdating(false)
+        return
       }
-    }
-    es.onerror = () => {
-      es.close()
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let finished = false
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const chunks = buffer.split('\n\n')
+        buffer = chunks.pop() || ''
+
+        for (const chunk of chunks) {
+          const dataLine = chunk.split('\n').find((line) => line.startsWith('data: '))
+          if (!dataLine) continue
+
+          try {
+            const d = JSON.parse(dataLine.slice(6))
+            if (d.done) {
+              finished = true
+              setUpdateLog((l) => [...l, '✅ Update selesai. Silakan muat ulang halaman (F5).'])
+            } else if (d.line) {
+              setUpdateLog((l) => [...l, d.line])
+            }
+          } catch {
+            // ponytail: abaikan chunk non-JSON
+          }
+        }
+      }
+
+      if (!finished) {
+        setUpdateLog((l) => [...l, '🔄 Koneksi terputus (app restart). Silakan muat ulang halaman (F5).'])
+      }
+    } catch {
       setUpdateLog((l) => [...l, '🔄 Koneksi terputus (app restart). Silakan muat ulang halaman (F5).'])
+    } finally {
       setUpdating(false)
     }
   }
