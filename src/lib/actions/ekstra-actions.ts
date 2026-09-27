@@ -1,6 +1,6 @@
 'use server';
 
-import { requireTuAdmin, requireGuru } from '@/lib/actions/auth-guard';
+import { requireTuAdmin, requireTuAdminOrGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID, JABATAN } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
@@ -77,13 +77,31 @@ export async function updatePembinaEkstra(formData: FormData) {
   }
 }
 
-function canManageEskul(jabatan: number | undefined) {
-  return jabatan === JABATAN.SUPER_ADMIN || jabatan === JABATAN.TU_ADMIN || jabatan === JABATAN.GURU;
+async function isPembinaEskul(idUser: number, idEskul: number): Promise<boolean> {
+  const [rows]: any = await pool.query(
+    `SELECT 1 FROM pembina_eskul pe
+     JOIN sekolah s ON s.id_sekolah = ?
+     WHERE pe.id_eskul = ? AND pe.id_user = ?
+       AND pe.tahun = s.tahun AND pe.semester = s.semester
+       AND pe.deleted_at IS NULL
+     LIMIT 1`,
+    [SEKOLAH_ID, idEskul, idUser]
+  );
+  return rows.length > 0;
+}
+
+async function canManageEskul(
+  user: { jabatan?: number; id_user?: number },
+  idEskul: number
+): Promise<boolean> {
+  if (user.jabatan === JABATAN.SUPER_ADMIN || user.jabatan === JABATAN.TU_ADMIN) return true;
+  if (user.jabatan !== JABATAN.GURU || !user.id_user) return false;
+  return isPembinaEskul(user.id_user, idEskul);
 }
 
 export async function addSiswaEkstra(formData: FormData) {
-  const authResult = await requireGuru();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
+  const authResult = await requireTuAdminOrGuru();
+  if (authResult.error || !authResult.user) return { success: false, error: authResult.error } as const;
 
   const idEskul = formData.get('id_eskul') as string;
   const idSiswa = formData.get('id_siswa') as string;
@@ -91,6 +109,10 @@ export async function addSiswaEkstra(formData: FormData) {
   const semester = formData.get('semester') as string;
   const predikat = formData.get('predikat') as string || '';
   const keterangan = formData.get('keterangan') as string || '';
+
+  if (!(await canManageEskul(authResult.user, Number(idEskul)))) {
+    return { success: false, error: 'Anda bukan pembina ekstrakurikuler ini' } as const;
+  }
 
   try {
     const [existing]: any = await pool.query(
@@ -114,10 +136,21 @@ export async function addSiswaEkstra(formData: FormData) {
 }
 
 export async function removeSiswaEkstra(idSiswaEkstra: number) {
-  const authResult = await requireGuru();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
+  const authResult = await requireTuAdminOrGuru();
+  if (authResult.error || !authResult.user) return { success: false, error: authResult.error } as const;
 
   try {
+    const [rows]: any = await pool.query(
+      'SELECT id_eskul FROM siswa_eskul WHERE id_siswa_eskul = ? LIMIT 1',
+      [idSiswaEkstra]
+    );
+    if (rows.length === 0) {
+      return { success: false, error: 'Data anggota tidak ditemukan' } as const;
+    }
+    if (!(await canManageEskul(authResult.user, Number(rows[0].id_eskul)))) {
+      return { success: false, error: 'Anda bukan pembina ekstrakurikuler ini' } as const;
+    }
+
     await pool.query('DELETE FROM siswa_eskul WHERE id_siswa_eskul = ?', [idSiswaEkstra]);
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
@@ -127,14 +160,25 @@ export async function removeSiswaEkstra(idSiswaEkstra: number) {
 }
 
 export async function updateSiswaEkstra(formData: FormData) {
-  const authResult = await requireGuru();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
+  const authResult = await requireTuAdminOrGuru();
+  if (authResult.error || !authResult.user) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_siswa_eskul') as string;
   const predikat = formData.get('predikat') as string || '';
   const keterangan = formData.get('keterangan') as string || '';
 
   try {
+    const [rows]: any = await pool.query(
+      'SELECT id_eskul FROM siswa_eskul WHERE id_siswa_eskul = ? LIMIT 1',
+      [id]
+    );
+    if (rows.length === 0) {
+      return { success: false, error: 'Data anggota tidak ditemukan' } as const;
+    }
+    if (!(await canManageEskul(authResult.user, Number(rows[0].id_eskul)))) {
+      return { success: false, error: 'Anda bukan pembina ekstrakurikuler ini' } as const;
+    }
+
     await pool.query(
       'UPDATE siswa_eskul SET predikat = ?, keterangan = ? WHERE id_siswa_eskul = ?',
       [predikat, keterangan, id]
@@ -147,11 +191,26 @@ export async function updateSiswaEkstra(formData: FormData) {
 }
 
 export async function bulkUpdateSiswaEkstra(items: { id_siswa_eskul: number; predikat: string; keterangan: string }[]) {
-  const authResult = await requireGuru();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
+  const authResult = await requireTuAdminOrGuru();
+  if (authResult.error || !authResult.user) return { success: false, error: authResult.error } as const;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return { success: false, error: 'Tidak ada data yang disimpan' } as const;
+  }
 
   try {
-    // ponytail: per-row UPDATE required — each item has unique predikat/keterangan
+    const ids = items.map((item) => item.id_siswa_eskul);
+    const [eskulRows]: any = await pool.query(
+      'SELECT DISTINCT id_eskul FROM siswa_eskul WHERE id_siswa_eskul IN (?)',
+      [ids]
+    );
+
+    for (const row of eskulRows) {
+      if (!(await canManageEskul(authResult.user, Number(row.id_eskul)))) {
+        return { success: false, error: 'Anda bukan pembina ekstrakurikuler ini' } as const;
+      }
+    }
+
     for (const item of items) {
       await pool.query(
         'UPDATE siswa_eskul SET predikat = ?, keterangan = ? WHERE id_siswa_eskul = ?',

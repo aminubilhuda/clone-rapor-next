@@ -1,6 +1,6 @@
 'use server'
 
-import { requireTuAdmin } from '@/lib/actions/auth-guard'
+import { requireTuAdmin, requireAuth } from '@/lib/actions/auth-guard'
 import { pool } from '@/lib/db'
 import { SEKOLAH_ID } from '@/lib/constants'
 import { revalidatePath } from 'next/cache'
@@ -1118,6 +1118,8 @@ export async function syncDapodik(formData: FormData) {
 }
 
 export async function getDapodikSyncStatusAction() {
+  const authResult = await requireAuth()
+  if (authResult.error) return { syncing: false, progress: null }
   return getDapodikSyncStatus()
 }
 

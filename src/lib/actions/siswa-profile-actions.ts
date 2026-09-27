@@ -217,7 +217,7 @@ export async function updateSiswaAccount(formData: FormData) {
     if (newPassword.length < 4) {
       return { success: false, error: 'Password baru minimal 4 karakter' } as const;
     }
-    if (confirmPassword && newPassword !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       return { success: false, error: 'Konfirmasi password baru tidak cocok' } as const;
     }
   }

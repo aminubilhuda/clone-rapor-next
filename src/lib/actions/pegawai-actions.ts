@@ -7,7 +7,9 @@ import bcrypt from 'bcryptjs';
 
 export async function updatePegawai(formData: FormData) {
   const authResult = await requireTuAdmin();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
+  if (authResult.error || !authResult.user) return { success: false, error: authResult.error } as const;
+
+  const actorJabatan = authResult.user.jabatan;
 
   const id = formData.get('id_user') as string;
   const nama = formData.get('nama') as string;
@@ -22,7 +24,43 @@ export async function updatePegawai(formData: FormData) {
   const idKepegawaian = formData.get('id_kepegawaian') as string;
   const idTugasTambahan = formData.get('id_tugas_tambahan') as string;
 
+  const jabatanNum = Number(jabatan);
+  if (![1, 2, 3].includes(jabatanNum)) {
+    return { success: false, error: 'Jabatan tidak valid' } as const;
+  }
+
+  if (!id) {
+    if (!nama?.trim() || !username?.trim() || !password) {
+      return { success: false, error: 'Nama, username, dan password wajib diisi' } as const;
+    }
+  }
+
+  if (jabatanNum === 1 && actorJabatan !== 1) {
+    return { success: false, error: 'Hanya super admin yang dapat menetapkan jabatan super admin' } as const;
+  }
+
   try {
+    if (id) {
+      const [targetRows]: any = await pool.query(
+        'SELECT jabatan FROM users WHERE id_user = ? AND deleted_at IS NULL LIMIT 1',
+        [id]
+      );
+      if (targetRows.length === 0) {
+        return { success: false, error: 'Pengguna tidak ditemukan' } as const;
+      }
+      if (Number(targetRows[0].jabatan) === 1 && actorJabatan !== 1) {
+        return { success: false, error: 'Hanya super admin yang dapat mengubah akun super admin' } as const;
+      }
+    }
+
+    const [dupRows]: any = await pool.query(
+      'SELECT id_user FROM users WHERE username = ? AND id_user != ? AND deleted_at IS NULL LIMIT 1',
+      [username, id || 0]
+    );
+    if (dupRows.length > 0) {
+      return { success: false, error: 'Username sudah digunakan' } as const;
+    }
+
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
     if (id) {
@@ -31,7 +69,7 @@ export async function updatePegawai(formData: FormData) {
         'username = ?', 'jabatan = ?', 'kelamin = ?',
         'agama = ?', 'id_kepegawaian = ?', 'id_tugas_tambahan = ?',
       ];
-      const values: any[] = [nama, nip, nuptk || '', kontak, username, jabatan, kelamin, agama, idKepegawaian, idTugasTambahan];
+      const values: any[] = [nama, nip, nuptk || '', kontak, username, jabatanNum, kelamin, agama, idKepegawaian, idTugasTambahan];
 
       if (hashedPassword) {
         fields.push('password = ?');
@@ -41,11 +79,10 @@ export async function updatePegawai(formData: FormData) {
       values.push(id);
       await pool.query(`UPDATE users SET ${fields.join(', ')} WHERE id_user = ?`, values);
     } else {
-      // Insert
       await pool.query(
         `INSERT INTO users (nama, nip, nuptk, kontak, username, password, jabatan, kelamin, agama, id_kepegawaian, id_tugas_tambahan, moto)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
-        [nama, nip, nuptk || '', kontak, username, hashedPassword, jabatan, kelamin, agama, idKepegawaian, idTugasTambahan]
+        [nama, nip, nuptk || '', kontak, username, hashedPassword, jabatanNum, kelamin, agama, idKepegawaian, idTugasTambahan]
       );
     }
 

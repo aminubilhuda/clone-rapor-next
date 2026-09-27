@@ -46,24 +46,3 @@ export async function getSekolahInfo(): Promise<SekolahInfo | null> {
     return null;
   }
 }
-
-export async function getSiswaRapor(tahun: number, semester: number, id_kelas: number) {
-  const session = await auth();
-  if (!session?.user) return [];
-
-  try {
-    const [rows]: any = await pool.query(`
-      SELECT sk.id_siswa_kelas, sk.id_kelas, s.id_siswa, s.nama_siswa, s.nis, s.nisn,
-             k.nama_kelas
-      FROM siswa_kelas sk
-      JOIN siswa s ON sk.id_siswa = s.id_siswa
-      JOIN kelas k ON sk.id_kelas = k.id_kelas
-      WHERE sk.tahun = ? AND sk.semester = ? AND sk.id_kelas = ? AND sk.deleted_at IS NULL AND s.deleted_at IS NULL
-      ORDER BY s.nama_siswa ASC
-    `, [tahun, semester, id_kelas]);
-    return rows;
-  } catch (error) {
-    console.error('Siswa rapor fetch error:', error);
-    return [];
-  }
-}

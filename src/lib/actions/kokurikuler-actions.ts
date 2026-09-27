@@ -1,9 +1,27 @@
 'use server';
 
-import { requireTuAdmin, requireAuth } from '@/lib/actions/auth-guard';
+import { requireTuAdmin, requireTuAdminOrGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
+import { JABATAN } from '@/lib/constants';
+
+async function checkProyekOwnership(
+  jabatan: number | undefined,
+  idUser: number | undefined,
+  idProyek: number
+): Promise<string | null> {
+  if (jabatan === JABATAN.SUPER_ADMIN || jabatan === JABATAN.TU_ADMIN) return null;
+
+  const [rows]: any = await pool.query(
+    'SELECT id_user FROM proyek_kelas WHERE id_proyek_kelas = ? AND deleted_at IS NULL',
+    [idProyek]
+  );
+  if (rows.length === 0) return 'Kegiatan tidak ditemukan';
+  if (Number(rows[0].id_user) !== Number(idUser)) return 'Bukan pembina kegiatan ini';
+
+  return null;
+}
 
 function generateKode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -173,8 +191,15 @@ export async function deleteKokurikulerProyek(id: number) {
  * Get all proyek_tujuan rows for a given proyek_kelas.
  */
 export async function getTujuanByProyek(idProyek: number) {
-  const authResult = await requireAuth();
+  const authResult = await requireTuAdminOrGuru();
   if (authResult.error) return { success: false, error: authResult.error } as const;
+
+  const ownershipError = await checkProyekOwnership(
+    authResult.user?.jabatan,
+    authResult.user?.id_user,
+    idProyek
+  );
+  if (ownershipError) return { success: false, error: ownershipError } as const;
 
   try {
     const [rows]: any = await pool.query(
@@ -286,8 +311,15 @@ export async function deleteTujuan(id: number, idProyekKelas?: number) {
  * Accessible by both TU Admin and Guru.
  */
 export async function getDataNilaiKokurikuler(idProyek: number) {
-  const authResult = await requireAuth();
+  const authResult = await requireTuAdminOrGuru();
   if (authResult.error) return { success: false, error: authResult.error } as const;
+
+  const ownershipError = await checkProyekOwnership(
+    authResult.user?.jabatan,
+    authResult.user?.id_user,
+    idProyek
+  );
+  if (ownershipError) return { success: false, error: ownershipError } as const;
 
   try {
     const [proyekRows]: any = await pool.query(
@@ -348,10 +380,17 @@ export async function getDataNilaiKokurikuler(idProyek: number) {
  * Accessible by both TU Admin and Guru.
  */
 export async function saveNilaiKokurikuler(formData: FormData) {
-  const authResult = await requireAuth();
+  const authResult = await requireTuAdminOrGuru();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idProyek = Number(formData.get('id_proyek_kelas'));
+
+  const ownershipError = await checkProyekOwnership(
+    authResult.user?.jabatan,
+    authResult.user?.id_user,
+    idProyek
+  );
+  if (ownershipError) return { success: false, error: ownershipError } as const;
   const tujuanIds: number[] = JSON.parse(formData.get('tujuan_ids') as string || '[]');
   const siswaIds: number[] = JSON.parse(formData.get('siswa_ids') as string || '[]');
 

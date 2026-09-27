@@ -30,6 +30,21 @@ export async function requireGuru() {
 }
 
 /**
+ * Guard for TU admin or Guru (jabatan 1/2/3).
+ */
+export async function requireTuAdminOrGuru() {
+  const session = await auth();
+  if (!session?.user) {
+    return { error: 'Unauthorized', user: null };
+  }
+  const jabatan = session.user.jabatan;
+  if (jabatan !== 1 && jabatan !== 2 && jabatan !== 3) {
+    return { error: 'Forbidden', user: null };
+  }
+  return { user: session.user, error: null };
+}
+
+/**
  * Guard for Guru BK pages (jabatan 3 + moto = '1').
  */
 export async function requireGuruBK() {

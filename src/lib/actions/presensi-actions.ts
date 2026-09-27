@@ -4,6 +4,7 @@ import { requireGuru, requireGuruBK } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
+import { isGuruPiketToday } from '@/lib/piket';
 
 export async function cekPiketHariIni() {
   const authResult = await requireGuru();
@@ -95,8 +96,13 @@ export async function savePresensiHarian(
   absensi: { id_siswa: number; id_absen: number }[]
 ) {
   const authResult = await requireGuru();
-  if (authResult.error) {
+  if (authResult.error || !authResult.user) {
     return { success: false, error: authResult.error } as const;
+  }
+
+  const piketHariIni = await isGuruPiketToday(Number(authResult.user.id_user));
+  if (!piketHariIni) {
+    return { success: false, error: 'Hanya guru piket hari ini yang dapat menyimpan absensi' } as const;
   }
 
   const sekolah = await getSekolahWithFilter();
