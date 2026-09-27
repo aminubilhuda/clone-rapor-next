@@ -54,8 +54,11 @@ export default function CatatanWaliEditor({
     }
   }, []);
 
-  const flushSave = useCallback(async () => {
+  const flushSave = useCallback(async (override?: string) => {
     clearTimer();
+    if (override !== undefined) {
+      currentValueRef.current = override;
+    }
     if (savingRef.current) {
       queuedRef.current = true;
       return;
@@ -103,12 +106,33 @@ export default function CatatanWaliEditor({
 
   useEffect(() => clearTimer, [clearTimer]);
 
+  useEffect(() => {
+    const flush = () => {
+      void flushSave();
+    };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, [flushSave]);
+
   return (
     <div className="space-y-1.5">
-      <textarea
-        value={value}
-        onChange={(event) => setValue(event.target.value.slice(0, 500))}
-        onBlur={() => void flushSave()}
+        <textarea
+          value={value}
+          onChange={(event) => {
+            const nextValue = event.target.value.slice(0, 500);
+            currentValueRef.current = nextValue;
+            setValue(nextValue);
+          }}
+          onBlur={(event) => void flushSave(event.currentTarget.value)}
         maxLength={500}
         rows={3}
         autoFocus={autoFocus}
