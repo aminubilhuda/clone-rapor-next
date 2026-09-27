@@ -15,27 +15,33 @@ export async function savePengaturan(formData: FormData) {
   const tahun = formData.get('tahun') as string
   const semester = formData.get('semester') as string
 
+  const tahunNum = Number(tahun)
+  const semesterNum = Number(semester)
+  if (!Number.isInteger(tahunNum) || tahunNum <= 0 || (semesterNum !== 1 && semesterNum !== 2)) {
+    return { success: false, error: 'Periode tidak valid' } as const
+  }
+
   try {
     await withTransaction(async (conn) => {
       await conn.query(
         'UPDATE sekolah SET lokasi = ?, tahun = ?, semester = ? WHERE id_sekolah = ?',
-        [lokasi, tahun, semester, SEKOLAH_ID]
+        [lokasi, tahunNum, semesterNum, SEKOLAH_ID]
       )
 
       const [existing]: any = await conn.query(
         'SELECT * FROM pembagian_raport WHERE tahun = ? AND semester = ?',
-        [tahun, semester]
+        [tahunNum, semesterNum]
       )
 
       if (existing.length > 0) {
         await conn.query(
           'UPDATE pembagian_raport SET tanggal_rapor = ?, tanggal_mid = ? WHERE tahun = ? AND semester = ?',
-          [tanggal_rapor, tanggal_mid, tahun, semester]
+          [tanggal_rapor, tanggal_mid, tahunNum, semesterNum]
         )
       } else {
         await conn.query(
           'INSERT INTO pembagian_raport (tahun, semester, tanggal_rapor, tanggal_mid) VALUES (?, ?, ?, ?)',
-          [tahun, semester, tanggal_rapor, tanggal_mid]
+          [tahunNum, semesterNum, tanggal_rapor, tanggal_mid]
         )
       }
     })
@@ -51,8 +57,21 @@ export async function addTahunPelajaran(nama: string) {
   const authResult = await requireTuAdmin()
   if (authResult.error) return { success: false, error: authResult.error } as const
 
+  const trimmed = (nama || '').trim()
+  if (!/^\d{4}\/\d{4}$/.test(trimmed)) {
+    return { success: false, error: 'Format tahun pelajaran harus YYYY/YYYY' } as const
+  }
+
   try {
-    await pool.query('INSERT INTO tahun_pelajaran (tahun_pelajaran) VALUES (?)', [nama])
+    const [dupRows]: any = await pool.query(
+      'SELECT id_tahun_pelajaran FROM tahun_pelajaran WHERE tahun_pelajaran = ? LIMIT 1',
+      [trimmed]
+    )
+    if (dupRows.length > 0) {
+      return { success: false, error: 'Tahun pelajaran sudah ada' } as const
+    }
+
+    await pool.query('INSERT INTO tahun_pelajaran (tahun_pelajaran) VALUES (?)', [trimmed])
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
   } catch (e: any) {

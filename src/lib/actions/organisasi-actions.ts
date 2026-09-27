@@ -13,6 +13,10 @@ export async function updateOrganisasi(formData: FormData) {
   const nama = formData.get('nama_organisasi') as string;
   const kode = formData.get('kode') as string;
 
+  if (!nama?.trim()) {
+    return { success: false, error: 'Nama organisasi wajib diisi' } as const;
+  }
+
   try {
     if (id) {
       await pool.query('UPDATE organisasi SET nama_organisasi = ?, kode = ? WHERE id_organisasi = ?', [nama, kode, id]);

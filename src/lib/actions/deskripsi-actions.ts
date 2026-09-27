@@ -14,6 +14,10 @@ export async function updateDeskripsi(formData: FormData) {
   const contoh = formData.get('contoh') as string;
   const nilai = formData.get('nilai') as string;
 
+  if (!kriteria?.trim()) {
+    return { success: false, error: 'Kriteria wajib diisi' } as const;
+  }
+
   try {
     if (id) {
       await pool.query(

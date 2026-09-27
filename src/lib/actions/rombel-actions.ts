@@ -13,6 +13,13 @@ export async function updateWaliKelas(formData: FormData) {
   const idUser = formData.get('id_user') as string;
   const { tahun, semester } = await getPeriodeAktif();
 
+  if (!Number.isInteger(Number(idKelas)) || Number(idKelas) <= 0) {
+    return { success: false, error: 'Kelas tidak valid' } as const;
+  }
+  if (idUser && (!Number.isInteger(Number(idUser)) || Number(idUser) <= 0)) {
+    return { success: false, error: 'Pegawai tidak valid' } as const;
+  }
+
   try {
     await withTransaction(async (conn) => {
       const [existing]: any = await conn.query(

@@ -12,16 +12,22 @@ export async function updatePiketHarian(formData: FormData) {
   const idHarian = formData.get('id_harian') as string;
   const idUser = formData.get('id_user') as string;
 
+  const idHarianNum = Number(idHarian);
+  const idUserNum = Number(idUser);
+  if (!Number.isInteger(idHarianNum) || idHarianNum <= 0 || !Number.isInteger(idUserNum) || idUserNum <= 0) {
+    return { success: false, error: 'Hari dan pegawai wajib dipilih' } as const;
+  }
+
   try {
     if (id) {
       await pool.query(
         `UPDATE piket_harian SET id_harian = ?, id_user = ? WHERE id_piket_harian = ?`,
-        [idHarian, idUser, id]
+        [idHarianNum, idUserNum, id]
       );
     } else {
       await pool.query(
         `INSERT INTO piket_harian (id_harian, id_user) VALUES (?, ?)`,
-        [idHarian, idUser]
+        [idHarianNum, idUserNum]
       );
     }
 

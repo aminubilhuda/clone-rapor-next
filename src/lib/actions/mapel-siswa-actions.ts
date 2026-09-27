@@ -3,6 +3,7 @@
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
 import { getSekolahAktif } from '@/lib/sekolah-helper';
+import { parseJsonArray } from '@/lib/validate';
 import { revalidatePath } from 'next/cache';
 
 export async function updateMapelSiswa(formData: FormData) {
@@ -95,7 +96,14 @@ export async function toggleMapelSiswaBatch(formData: FormData) {
 
   const idKelas = parseInt(formData.get('id_kelas') as string);
   const idMapel = parseInt(formData.get('id_mapel') as string);
-  const entries: { id_siswa: number; diikuti: boolean }[] = JSON.parse(formData.get('entries') as string);
+  const parsedEntries = parseJsonArray<{ id_siswa: number; diikuti: boolean }>(
+    formData.get('entries') as string,
+    'data siswa'
+  );
+  if (!parsedEntries.ok) {
+    return { success: false, error: parsedEntries.error } as const;
+  }
+  const entries = parsedEntries.value;
 
   const sekolah = await getSekolahAktif();
   const { tahun, semester } = { tahun: sekolah?.tahun || 1, semester: sekolah?.semester || 1 };

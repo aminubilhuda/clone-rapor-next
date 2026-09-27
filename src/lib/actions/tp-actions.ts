@@ -3,6 +3,7 @@
 import { requireGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { parseJsonArray } from '@/lib/validate';
 import { revalidatePath } from 'next/cache';
 
 function formatDisplayOrder(index: number) {
@@ -69,7 +70,9 @@ export async function addTujuanMulti(formData: FormData) {
   const { user } = authResult;
 
   const idMapel = Number(formData.get('id_mapel'));
-  const kelasIds: number[] = JSON.parse(formData.get('kelas_ids') as string);
+  const parsedKelasIds = parseJsonArray<number>(formData.get('kelas_ids') as string, 'kelas');
+  if (!parsedKelasIds.ok) return { success: false, error: parsedKelasIds.error } as const;
+  const kelasIds = parsedKelasIds.value;
   const kode = (formData.get('kode') as string)?.trim();
   const tujuan = (formData.get('tujuan') as string)?.trim();
   const kktp = Number(formData.get('kktp')) || 80;
@@ -236,8 +239,12 @@ export async function copyTujuan(formData: FormData) {
   const { user } = authResult;
 
   const idMapel = Number(formData.get('id_mapel'));
-  const kodes: string[] = JSON.parse(formData.get('kodes') as string);
-  const kelasIds: number[] = JSON.parse(formData.get('kelas_ids') as string);
+  const parsedKodes = parseJsonArray<string>(formData.get('kodes') as string, 'TP');
+  if (!parsedKodes.ok) return { success: false, error: parsedKodes.error } as const;
+  const parsedKelasIds = parseJsonArray<number>(formData.get('kelas_ids') as string, 'kelas');
+  if (!parsedKelasIds.ok) return { success: false, error: parsedKelasIds.error } as const;
+  const kodes = parsedKodes.value;
+  const kelasIds = parsedKelasIds.value;
 
   if (!kodes.length) return { success: false, error: 'Pilih minimal satu TP' } as const;
   if (!kelasIds.length) return { success: false, error: 'Pilih minimal satu kelas' } as const;

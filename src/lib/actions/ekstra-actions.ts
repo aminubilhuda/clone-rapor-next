@@ -14,6 +14,10 @@ export async function updateEkstra(formData: FormData) {
   const namaEskul = formData.get('nama_eskul') as string;
   const kode = formData.get('kode') as string;
 
+  if (!namaEskul?.trim()) {
+    return { success: false, error: 'Nama ekstrakurikuler wajib diisi' } as const;
+  }
+
   try {
     if (id) {
       await pool.query('UPDATE eskul SET nama_eskul = ?, kode = ? WHERE id_eskul = ?', [namaEskul, kode, id]);

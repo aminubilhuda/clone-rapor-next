@@ -15,6 +15,13 @@ export async function updateMapel(formData: FormData) {
   const idKelompok = formData.get('id_kelompok') as string;
   const urut = formData.get('urut') as string;
 
+  if (!namaMapel?.trim()) {
+    return { success: false, error: 'Nama mata pelajaran wajib diisi' } as const;
+  }
+  if (!Number.isInteger(Number(idKelompok)) || Number(idKelompok) <= 0) {
+    return { success: false, error: 'Kelompok mapel tidak valid' } as const;
+  }
+
   try {
     if (id) {
       await pool.query(

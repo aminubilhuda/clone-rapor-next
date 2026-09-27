@@ -3,6 +3,7 @@
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
 import { getPeriodeAktif } from '@/lib/sekolah-helper';
+import { parseJsonArray } from '@/lib/validate';
 import { revalidatePath } from 'next/cache';
 
 function generateKode() {
@@ -22,6 +23,12 @@ export async function updateP5BK(formData: FormData) {
   const subElemenIdsRaw = formData.get('sub_elemen_ids') as string;
 
   const { tahun, semester } = await getPeriodeAktif();
+
+  const parsedSubElemen = parseJsonArray<number>(subElemenIdsRaw, 'sub elemen');
+  if (!parsedSubElemen.ok) {
+    return { success: false, error: parsedSubElemen.error } as const;
+  }
+  const subElemenIds = parsedSubElemen.value;
 
   try {
     await withTransaction(async (conn) => {
@@ -44,7 +51,6 @@ export async function updateP5BK(formData: FormData) {
 
       // Save sub_elemen selections
       if (subElemenIdsRaw) {
-        const subElemenIds: number[] = JSON.parse(subElemenIdsRaw);
         await conn.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [proyekId]);
 
         if (subElemenIds.length > 0) {
@@ -167,8 +173,12 @@ export async function saveNilaiP5BK(formData: FormData) {
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const idProyek = Number(formData.get('id_proyek_kelas'));
-  const subElemenIds: number[] = JSON.parse(formData.get('sub_elemen_ids') as string || '[]');
-  const siswaIds: number[] = JSON.parse(formData.get('siswa_ids') as string || '[]');
+  const parsedSubElemenIds = parseJsonArray<number>(formData.get('sub_elemen_ids') as string, 'sub elemen');
+  if (!parsedSubElemenIds.ok) return { success: false, error: parsedSubElemenIds.error } as const;
+  const parsedSiswaIds = parseJsonArray<number>(formData.get('siswa_ids') as string, 'siswa');
+  if (!parsedSiswaIds.ok) return { success: false, error: parsedSiswaIds.error } as const;
+  const subElemenIds = parsedSubElemenIds.value;
+  const siswaIds = parsedSiswaIds.value;
 
   if (!idProyek || subElemenIds.length === 0 || siswaIds.length === 0) {
     return { success: false, error: 'Data tidak lengkap' } as const;

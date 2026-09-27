@@ -3,6 +3,7 @@
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
 import { getPeriodeAktif } from '@/lib/sekolah-helper';
+import { isValidDateString } from '@/lib/validate';
 import { revalidatePath } from 'next/cache';
 
 export async function updatePrakerin(formData: FormData) {
@@ -18,6 +19,16 @@ export async function updatePrakerin(formData: FormData) {
   const idUser = formData.get('id_user') as string;
 
   const { tahun, semester } = await getPeriodeAktif();
+
+  if (!mitra?.trim()) {
+    return { success: false, error: 'Mitra wajib diisi' } as const;
+  }
+  if (tanggalMulai && !isValidDateString(tanggalMulai)) {
+    return { success: false, error: 'Tanggal mulai tidak valid' } as const;
+  }
+  if (tanggalAkhir && !isValidDateString(tanggalAkhir)) {
+    return { success: false, error: 'Tanggal akhir tidak valid' } as const;
+  }
 
   try {
     if (id) {

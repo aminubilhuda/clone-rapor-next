@@ -3,6 +3,7 @@
 import { requireTuAdmin, requireTuAdminOrGuru } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
 import { getPeriodeAktif } from '@/lib/sekolah-helper';
+import { parseJsonArray } from '@/lib/validate';
 import { revalidatePath } from 'next/cache';
 import { JABATAN } from '@/lib/constants';
 
@@ -395,8 +396,14 @@ export async function saveNilaiKokurikuler(formData: FormData) {
     idProyek
   );
   if (ownershipError) return { success: false, error: ownershipError } as const;
-  const tujuanIds: number[] = JSON.parse(formData.get('tujuan_ids') as string || '[]');
-  const siswaIds: number[] = JSON.parse(formData.get('siswa_ids') as string || '[]');
+
+  const parsedTujuanIds = parseJsonArray<number>(formData.get('tujuan_ids') as string, 'tujuan');
+  if (!parsedTujuanIds.ok) return { success: false, error: parsedTujuanIds.error } as const;
+  const parsedSiswaIds = parseJsonArray<number>(formData.get('siswa_ids') as string, 'siswa');
+  if (!parsedSiswaIds.ok) return { success: false, error: parsedSiswaIds.error } as const;
+
+  const tujuanIds = parsedTujuanIds.value;
+  const siswaIds = parsedSiswaIds.value;
 
   if (!idProyek || tujuanIds.length === 0 || siswaIds.length === 0) {
     return { success: false, error: 'Data tidak lengkap' } as const;

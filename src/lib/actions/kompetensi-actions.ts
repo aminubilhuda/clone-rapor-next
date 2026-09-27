@@ -12,6 +12,10 @@ export async function updateKompetensi(formData: FormData) {
   const kompetensi = formData.get('kompetensi_keahlian') as string;
   const deskripsi = formData.get('deskripsi') as string;
 
+  if (!kompetensi?.trim()) {
+    return { success: false, error: 'Kompetensi keahlian wajib diisi' } as const;
+  }
+
   try {
     if (id) {
       await pool.query(
