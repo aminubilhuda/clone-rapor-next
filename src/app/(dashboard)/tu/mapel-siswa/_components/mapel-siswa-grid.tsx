@@ -87,11 +87,6 @@ export default function MapelSiswaGrid({
     [students, optimisticEnrollments]
   );
 
-  const enrolledCountForMapel = useCallback(
-    (mapelId: number) => students.filter((s) => isEnrolled(s.id_siswa, mapelId)).length,
-    [students, isEnrolled]
-  );
-
   const handleToggle = async (siswaId: number, mapelId: number, checked: boolean) => {
     const key = getCellKey(siswaId, mapelId);
 

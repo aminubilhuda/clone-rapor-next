@@ -27,7 +27,7 @@ export async function updateEkstra(formData: FormData) {
 
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -40,7 +40,7 @@ export async function deleteEkstra(id: number) {
     await pool.query('DELETE FROM eskul WHERE id_eskul = ?', [id]);
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
@@ -78,7 +78,7 @@ export async function updatePembinaEkstra(formData: FormData) {
 
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -140,7 +140,7 @@ export async function addSiswaEkstra(formData: FormData) {
 
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menambah anggota' } as const;
   }
 }
@@ -164,7 +164,7 @@ export async function removeSiswaEkstra(idSiswaEkstra: number) {
     await pool.query('DELETE FROM siswa_eskul WHERE id_siswa_eskul = ?', [idSiswaEkstra]);
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus anggota' } as const;
   }
 }
@@ -195,7 +195,7 @@ export async function updateSiswaEkstra(formData: FormData) {
     );
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengupdate anggota' } as const;
   }
 }
@@ -232,7 +232,7 @@ export async function bulkUpdateSiswaEkstra(items: { id_siswa_eskul: number; pre
 
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan nilai' } as const;
   }
 }

@@ -133,7 +133,7 @@ export async function savePresensiHarian(
     await conn.commit();
     revalidatePath('/guru/absensi-piket');
     return { success: true, count: absensi.length } as const;
-  } catch (e: any) {
+  } catch {
     await conn.rollback();
     return { success: false, error: 'Gagal menyimpan absensi' } as const;
   } finally {

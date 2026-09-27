@@ -473,7 +473,7 @@ export default function IntegrasiApiClient({ initialKeys }: IntegrasiApiClientPr
         headers['X-API-KEY'] = activeKey;
       }
 
-      let reqOptions: RequestInit = {
+      const reqOptions: RequestInit = {
         method: selectedEndpoint.method,
         headers,
       };

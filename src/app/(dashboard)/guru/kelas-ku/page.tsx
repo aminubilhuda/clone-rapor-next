@@ -29,7 +29,7 @@ export default async function KelasKuPage() {
   const data = await getKelasKu(session.user.id_user);
   if (!data) return <div className="text-red-500">Gagal memuat data.</div>;
 
-  const { mapelKelas, sekolah } = data;
+  const { mapelKelas } = data;
 
   return (
     <div>

@@ -102,7 +102,7 @@ export default async function TUDashboardPage() {
   const session = await auth();
   if (!session?.user || (session.user.jabatan !== 1 && session.user.jabatan !== 2)) redirect('/login');
 
-  const { sekolah, stats } = await getStats();
+  const { stats } = await getStats();
 
   if (!stats) {
     return (

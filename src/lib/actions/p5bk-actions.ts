@@ -82,7 +82,7 @@ export async function updateP5BK(formData: FormData) {
 
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -97,7 +97,7 @@ export async function getSubelemenByProyek(idProyek: number) {
       [idProyek]
     );
     return { success: true, data: rows.map((r: any) => r.id_sub_elemen) } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengambil data' } as const;
   }
 }
@@ -163,7 +163,7 @@ export async function getDataNilaiP5BK(idProyek: number) {
         subElemenCount: subElemenRows.length,
       },
     } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengambil data nilai' } as const;
   }
 }
@@ -208,7 +208,6 @@ export async function saveNilaiP5BK(formData: FormData) {
       'SELECT id_nilai_proyek, id_siswa, id_sub_elemen FROM nilai_proyek WHERE proyek = ?',
       [idProyek]
     );
-    const existingKey = new Set(existingNilaiRows.map((r: any) => `${r.id_siswa}_${r.id_sub_elemen}`));
     const existingMap = new Map<string, number>();
     for (const r of existingNilaiRows) {
       existingMap.set(`${r.id_siswa}_${r.id_sub_elemen}`, r.id_nilai_proyek);
@@ -255,7 +254,7 @@ export async function saveNilaiP5BK(formData: FormData) {
 
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan nilai' } as const;
   }
 }
@@ -272,7 +271,7 @@ export async function deleteP5BK(id: number) {
     });
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

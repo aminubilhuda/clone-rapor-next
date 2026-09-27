@@ -18,7 +18,7 @@ try {
       env[key] = val;
     }
   });
-} catch (e) {
+} catch {
   // ponytail: .env.local missing on server -> rely on system env
 }
 

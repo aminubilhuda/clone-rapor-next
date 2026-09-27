@@ -59,7 +59,7 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
   const [addKktp, setAddKktp] = useState('80');
   const [addKelas, setAddKelas] = useState<Record<number, boolean>>({});
 
-  const [editKode, setEditKode] = useState('');
+  const [, setEditKode] = useState('');
   const [editTujuanVal, setEditTujuanVal] = useState('');
   const [editKktp, setEditKktp] = useState('80');
 

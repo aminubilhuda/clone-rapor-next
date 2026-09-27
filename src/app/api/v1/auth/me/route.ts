@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import { requireApiAuth } from '@/lib/api-auth-guard';
 import { apiSuccess, apiError, apiOptionsResponse } from '@/lib/api-response';
-import { JABATAN } from '@/lib/constants';
 
 export const runtime = 'nodejs';
 

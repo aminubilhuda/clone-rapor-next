@@ -45,7 +45,7 @@ export async function updateWaliKelas(formData: FormData) {
 
     revalidatePath('/tu/rombel');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }

@@ -1,4 +1,5 @@
 import { escapeHtml } from './rapor-template';
+import { formatTanggalIndo } from '@/lib/format';
 
 export interface PelengkapSekolahInfo {
   npsn: string;
@@ -57,17 +58,7 @@ const value = (input: unknown): string => {
   return escapeHtml(String(input));
 };
 
-const formatTanggal = (input: string | Date | null): string => {
-  if (!input) return '-';
-  const date = input instanceof Date ? input : new Date(input);
-  if (Number.isNaN(date.getTime())) return value(input);
-  return new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Jakarta',
-  }).format(date);
-};
+const formatTanggal = (input: string | Date | null): string => value(formatTanggalIndo(input));
 
 const infoRow = (nomor: string, label: string, content: unknown): string => `
   <tr>

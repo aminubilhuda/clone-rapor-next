@@ -47,7 +47,7 @@ export async function updatePrakerin(formData: FormData) {
 
     revalidatePath('/tu/prakerin');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -60,7 +60,7 @@ export async function deletePrakerin(id: number) {
     await pool.query('DELETE FROM prakerin WHERE id_prakerin = ?', [id]);
     revalidatePath('/tu/prakerin');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

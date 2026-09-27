@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { useToast } from '@/components/ui/toast-provider';
+import { findHeaderStrict, excelDateToISO } from '@/lib/excel';
 
 interface ModalImportSiswaProps {
   open: boolean;
@@ -59,57 +60,6 @@ const COLUMN_MAP: { keys: string[]; field: string }[] = [
   { keys: ['password *', 'password', 'pass', 'pwd'], field: 'password' },
 ];
 
-const normHeader = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-
-function findHeader(headers: string[], keys: string[]): string | null {
-  // Pass 1: exact match (normalized, ignores * / spasi / underscore)
-  for (const key of keys) {
-    const nk = normHeader(key);
-    if (!nk) continue;
-    for (const h of headers) {
-      if (normHeader(h) === nk) return h;
-    }
-  }
-  // Pass 2: semua token key harus ada sebagai token utuh di header
-  // (mencegah false-match seperti 'nisn'/'jenis kelamin' menangkap 'NIS')
-  for (const key of keys) {
-    const tokens = normHeader(key).split(' ').filter(Boolean);
-    if (tokens.length === 0) continue;
-    for (const h of headers) {
-      const headerTokens = new Set(normHeader(h).split(' ').filter(Boolean));
-      if (headerTokens.size > 0 && tokens.every(t => headerTokens.has(t))) return h;
-    }
-  }
-  return null;
-}
-
-function excelDateToISO(value: any): string | null {
-  if (!value) return null;
-  if (typeof value === 'number') {
-    const d = new Date((value - 25569) * 86400 * 1000);
-    return isNaN(d.getTime()) ? null : d.toISOString().split('T')[0];
-  }
-  if (typeof value === 'string') {
-    const cleaned = value.replace(/\s+/g, ' ').trim();
-    // DD/MM/YYYY or DD-MM-YYYY (4-digit year)
-    const parts4 = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if (parts4) return `${parts4[3]}-${parts4[2].padStart(2, '0')}-${parts4[1].padStart(2, '0')}`;
-    // DD/MM/YY or DD-MM-YY (2-digit year)
-    const parts2 = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/);
-    if (parts2) {
-      const yy = parseInt(parts2[3], 10);
-      const yyyy = yy > 50 ? 1900 + yy : 2000 + yy;
-      return `${yyyy}-${parts2[2].padStart(2, '0')}-${parts2[1].padStart(2, '0')}`;
-    }
-    // YYYY-MM-DD or YYYY/MM/DD
-    const partsY = cleaned.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-    if (partsY) return `${partsY[1]}-${partsY[2].padStart(2, '0')}-${partsY[3].padStart(2, '0')}`;
-    const d = new Date(cleaned);
-    if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
-  }
-  return null;
-}
-
 export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, refJurusan, refTingkat, refHubKeluarga, refJenisSiswa, refPendidikan, onImport }: ModalImportSiswaProps) {
   const { showToast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -142,7 +92,7 @@ export default function ModalImportSiswa({ open, onClose, refKelamin, refAgama, 
         const excelHeaders = Object.keys(json[0]);
         const map: Record<string, string> = {};
         for (const cm of COLUMN_MAP) {
-          const found = findHeader(excelHeaders, cm.keys);
+          const found = findHeaderStrict(excelHeaders, cm.keys);
           if (found) map[cm.field] = found;
         }
 

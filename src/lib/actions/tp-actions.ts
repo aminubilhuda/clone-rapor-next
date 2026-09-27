@@ -57,7 +57,7 @@ export async function getKodeNext(idMapel: number) {
     const nextIndex = getNextDisplayIndex(rows);
 
     return { success: true, kode: createKode(singkatan, nextIndex) } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengambil data' } as const;
   }
 }
@@ -120,7 +120,7 @@ export async function addTujuanMulti(formData: FormData) {
 
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menambah TP' } as const;
   }
 }
@@ -151,7 +151,7 @@ export async function updateTujuanMulti(formData: FormData) {
 
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengupdate TP' } as const;
   }
 }
@@ -161,8 +161,6 @@ export async function updateTujuanSingle(formData: FormData) {
   if (authResult.error || !authResult.user) {
     return { success: false, error: authResult.error || 'Unauthorized' } as const;
   }
-  const { user } = authResult;
-
   const idTujuan = Number(formData.get('id_tujuan'));
   const tujuan = (formData.get('tujuan') as string)?.trim();
 
@@ -177,7 +175,7 @@ export async function updateTujuanSingle(formData: FormData) {
     );
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengupdate TP' } as const;
   }
 }
@@ -197,7 +195,7 @@ export async function deleteTujuanByKode(kode: string, idMapel: number) {
     );
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus TP' } as const;
   }
 }
@@ -211,7 +209,7 @@ export async function getTpFromPreviousYear(idMapel: number) {
     const sekolah = await getSekolahWithFilter();
 
     let prevTahun = sekolah.tahun - 1;
-    let prevSemester = sekolah.semester === 1 ? 2 : 1;
+    const prevSemester = sekolah.semester === 1 ? 2 : 1;
     if (sekolah.semester === 1) prevTahun = sekolah.tahun - 1;
 
     const [rows]: any = await pool.query(
@@ -226,7 +224,7 @@ export async function getTpFromPreviousYear(idMapel: number) {
     );
 
     return { success: true, tp: rows, prevTahun, prevSemester } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengambil data' } as const;
   }
 }
@@ -252,7 +250,7 @@ export async function copyTujuan(formData: FormData) {
   try {
     const sekolah = await getSekolahWithFilter();
     let prevTahun = sekolah.tahun - 1;
-    let prevSemester = sekolah.semester === 1 ? 2 : 1;
+    const prevSemester = sekolah.semester === 1 ? 2 : 1;
     if (sekolah.semester === 1) prevTahun = sekolah.tahun - 1;
 
     // Batch: ambil sumber TP untuk semua kode sekaligus
@@ -326,7 +324,7 @@ export async function copyTujuan(formData: FormData) {
 
     revalidatePath('/guru/tujuan-pembelajaran');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal copy TP' } as const;
   }
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useToast } from '@/components/ui/toast-provider';
 import ModalTransferAnggotaKelas from './modal-transfer-anggota-kelas';
 
 const COLUMNS = [
@@ -18,8 +17,6 @@ interface AnggotaKelasClientProps {
 }
 
 export default function AnggotaKelasClient({ data, refSiswa, anggotaKelas }: AnggotaKelasClientProps) {
-  const { showToast } = useToast();
-
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(10);

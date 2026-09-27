@@ -115,7 +115,7 @@ export async function updateMapelKelas(formData: FormData) {
 
     revalidatePath('/tu/mapel-kelas');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -128,7 +128,7 @@ export async function deleteMapelKelas(id: number) {
     await pool.query('DELETE FROM mapel_kelas WHERE id_mapel_kelas = ?', [id]);
     revalidatePath('/tu/mapel-kelas');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
@@ -225,7 +225,7 @@ export async function copyMapelKelasFromPreviousYear() {
 
     revalidatePath('/tu/mapel-kelas');
     return { success: true, totalDisalin, totalSkip, totalEnrolled, hasil } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyalin mapel kelas' } as const;
   }
 }
@@ -314,7 +314,7 @@ export async function copyMapelKelasFromSameYear() {
 
     revalidatePath('/tu/mapel-kelas');
     return { success: true, totalDisalin, totalSkip, totalEnrolled, hasil } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyalin mapel kelas' } as const;
   }
 }

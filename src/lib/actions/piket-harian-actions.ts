@@ -33,7 +33,7 @@ export async function updatePiketHarian(formData: FormData) {
 
     revalidatePath('/tu/piket-harian');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -46,7 +46,7 @@ export async function deletePiketHarian(id: number) {
     await pool.query('DELETE FROM piket_harian WHERE id_piket_harian = ?', [id]);
     revalidatePath('/tu/piket-harian');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
@@ -62,7 +62,7 @@ export async function addPiketHarian(idHarian: number, idUser: number) {
     );
     revalidatePath('/tu/piket-harian');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -78,7 +78,7 @@ export async function deletePiketHarianByHariUser(idHarian: number, idUser: numb
     );
     revalidatePath('/tu/piket-harian');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

@@ -39,7 +39,7 @@ export async function updateMapelSiswa(formData: FormData) {
 
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -85,7 +85,7 @@ export async function toggleMapelSiswa(formData: FormData) {
 
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -138,7 +138,7 @@ export async function toggleMapelSiswaBatch(formData: FormData) {
 
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -151,7 +151,7 @@ export async function deleteMapelSiswa(id: number) {
     await pool.query('DELETE FROM mapel_siswa WHERE id_mapel_siswa = ?', [id]);
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

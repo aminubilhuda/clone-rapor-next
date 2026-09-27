@@ -88,7 +88,7 @@ export async function updatePegawai(formData: FormData) {
 
     revalidatePath('/tu/pegawai');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -101,7 +101,7 @@ export async function deletePegawai(id: number) {
     await pool.query('UPDATE users SET deleted_at = NOW() WHERE id_user = ?', [id]);
     revalidatePath('/tu/pegawai');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

@@ -35,7 +35,7 @@ export async function updateAnggotaKelas(formData: FormData) {
 
     revalidatePath('/tu/anggota-kelas');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -48,7 +48,7 @@ export async function deleteAnggotaKelas(id: number) {
     await pool.query('UPDATE siswa_kelas SET deleted_at = NOW() WHERE id_siswa_kelas = ?', [id]);
     revalidatePath('/tu/anggota-kelas');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
@@ -74,7 +74,7 @@ export async function bulkAddAnggotaKelas(idKelas: number, idSiswaList: number[]
 
     revalidatePath('/tu/anggota-kelas');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menambah anggota' } as const;
   }
 }
@@ -94,7 +94,7 @@ export async function bulkRemoveAnggotaKelas(idSiswaKelasList: number[]) {
 
     revalidatePath('/tu/anggota-kelas');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus anggota' } as const;
   }
 }

@@ -48,7 +48,7 @@ export async function savePengaturan(formData: FormData) {
 
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan pengaturan' } as const
   }
 }
@@ -74,7 +74,7 @@ export async function addTahunPelajaran(nama: string) {
     await pool.query('INSERT INTO tahun_pelajaran (tahun_pelajaran) VALUES (?)', [trimmed])
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menambah tahun pelajaran' } as const
   }
 }
@@ -87,7 +87,7 @@ export async function deleteTahunPelajaran(id: number) {
     await pool.query('DELETE FROM tahun_pelajaran WHERE id_tahun_pelajaran = ?', [id])
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus tahun pelajaran' } as const
   }
 }

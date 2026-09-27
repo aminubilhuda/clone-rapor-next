@@ -95,7 +95,6 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
   const options = data?.options || [];
   const currentValue = data?.currentValue || '';
   const activeLabel = data?.activeLabel || 'Data Aktif';
-  const isHistorical = data?.isHistorical || false;
 
   const handleChange = (val: string) => {
     const opt = options.find(o => o.value === val);

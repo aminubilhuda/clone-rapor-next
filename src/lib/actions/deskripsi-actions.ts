@@ -33,7 +33,7 @@ export async function updateDeskripsi(formData: FormData) {
 
     revalidatePath('/tu/deskripsi-rapor');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -46,7 +46,7 @@ export async function deleteDeskripsi(id: number) {
     await pool.query('DELETE FROM deskripsi_rapor WHERE id_deskripsi = ?', [id]);
     revalidatePath('/tu/deskripsi-rapor');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

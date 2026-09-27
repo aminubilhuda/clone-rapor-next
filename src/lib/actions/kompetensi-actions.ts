@@ -31,7 +31,7 @@ export async function updateKompetensi(formData: FormData) {
 
     revalidatePath('/tu/kompetensi');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -44,7 +44,7 @@ export async function deleteKompetensi(id: number) {
     await pool.query('DELETE FROM kompetensi_keahlian WHERE id_kompetensi_keahlian = ?', [id]);
     revalidatePath('/tu/kompetensi');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }

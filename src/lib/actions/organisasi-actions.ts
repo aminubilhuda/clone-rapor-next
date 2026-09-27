@@ -26,7 +26,7 @@ export async function updateOrganisasi(formData: FormData) {
 
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -39,7 +39,7 @@ export async function deleteOrganisasi(id: number) {
     await pool.query('DELETE FROM organisasi WHERE id_organisasi = ?', [id]);
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
@@ -77,7 +77,7 @@ export async function updatePembinaOrganisasi(formData: FormData) {
 
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -111,7 +111,7 @@ export async function addSiswaOrganisasi(formData: FormData) {
 
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menambah anggota' } as const;
   }
 }
@@ -124,7 +124,7 @@ export async function removeSiswaOrganisasi(id: number) {
     await pool.query('DELETE FROM siswa_organisasi WHERE id_siswa_organisasi = ?', [id]);
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus anggota' } as const;
   }
 }

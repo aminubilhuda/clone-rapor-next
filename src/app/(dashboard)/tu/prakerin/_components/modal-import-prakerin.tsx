@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
+import { findHeaderLoose, excelDateToISO } from '@/lib/excel';
 import { useToast } from '@/components/ui/toast-provider';
 
 interface ModalImportProps {
@@ -18,39 +19,11 @@ const COLUMN_MAP: { keys: string[]; field: string }[] = [
   { keys: ['pembimbing', 'guru pendamping', 'guru', 'pendamping', 'instruktur'], field: 'instruktur' },
 ];
 
-function findHeader(headers: string[], keys: string[]): string | null {
-  const lower = headers.map(h => h.toLowerCase().trim());
-  for (const key of keys) {
-    const idx = lower.findIndex(h => h === key || h.includes(key) || key.includes(h));
-    if (idx >= 0) return headers[idx];
-  }
-  return null;
-}
-
-function excelDateToISO(value: any): string | null {
-  if (!value) return null;
-  if (typeof value === 'number') {
-    const d = new Date((value - 25569) * 86400 * 1000);
-    return isNaN(d.getTime()) ? null : d.toISOString().split('T')[0];
-  }
-  if (typeof value === 'string') {
-    const cleaned = value.replace(/\s+/g, ' ').trim();
-    const d = new Date(cleaned);
-    if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
-    const parts = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if (parts) return `${parts[3]}-${parts[2].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
-    const parts2 = cleaned.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-    if (parts2) return `${parts2[1]}-${parts2[2].padStart(2, '0')}-${parts2[3].padStart(2, '0')}`;
-  }
-  return null;
-}
-
 export default function ModalImportPrakerin({ open, onClose, onImport }: ModalImportProps) {
   const { showToast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<any[] | null>(null);
   const [columnMap, setColumnMap] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
 
   if (!open) return null;
@@ -75,7 +48,7 @@ export default function ModalImportPrakerin({ open, onClose, onImport }: ModalIm
         const excelHeaders = Object.keys(json[0]);
         const map: Record<string, string> = {};
         for (const cm of COLUMN_MAP) {
-          const found = findHeader(excelHeaders, cm.keys);
+          const found = findHeaderLoose(excelHeaders, cm.keys);
           if (found) map[cm.field] = found;
         }
 

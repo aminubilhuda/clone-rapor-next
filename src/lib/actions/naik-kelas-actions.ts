@@ -81,7 +81,7 @@ export async function updateNaikKelas(formData: FormData) {
 
     revalidatePath('/tu/naik-kelas');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -243,7 +243,7 @@ export async function promoteAllKelas() {
 
       // Pre-fetch existing siswa_kelas di tahun baru untuk menghindari duplikasi
       const targetTingkatIds = [...new Set(kelasRows.map((k: any) => getNextTingkatId(k.id_tingkat)).filter(Boolean))];
-      let existingByTargetKelas = new Map<number, Set<number>>();
+      const existingByTargetKelas = new Map<number, Set<number>>();
 
       if (targetTingkatIds.length > 0) {
         const [targetKelasInDb]: any = await conn.query(

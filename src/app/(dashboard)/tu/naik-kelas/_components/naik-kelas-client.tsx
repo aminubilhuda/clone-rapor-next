@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Select from 'react-select';
 import { useToast } from '@/components/ui/toast-provider';
 import { updateNaikKelas, promoteKelas, promoteAllKelas, getInfoPromosi } from '@/lib/actions/naik-kelas-actions';
 
@@ -110,9 +109,6 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
   const individualData = filteredData.filter((d: any) =>
     !individualFilter || d.nama_siswa.toLowerCase().includes(individualFilter.toLowerCase())
   );
-
-  const guruOptions = refKelas.map((k: any) => ({ value: k.id_kelas, label: k.nama_kelas }));
-  const tingkatOptions = refTingkat.map((t: any) => ({ value: t.id_tingkat, label: t.tingkat }));
 
   return (
     <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">

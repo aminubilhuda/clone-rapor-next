@@ -7,6 +7,7 @@ import type {
   TDocumentDefinitions,
 } from 'pdfmake/interfaces';
 import { mm, pdfMake } from './pdfmake-runtime';
+import { formatTanggalIndo } from '@/lib/format';
 import type {
   PelengkapSekolahInfo,
   PelengkapSiswaInfo,
@@ -71,15 +72,7 @@ function displayValue(input: unknown): string {
 }
 
 function formatTanggal(input: string | Date | null): string {
-  if (!input) return '-';
-  const date = input instanceof Date ? input : new Date(input);
-  if (Number.isNaN(date.getTime())) return displayValue(input);
-  return new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Jakarta',
-  }).format(date);
+  return displayValue(formatTanggalIndo(input));
 }
 
 function imageDataUri(fileName: string | null): string | null {

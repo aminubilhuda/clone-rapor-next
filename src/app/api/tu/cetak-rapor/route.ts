@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { formatTanggalIndo } from '@/lib/format';
 import { existsSync } from 'fs';
 import { basename, join } from 'path';
 import { NextRequest, NextResponse } from 'next/server';
@@ -12,7 +13,7 @@ import {
   PelengkapSiswaInfo,
 } from '@/lib/pdf-templates/pelengkap-template';
 import { generatePelengkapRaporPdf } from '@/lib/pdf-templates/pelengkap-pdfmake';
-import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, MapelNilai, PresensiData } from '@/lib/pdf-templates/tengah-semester-template';
+import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, PresensiData } from '@/lib/pdf-templates/tengah-semester-template';
 import { generateTengahSemesterRaporPdf } from '@/lib/pdf-templates/tengah-semester-pdfmake';
 import { generateSemesterRaporHTML, SiswaSemesterRapor, KelompokSemester, MapelSemester, PrakerinItem, EskulItem, OrganisasiItem } from '@/lib/pdf-templates/semester-template';
 import { generateSemesterRaporPdf } from '@/lib/pdf-templates/semester-pdfmake';
@@ -106,13 +107,6 @@ function wrapHtmlForPrint(html: string, siswa?: SiswaInfo): string {
     return html.replace('</body>', printCss + '</body>');
   }
   return html + printCss;
-}
-
-function tglIndo(dateStr: string): string {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -376,7 +370,7 @@ export async function POST(req: NextRequest) {
         'SELECT tanggal_mid FROM pembagian_raport WHERE tahun = ? AND semester = ? AND deleted_at IS NULL LIMIT 1',
         [useTahun, useSemester]
       );
-      const tanggalMid = pembagianRows[0]?.tanggal_mid ? tglIndo(pembagianRows[0].tanggal_mid) : '';
+      const tanggalMid = pembagianRows[0]?.tanggal_mid ? formatTanggalIndo(pembagianRows[0].tanggal_mid) : '';
 
       const siswaMidList: SiswaMidRapor[] = siswaRows.map((row: any) => {
         const skInfo = siswaKelasMap.get(row.id_siswa) || { id_kelas: 0, nama_kelas: row.nama_kelas, fase: '' };
@@ -583,7 +577,7 @@ export async function POST(req: NextRequest) {
         'SELECT tanggal_rapor FROM pembagian_raport WHERE tahun = ? AND semester = ? AND deleted_at IS NULL LIMIT 1',
         [useTahun, useSemester]
       );
-      const tanggalRapor = pembagianRows[0]?.tanggal_rapor ? tglIndo(pembagianRows[0].tanggal_rapor) : '';
+      const tanggalRapor = pembagianRows[0]?.tanggal_rapor ? formatTanggalIndo(pembagianRows[0].tanggal_rapor) : '';
 
       const tingkatIds = [...new Set(siswaKelasRows.map((r: any) => r.id_tingkat))];
       const firstTingkat = tingkatIds[0] as number | undefined;

@@ -37,7 +37,7 @@ export async function updateMapel(formData: FormData) {
 
     revalidatePath('/tu/mapel');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
@@ -50,7 +50,7 @@ export async function deleteMapel(id: number) {
     await pool.query('DELETE FROM mapel WHERE id_mapel = ?', [id]);
     revalidatePath('/tu/mapel');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal menghapus data' } as const;
   }
 }
@@ -63,7 +63,7 @@ export async function updateUrutMapel(idMapel: number, urut: number) {
     await pool.query('UPDATE mapel SET urut = ? WHERE id_mapel = ?', [urut, idMapel]);
     revalidatePath('/tu/mapel');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal mengupdate urutan' } as const;
   }
 }

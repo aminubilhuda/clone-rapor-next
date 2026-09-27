@@ -34,7 +34,6 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
     }
   }, [open, kelas?.id_kelas, anggotaKelas]);
 
-  const rightIds = useMemo(() => new Set(rightData.map((a: any) => a.id_siswa)), [rightData]);
   const allAnggotaIds = useMemo(() => new Set(anggotaKelas.map((a: any) => a.id_siswa)), [anggotaKelas]);
 
   const leftData = useMemo(() => {

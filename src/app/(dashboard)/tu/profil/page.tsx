@@ -37,7 +37,7 @@ async function getProfil() {
       semester: semesterRows[0],
       tahun: tahunRows[0],
     };
-  } catch (e) {
+  } catch {
     return null;
   }
 }

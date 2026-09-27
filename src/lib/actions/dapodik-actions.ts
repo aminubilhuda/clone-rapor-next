@@ -1135,7 +1135,7 @@ export async function syncDapodik(formData: FormData) {
         periodeAktif,
       },
     } as const
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Sinkronisasi gagal', summary, runId, periode: null } as const
   } finally {
     await setSyncStatus(false)
@@ -1166,7 +1166,7 @@ export async function getDapodikLogDetail(runId: string) {
       [runId]
     )
     return { success: true, rows: rows as DapodikLogDetailRow[] } as const
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal memuat detail' } as const
   }
 }

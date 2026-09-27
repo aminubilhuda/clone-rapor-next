@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
-import { SEKOLAH_ID, JABATAN } from '@/lib/constants';
+import { SEKOLAH_ID } from '@/lib/constants';
 import { requireApiAuth, ALL_ROLES } from '@/lib/api-auth-guard';
 import { apiSuccess, apiError, apiOptionsResponse } from '@/lib/api-response';
 
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     );
 
     // Detail formatif / sumatif jika diminta
-    let detailMap: Record<string, any> = {};
+    const detailMap: Record<string, any> = {};
     if (includeDetail && idSiswa) {
       const [fmtRows]: any = await pool.query(
         `SELECT id_mapel, ROUND(AVG(nilai), 2) as rata_formatif FROM nilai_formatif

@@ -502,13 +502,13 @@ export async function importSiswa(rows: {
           ]
         );
         updated++;
-      } catch (e: any) {
+      } catch {
         errors.push(`Baris ${p.index + 1} (${r.nama_siswa}): Gagal menyimpan data`);
       }
     }
 
     await conn.commit();
-  } catch (e: any) {
+  } catch {
     await conn.rollback();
     return { success: false, error: 'Gagal import data', count: 0, inserted: 0, updated: 0, errors } as const;
   } finally {
@@ -532,7 +532,7 @@ export async function deleteSiswa(id: number) {
     await conn.commit();
     revalidatePath('/tu/kesiswaan');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     await conn.rollback();
     return { success: false, error: 'Gagal menghapus data' } as const;
   } finally {
@@ -560,7 +560,7 @@ export async function nonaktifkanSiswa(id: number) {
     revalidatePath('/tu/kesiswaan');
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
-  } catch (e: any) {
+  } catch {
     await conn.rollback();
     return { success: false, error: 'Gagal menonaktifkan siswa' } as const;
   } finally {
@@ -594,7 +594,7 @@ export async function generateUsernamePasswordBulk() {
 
     revalidatePath('/tu/kesiswaan');
     return { success: true, count: updated } as const;
-  } catch (e: any) {
+  } catch {
     return { success: false, error: 'Gagal generate username/password' } as const;
   }
 }

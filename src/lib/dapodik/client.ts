@@ -44,7 +44,7 @@ async function rawFetch(conn: DapodikConnection, endpoint: string, start: number
       }
       try {
         return JSON.parse(text) as DapodikResponse<unknown>;
-      } catch (e) {
+      } catch {
         throw new Error(`Respons ${endpoint} bukan JSON valid: ${text.slice(0, 120)}`);
       }
     } catch (e: any) {
