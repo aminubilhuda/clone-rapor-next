@@ -12,7 +12,8 @@ export async function cekPiketHariIni() {
 
   try {
     return await isGuruPiketToday(Number(authResult.user.id_user));
-  } catch {
+  } catch (e) {
+    console.error('cekPiketHariIni error:', e);
     return false;
   }
 }
@@ -39,7 +40,8 @@ export async function getKelasList() {
       [sekolah.tahun, sekolah.semester, sekolah.tahun, sekolah.semester]
     );
     return rows;
-  } catch {
+  } catch (e) {
+    console.error('presensi query error:', e);
     return [];
   }
 }
@@ -60,7 +62,8 @@ export async function getSiswaKelas(idKelas: number) {
       [idKelas, sekolah.tahun, sekolah.semester]
     );
     return rows;
-  } catch {
+  } catch (e) {
+    console.error('presensi query error:', e);
     return [];
   }
 }
@@ -82,7 +85,8 @@ export async function cekAbsensiHariIni(idKelas: number) {
       [idKelas, sekolah.tahun, sekolah.semester]
     );
     return { sudahAbsen: rows.length > 0, data: rows };
-  } catch {
+  } catch (e) {
+    console.error('cekAbsensiHariIni error:', e);
     return { sudahAbsen: false, data: [] };
   }
 }
@@ -154,7 +158,8 @@ export async function getKelasListForBK() {
       [sekolah.tahun, sekolah.semester]
     );
     return rows;
-  } catch {
+  } catch (e) {
+    console.error('presensi query error:', e);
     return [];
   }
 }
@@ -182,7 +187,8 @@ export async function getRekapAbsensiBK(idKelas: number) {
       [sekolah.tahun, sekolah.semester, sekolah.tahun, sekolah.semester, idKelas]
     );
     return rows;
-  } catch {
+  } catch (e) {
+    console.error('presensi query error:', e);
     return [];
   }
 }
@@ -235,7 +241,8 @@ export async function updatePresensiInline(
     await conn.commit();
     revalidatePath('/guru/rekap-absensi-bk');
     return { success: true } as const;
-  } catch {
+  } catch (e) {
+    console.error('updatePresensi error:', e);
     await conn.rollback();
     return { success: false, error: 'Gagal update presensi' } as const;
   } finally {

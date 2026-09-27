@@ -102,7 +102,8 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
       ekstraList: ekstraRows.map((r: any) => ({ id_eskul: r.id_eskul, nama_eskul: r.nama_eskul })),
       organisasiList: orgRows.map((r: any) => ({ id_organisasi: r.id_organisasi, nama_organisasi: r.nama_organisasi })),
     };
-  } catch {
+  } catch (e) {
+    console.error('getGuruTugas error:', e);
     return null;
   }
 }
