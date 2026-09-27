@@ -51,6 +51,6 @@ export async function GET(req: NextRequest) {
     return apiSuccess(data, 'Daftar tahun pelajaran dan semester berhasil diambil');
   } catch (error: any) {
     console.error('API /periode error:', error);
-    return apiError('Gagal mengambil data periode', 500, error.message);
+    return apiError('Gagal mengambil data periode');
   }
 }

@@ -171,6 +171,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('API /nilai error:', error);
-    return apiError('Gagal mengambil data nilai', 500, error.message);
+    return apiError('Gagal mengambil data nilai');
   }
 }

@@ -15,6 +15,12 @@ export interface ApiKeyItem {
   created_at: string;
 }
 
+const MASKED_KEY = 'raporkm_live_••••••••••••••••';
+
+function hashApiKey(value: string): string {
+  return crypto.createHash('sha256').update(value).digest('hex');
+}
+
 export async function getApiKeys(): Promise<ApiKeyItem[]> {
   const auth = await requireTuAdmin();
   if (auth.error) return [];
@@ -26,7 +32,7 @@ export async function getApiKeys(): Promise<ApiKeyItem[]> {
        WHERE deleted_at IS NULL
        ORDER BY id_api_key DESC`
     );
-    return rows;
+    return rows.map((row: ApiKeyItem) => ({ ...row, key_value: MASKED_KEY }));
   } catch (error) {
     console.error('getApiKeys error:', error);
     return [];
@@ -50,7 +56,7 @@ export async function createApiKey(formData: FormData) {
 
     await pool.query(
       `INSERT INTO api_keys (nama, key_value, is_active, deskripsi) VALUES (?, ?, 1, ?)`,
-      [nama, keyValue, deskripsi]
+      [nama, hashApiKey(keyValue), deskripsi]
     );
 
     revalidatePath('/tu/integrasi-api');

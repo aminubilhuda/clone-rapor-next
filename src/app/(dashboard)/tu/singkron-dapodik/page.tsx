@@ -7,7 +7,18 @@ async function getData() {
   try {
     const [configRows]: any = await pool.query('SELECT * FROM dapodik_config WHERE id = 1 LIMIT 1');
     const [logRows]: any = await pool.query('SELECT * FROM dapodik_log ORDER BY id DESC LIMIT 50');
-    return { config: configRows[0] || null, logs: logRows };
+
+    let config = null;
+    if (configRows[0]) {
+      const { token, ...rest } = configRows[0];
+      config = {
+        ...rest,
+        has_token: Boolean(token),
+        token_preview: token ? `${String(token).slice(0, 4)}••••` : null,
+      };
+    }
+
+    return { config, logs: logRows };
   } catch (error) {
     console.error('Singkron DAPODIK data fetch error:', error);
     return { config: null, logs: [] };

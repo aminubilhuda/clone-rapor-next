@@ -422,7 +422,7 @@ export default function IntegrasiApiClient({ initialKeys }: IntegrasiApiClientPr
         {
           id_api_key: Date.now(),
           nama: (fd.get('nama') as string) || 'API Key',
-          key_value: res.key,
+          key_value: 'raporkm_live_••••••••••••••••',
           is_active: 1,
           deskripsi: (fd.get('deskripsi') as string) || null,
           last_used_at: null,
@@ -603,20 +603,9 @@ export default function IntegrasiApiClient({ initialKeys }: IntegrasiApiClientPr
                           {k.deskripsi && <div className="text-xs text-gray-400 font-normal mt-0.5">{k.deskripsi}</div>}
                         </td>
                         <td className="px-6 py-4 font-mono text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-md border border-gray-200">
-                              {k.key_value.substring(0, 16)}••••••••••••••••
-                            </span>
-                            <button
-                              onClick={() => handleCopy(k.key_value, 'API Key')}
-                              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                              title="Salin API Key Lengkap"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                              </svg>
-                            </button>
-                          </div>
+                          <span className="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-md border border-gray-200">
+                            {k.key_value}
+                          </span>
                         </td>
                         <td className="px-6 py-4 text-center">
                           <button

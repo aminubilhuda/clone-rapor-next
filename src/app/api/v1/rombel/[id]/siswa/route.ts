@@ -97,6 +97,6 @@ export async function GET(
     return apiSuccess(data, `Daftar siswa kelas ${kelas.nama_kelas} berhasil diambil`);
   } catch (error: any) {
     console.error('API /rombel/[id]/siswa error:', error);
-    return apiError('Gagal mengambil data siswa kelas', 500, error.message);
+    return apiError('Gagal mengambil data siswa kelas');
   }
 }

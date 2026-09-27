@@ -86,7 +86,18 @@ export async function getDapodikConfig() {
     const [logs]: any = await pool.query(
       'SELECT * FROM dapodik_log ORDER BY id DESC LIMIT 50'
     )
-    return { config: cfgRows[0] || null, logs } as const
+
+    let config = null
+    if (cfgRows[0]) {
+      const { token, ...rest } = cfgRows[0]
+      config = {
+        ...rest,
+        has_token: Boolean(token),
+        token_preview: token ? `${String(token).slice(0, 4)}••••` : null,
+      }
+    }
+
+    return { config, logs } as const
   } catch (e) {
     console.error('getDapodikConfig error:', e)
     return { config: null, logs: [] } as const
@@ -101,16 +112,28 @@ export async function saveDapodikConfig(formData: FormData) {
   const token = (formData.get('token') as string)?.trim()
   const npsn = (formData.get('npsn') as string)?.trim()
 
-  if (!url || !token || !npsn) {
-    return { success: false, error: 'URL, token, dan NPSN wajib diisi' } as const
+  if (!url || !npsn) {
+    return { success: false, error: 'URL dan NPSN wajib diisi' } as const
   }
 
   try {
+    let tokenValue = token
+    if (!tokenValue) {
+      const [existingRows]: any = await pool.query(
+        'SELECT token FROM dapodik_config WHERE id = 1 LIMIT 1'
+      )
+      tokenValue = existingRows[0]?.token || ''
+    }
+
+    if (!tokenValue) {
+      return { success: false, error: 'Token DAPODIK wajib diisi' } as const
+    }
+
     await pool.query(
       `INSERT INTO dapodik_config (id, url, token, npsn)
        VALUES (1, ?, ?, ?)
        ON DUPLICATE KEY UPDATE url = VALUES(url), token = VALUES(token), npsn = VALUES(npsn)`,
-      [url, token, npsn]
+      [url, tokenValue, npsn]
     )
     revalidatePath('/tu/singkron-dapodik')
     return { success: true } as const
@@ -136,7 +159,8 @@ export async function testDapodikConnection(url?: string, token?: string, npsn?:
       message: `Koneksi berhasil — ${nama} (NPSN ${npsnApi})${match ? '' : ' — perhatian: NPSN tidak cocok dengan konfigurasi!'}`,
     } as const
   } catch (e: any) {
-    return { success: false, message: e?.message || 'Gagal terhubung ke server DAPODIK' } as const
+    console.error('testDapodikConnection error:', e)
+    return { success: false, message: 'Gagal terhubung ke server DAPODIK' } as const
   }
 }
 
@@ -182,7 +206,8 @@ export async function cekPeriodeDapodik() {
       },
     } as const
   } catch (e: any) {
-    return { ok: false, error: e?.message || 'Gagal memeriksa periode DAPODIK' } as const
+    console.error('cekPeriodeDapodik error:', e)
+    return { ok: false, error: 'Gagal memeriksa periode DAPODIK' } as const
   }
 }
 
@@ -1111,7 +1136,7 @@ export async function syncDapodik(formData: FormData) {
       },
     } as const
   } catch (e: any) {
-    return { success: false, error: e?.message || 'Sinkronisasi gagal', summary, runId, periode: null } as const
+    return { success: false, error: 'Sinkronisasi gagal', summary, runId, periode: null } as const
   } finally {
     await setSyncStatus(false)
   }
@@ -1142,6 +1167,6 @@ export async function getDapodikLogDetail(runId: string) {
     )
     return { success: true, rows: rows as DapodikLogDetailRow[] } as const
   } catch (e: any) {
-    return { success: false, error: e?.message || 'Gagal memuat detail' } as const
+    return { success: false, error: 'Gagal memuat detail' } as const
   }
 }

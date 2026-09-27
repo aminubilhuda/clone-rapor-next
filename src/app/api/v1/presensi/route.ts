@@ -140,7 +140,7 @@ export async function GET(req: NextRequest) {
     return apiSuccess(data, 'Data presensi berhasil diambil');
   } catch (error: any) {
     console.error('API /presensi error:', error);
-    return apiError('Gagal mengambil data presensi', 500, error.message);
+    return apiError('Gagal mengambil data presensi');
   }
 }
 
@@ -235,6 +235,6 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: any) {
     console.error('API POST /presensi error:', error);
-    return apiError('Gagal mencatat presensi', 500, error.message);
+    return apiError('Gagal mencatat presensi');
   }
 }

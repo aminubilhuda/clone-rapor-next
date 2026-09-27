@@ -47,7 +47,7 @@ export default function SingkronClient({ config, logs }: Props) {
   const router = useRouter()
   const { showToast } = useToast()
   const [url, setUrl] = useState(config?.url || '')
-  const [token, setToken] = useState(config?.token || '')
+  const [token, setToken] = useState('')
   const [npsn, setNpsn] = useState(config?.npsn || '')
   const [testing, setTesting] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -73,7 +73,7 @@ export default function SingkronClient({ config, logs }: Props) {
     setSaving(true)
     const fd = new FormData()
     fd.set('url', url)
-    fd.set('token', token)
+    if (token.trim()) fd.set('token', token.trim())
     fd.set('npsn', npsn)
     const result = await saveDapodikConfig(fd)
     if (result.success) {
@@ -197,7 +197,7 @@ export default function SingkronClient({ config, logs }: Props) {
               <input
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
-                placeholder="Token akses DAPODIK"
+                placeholder={config?.has_token ? `Tersimpan (${config.token_preview}) — isi hanya untuk mengganti` : 'Token akses DAPODIK'}
                 className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all"
               />
             </div>

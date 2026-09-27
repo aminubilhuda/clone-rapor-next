@@ -146,7 +146,7 @@ export async function promoteKelas(formData: FormData) {
     } as const;
   } catch (e: any) {
     console.error('Error promoteKelas:', e);
-    return { success: false, error: `Gagal menaikkan kelas: ${e?.message || e}` } as const;
+    return { success: false, error: 'Gagal menaikkan kelas' } as const;
   }
 }
 
@@ -392,7 +392,7 @@ export async function promoteAllKelas() {
   } catch (e: any) {
     await conn.rollback();
     console.error('Error promoteAllKelas:', e);
-    return { success: false, error: `Gagal menaikkan semua kelas: ${e?.message || e}` } as const;
+    return { success: false, error: 'Gagal menaikkan semua kelas' } as const;
   } finally {
     conn.release();
   }

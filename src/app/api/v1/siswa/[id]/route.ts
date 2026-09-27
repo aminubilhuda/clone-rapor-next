@@ -123,6 +123,6 @@ export async function GET(
     return apiSuccess(data, 'Detail profil siswa berhasil diambil');
   } catch (error: any) {
     console.error('API /siswa/[id] error:', error);
-    return apiError('Gagal mengambil detail siswa', 500, error.message);
+    return apiError('Gagal mengambil detail siswa');
   }
 }

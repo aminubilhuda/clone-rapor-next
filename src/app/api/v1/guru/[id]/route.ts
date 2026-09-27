@@ -122,6 +122,6 @@ export async function GET(
     return apiSuccess(data, 'Detail profil guru berhasil diambil');
   } catch (error: any) {
     console.error('API /guru/[id] error:', error);
-    return apiError('Gagal mengambil detail guru', 500, error.message);
+    return apiError('Gagal mengambil detail guru');
   }
 }

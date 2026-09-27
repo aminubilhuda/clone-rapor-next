@@ -85,6 +85,6 @@ export async function GET(req: NextRequest) {
     return apiSuccess(data, 'Data profil sekolah berhasil diambil');
   } catch (error: any) {
     console.error('API /sekolah error:', error);
-    return apiError('Gagal mengambil data profil sekolah', 500, error.message);
+    return apiError('Gagal mengambil data profil sekolah');
   }
 }

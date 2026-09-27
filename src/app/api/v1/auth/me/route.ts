@@ -65,6 +65,6 @@ export async function GET(req: NextRequest) {
     return apiSuccess(user, 'Profil user berhasil diambil');
   } catch (error: any) {
     console.error('API /auth/me error:', error);
-    return apiError('Gagal mengambil data profil', 500, error.message);
+    return apiError('Gagal mengambil data profil');
   }
 }

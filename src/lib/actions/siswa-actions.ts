@@ -276,7 +276,7 @@ export async function updateSiswa(formData: FormData) {
     if (e.code === 'ER_DUP_ENTRY') {
       return { success: false, error: 'Username, NIS, atau NISN sudah terdaftar di sistem' } as const;
     }
-    return { success: false, error: e?.message || 'Gagal menyimpan data' } as const;
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
 
@@ -503,14 +503,14 @@ export async function importSiswa(rows: {
         );
         updated++;
       } catch (e: any) {
-        errors.push(`Baris ${p.index + 1} (${r.nama_siswa}): ${e?.message || 'Gagal menyimpan data'}`);
+        errors.push(`Baris ${p.index + 1} (${r.nama_siswa}): Gagal menyimpan data`);
       }
     }
 
     await conn.commit();
   } catch (e: any) {
     await conn.rollback();
-    return { success: false, error: 'Gagal import data: ' + (e?.message || ''), count: 0, inserted: 0, updated: 0, errors } as const;
+    return { success: false, error: 'Gagal import data', count: 0, inserted: 0, updated: 0, errors } as const;
   } finally {
     conn.release();
   }
@@ -593,6 +593,6 @@ export async function generateUsernamePasswordBulk() {
     revalidatePath('/tu/kesiswaan');
     return { success: true, count: updated } as const;
   } catch (e: any) {
-    return { success: false, error: e?.message || 'Gagal generate username/password' } as const;
+    return { success: false, error: 'Gagal generate username/password' } as const;
   }
 }

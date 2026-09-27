@@ -94,6 +94,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('API /guru error:', error);
-    return apiError('Gagal mengambil data guru & pegawai', 500, error.message);
+    return apiError('Gagal mengambil data guru & pegawai');
   }
 }

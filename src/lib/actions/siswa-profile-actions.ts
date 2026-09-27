@@ -194,7 +194,7 @@ export async function updateSiswaProfile(formData: FormData) {
     ) {
       return { success: false, error: 'Tanggal lahir tidak boleh kosong' } as const;
     }
-    return { success: false, error: e?.message || 'Gagal menyimpan data profil' } as const;
+    return { success: false, error: 'Gagal menyimpan data profil' } as const;
   }
 }
 
@@ -256,6 +256,6 @@ export async function updateSiswaAccount(formData: FormData) {
     if (e.code === 'ER_DUP_ENTRY') {
       return { success: false, error: 'Username sudah digunakan di sistem' } as const;
     }
-    return { success: false, error: e?.message || 'Gagal menyimpan data akun' } as const;
+    return { success: false, error: 'Gagal menyimpan data akun' } as const;
   }
 }

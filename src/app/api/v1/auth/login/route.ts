@@ -127,6 +127,6 @@ export async function POST(req: NextRequest) {
     return apiError('Username atau password salah', 401, 'INVALID_CREDENTIALS');
   } catch (error: any) {
     console.error('API login error:', error);
-    return apiError('Terjadi kesalahan server saat proses login', 500, error.message);
+    return apiError('Terjadi kesalahan server saat proses login');
   }
 }

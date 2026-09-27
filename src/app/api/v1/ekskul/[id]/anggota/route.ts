@@ -104,6 +104,6 @@ export async function GET(
     return apiSuccess(data, `Anggota ekstrakurikuler ${eskul.nama_eskul} berhasil diambil`);
   } catch (error: any) {
     console.error('API /ekskul/[id]/anggota error:', error);
-    return apiError('Gagal mengambil data anggota ekstrakurikuler', 500, error.message);
+    return apiError('Gagal mengambil data anggota ekstrakurikuler');
   }
 }

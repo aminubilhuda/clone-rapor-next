@@ -739,7 +739,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Cetak rapor error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Gagal mencetak rapor' },
+      { error: 'Gagal mencetak rapor' },
       { status: 500 }
     );
   }

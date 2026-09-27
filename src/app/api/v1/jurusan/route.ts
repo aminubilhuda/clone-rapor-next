@@ -37,6 +37,6 @@ export async function GET(req: NextRequest) {
     return apiSuccess(data, 'Daftar jurusan berhasil diambil');
   } catch (error: any) {
     console.error('API /jurusan error:', error);
-    return apiError('Gagal mengambil data jurusan', 500, error.message);
+    return apiError('Gagal mengambil data jurusan');
   }
 }
