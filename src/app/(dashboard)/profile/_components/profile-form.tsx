@@ -59,6 +59,7 @@ export default function ProfileForm({ user, namaJabatan }: ProfileFormProps) {
           onClick={() => fotoInputRef.current?.click()}
         >
           {fotoPreview ? (
+            // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
             <img src={fotoPreview} alt="Foto Profil" className="w-full h-full object-cover" />
           ) : (
             <span className="text-2xl font-bold text-[#1A1A2E]/30">

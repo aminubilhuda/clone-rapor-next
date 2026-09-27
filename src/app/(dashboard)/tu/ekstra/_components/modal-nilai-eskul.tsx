@@ -36,9 +36,11 @@ export default function ModalNilaiEskul({ open, onClose, eskul, anggota }: Modal
           predikat: a.predikat || '',
           keterangan: a.keterangan || '',
         }));
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi state saat modal dibuka
       setRows(filtered);
       setSearch('');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- sengaja hanya reset saat modal dibuka
   }, [open, eskul?.id_eskul, anggota]);
 
   const filtered = useMemo(() => {

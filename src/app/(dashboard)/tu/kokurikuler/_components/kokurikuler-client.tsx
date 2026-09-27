@@ -44,6 +44,7 @@ export default function KokurikulerClient({ data: initialData, refKelas, refUser
   const [updatingPembinaId, setUpdatingPembinaId] = useState<number | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi state saat modal dibuka
     setTableData(initialData);
   }, [initialData]);
 

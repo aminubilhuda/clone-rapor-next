@@ -64,6 +64,7 @@ export default function SidebarSiswa() {
           <Link href="/siswa" className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-white/10">
               {logo ? (
+                // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
                   src={logo}
                   alt="Logo Sekolah"

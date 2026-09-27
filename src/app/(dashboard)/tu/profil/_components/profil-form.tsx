@@ -79,6 +79,7 @@ export default function ProfilForm({
               onClick={() => logoInputRef.current?.click()}
             >
               {logoPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
                   src={logoPreview}
                   alt="Logo Sekolah"
@@ -121,6 +122,7 @@ export default function ProfilForm({
               onClick={() => logoProvInputRef.current?.click()}
             >
               {logoProvPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
                   src={logoProvPreview}
                   alt="Logo Provinsi"

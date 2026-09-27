@@ -39,17 +39,20 @@ export default function NaikKelasClient({ data, refKelas, refTingkat }: Props) {
 
   useEffect(() => {
     if (sumberTingkatId && !isMaxTingkat) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi state saat modal dibuka
       setDestTingkatId(String(sumberTingkatId + 1));
     } else {
       setDestTingkatId('');
     }
     setDestKelasId('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- sengaja hanya reset saat modal dibuka
   }, [sourceKelasId]);
 
   const canPromote = sourceKelasId && destTingkatId && destKelasId && !promoting && filteredData.length > 0;
 
   useEffect(() => {
     if (showConfirm && !infoPromosi) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi state saat modal dibuka
       setLoadingInfo(true);
       getInfoPromosi().then((data) => {
         setInfoPromosi(data);

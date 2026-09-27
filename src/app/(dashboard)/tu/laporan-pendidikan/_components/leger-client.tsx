@@ -107,15 +107,18 @@ export default function LegerClient({
       ) || 0,
     }));
     withAvg.sort((a, b) => b.avg - a.avg);
-    let rank = 0;
+    const ranked: (typeof withAvg[number] & { rank: number })[] = [];
+    let currentRank = 0;
     let prevAvg = -1;
-    return withAvg.map((s, i) => {
+    for (let i = 0; i < withAvg.length; i++) {
+      const s = withAvg[i];
       if (s.avg !== prevAvg) {
-        rank = i + 1;
+        currentRank = i + 1;
         prevAvg = s.avg;
       }
-      return { ...s, rank };
-    });
+      ranked.push({ ...s, rank: currentRank });
+    }
+    return ranked;
   }, [students, nilaiKelasLookup, selectedKelas]);
 
   function handleExportExcel() {

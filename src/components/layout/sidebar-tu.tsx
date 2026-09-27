@@ -142,6 +142,7 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
           <Link href="/tu" className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10 overflow-hidden">
               {logo ? (
+                // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
                   src={logo}
                   alt="Logo"

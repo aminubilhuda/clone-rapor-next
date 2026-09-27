@@ -20,7 +20,16 @@ const eslintConfig = defineConfig([
     // Runtime & tooling artifacts:
     "storage/**",
     "graphify-out/**",
+    // Node CommonJS config (bukan kode aplikasi):
+    "ecosystem.config.js",
   ]),
+  {
+    rules: {
+      // Backlog: 1.070 `any` tersisa, diturunkan ke warning agar CI bisa
+      // memblokir error nyata sambil pembersihan tipe berjalan bertahap.
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

@@ -26,12 +26,14 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
       const filtered = anggotaKelas
         .filter((a: any) => a.id_kelas === kelas.id_kelas)
         .map((a: any) => ({ ...a }));
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi state saat modal dibuka
       setRightData(filtered);
       setLeftChecked(new Set());
       setRightChecked(new Set());
       setLeftSearch('');
       setRightSearch('');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- sengaja hanya reset saat modal dibuka
   }, [open, kelas?.id_kelas, anggotaKelas]);
 
   const allAnggotaIds = useMemo(() => new Set(anggotaKelas.map((a: any) => a.id_siswa)), [anggotaKelas]);
@@ -58,7 +60,8 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
   const toggleLeft = (id: number) => {
     setLeftChecked((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -66,7 +69,8 @@ export default function ModalTransferAnggotaKelas({ open, onClose, kelas, semuaS
   const toggleRight = (id: number) => {
     setRightChecked((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };

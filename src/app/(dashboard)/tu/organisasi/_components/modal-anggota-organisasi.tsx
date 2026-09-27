@@ -25,12 +25,14 @@ export default function ModalAnggotaOrganisasi({ open, onClose, organisasi, sisw
 
   useEffect(() => {
     if (open && organisasi) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi state saat modal dibuka
       setLocalAnggota(anggota.filter((a: any) => a.id_organisasi === organisasi.id_organisasi));
       setLeftChecked(new Set());
       setRightChecked(new Set());
       setLeftSearch('');
       setRightSearch('');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- sengaja hanya reset saat modal dibuka
   }, [open, organisasi?.id_organisasi, anggota]);
 
   const anggotaIds = useMemo(() => new Set(localAnggota.map((a: any) => a.id_siswa)), [localAnggota]);
@@ -54,7 +56,8 @@ export default function ModalAnggotaOrganisasi({ open, onClose, organisasi, sisw
   const toggleLeft = (id: number) => {
     setLeftChecked((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -62,7 +65,8 @@ export default function ModalAnggotaOrganisasi({ open, onClose, organisasi, sisw
   const toggleRight = (id: number) => {
     setRightChecked((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };

@@ -62,6 +62,7 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <div className="mx-auto w-20 h-20 rounded-xl bg-[#F8F9FB] flex items-center justify-center mb-4 overflow-hidden">
               {logo ? (
+                // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
                   src={logo}
                   alt="Logo Sekolah"
