@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
-import { requireApiAuth } from '@/lib/api-auth-guard';
+import { requireApiAuth, ALL_ROLES } from '@/lib/api-auth-guard';
 import { apiSuccess, apiError, apiOptionsResponse } from '@/lib/api-response';
 
 export const runtime = 'nodejs';
@@ -13,7 +13,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = await requireApiAuth(req);
+  const authResult = await requireApiAuth(req, ALL_ROLES);
   if (!authResult.authorized) {
     return authResult.errorResponse!;
   }
@@ -22,6 +22,11 @@ export async function GET(
   const idSiswa = parseInt(id, 10);
   if (isNaN(idSiswa)) {
     return apiError('ID siswa tidak valid', 400, 'BAD_REQUEST');
+  }
+
+  const user = authResult.user!;
+  if (user.role === 'siswa' && Number(user.id_siswa) !== idSiswa) {
+    return apiError('Anda hanya dapat mengakses data diri sendiri.', 403, 'FORBIDDEN');
   }
 
   try {

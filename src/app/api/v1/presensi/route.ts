@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
-import { requireApiAuth } from '@/lib/api-auth-guard';
+import { requireApiAuth, ALL_ROLES, STAFF_ROLES } from '@/lib/api-auth-guard';
+import { isGuruPiketToday } from '@/lib/piket';
 import { apiSuccess, apiError, apiOptionsResponse } from '@/lib/api-response';
 
 export const runtime = 'nodejs';
@@ -11,7 +12,7 @@ export async function OPTIONS() {
 }
 
 export async function GET(req: NextRequest) {
-  const authResult = await requireApiAuth(req);
+  const authResult = await requireApiAuth(req, ALL_ROLES);
   if (!authResult.authorized || !authResult.user) {
     return authResult.errorResponse!;
   }
@@ -39,7 +40,10 @@ export async function GET(req: NextRequest) {
     const bulan = searchParams.get('bulan');
 
     // Siswa hanya boleh lihat presensinya sendiri
-    if (user.role === 'siswa' && user.id_siswa) {
+    if (user.role === 'siswa') {
+      if (!user.id_siswa) {
+        return apiError('Akun siswa tidak valid.', 403, 'FORBIDDEN');
+      }
       idSiswa = String(user.id_siswa);
     }
 
@@ -141,21 +145,46 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const authResult = await requireApiAuth(req, ['super_admin', 'tu_admin', 'guru']);
+  const authResult = await requireApiAuth(req, STAFF_ROLES);
   if (!authResult.authorized) {
     return authResult.errorResponse!;
   }
 
+  const user = authResult.user!;
+
   try {
     const body = await req.json();
-    const { id_siswa, id_kelas, id_absen, tanggal, jumlah = 1 } = body || {};
+    const idSiswa = Number(body?.id_siswa);
+    const idAbsen = Number(body?.id_absen);
+    const jumlah = Number(body?.jumlah ?? 1);
+    const tanggal = String(body?.tanggal ?? '');
+    const inputKelas = Number(body?.id_kelas);
 
-    if (!id_siswa || !id_absen || !tanggal) {
-      return apiError(
-        'Parameter id_siswa, id_absen, dan tanggal wajib diisi',
-        400,
-        'BAD_REQUEST'
-      );
+    if (!Number.isInteger(idSiswa) || idSiswa <= 0 || !Number.isInteger(idAbsen) || idAbsen <= 0) {
+      return apiError('Parameter id_siswa dan id_absen wajib berupa angka valid', 400, 'BAD_REQUEST');
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(tanggal) || Number.isNaN(Date.parse(tanggal))) {
+      return apiError('Format tanggal harus YYYY-MM-DD', 400, 'BAD_REQUEST');
+    }
+
+    if (!Number.isInteger(jumlah) || jumlah < 0 || jumlah > 31) {
+      return apiError('Nilai jumlah tidak valid', 400, 'BAD_REQUEST');
+    }
+
+    if (user.role === 'guru') {
+      const piketHariIni = await isGuruPiketToday(Number(user.id_user));
+      if (!piketHariIni) {
+        return apiError('Hanya guru piket hari ini yang dapat mencatat presensi.', 403, 'FORBIDDEN');
+      }
+    }
+
+    const [siswaRows]: any = await pool.query(
+      'SELECT id_siswa FROM siswa WHERE id_siswa = ? AND aktif = 1 AND deleted_at IS NULL LIMIT 1',
+      [idSiswa]
+    );
+    if (siswaRows.length === 0) {
+      return apiError('Siswa tidak ditemukan atau tidak aktif', 404, 'NOT_FOUND');
     }
 
     const [sekolahRows]: any = await pool.query(
@@ -165,40 +194,41 @@ export async function POST(req: NextRequest) {
     const tahun = sekolahRows[0]?.tahun || 1;
     const semester = sekolahRows[0]?.semester || 1;
 
-    // Hitung bulan dari string tanggal (YYYY-MM-DD)
-    const bulan = String(new Date(tanggal).getMonth() + 1);
+    const bulan = String(Number(tanggal.slice(5, 7)));
 
-    // Ambil id_kelas jika tidak disertakan
-    let resolvedKelas = id_kelas;
+    let resolvedKelas = Number.isInteger(inputKelas) && inputKelas > 0 ? inputKelas : 0;
     if (!resolvedKelas) {
       const [skRows]: any = await pool.query(
         `SELECT id_kelas FROM siswa_kelas WHERE id_siswa = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL LIMIT 1`,
-        [id_siswa, tahun, semester]
+        [idSiswa, tahun, semester]
       );
       resolvedKelas = skRows[0]?.id_kelas || 0;
     }
 
-    // Cek apakah sudah ada presensi pada tanggal tersebut
+    if (!resolvedKelas) {
+      return apiError('Siswa tidak terdaftar pada kelas periode aktif', 400, 'BAD_REQUEST');
+    }
+
     const [existing]: any = await pool.query(
       `SELECT id_presensi FROM presensi WHERE id_siswa = ? AND tanggal = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL`,
-      [id_siswa, tanggal, tahun, semester]
+      [idSiswa, tanggal, tahun, semester]
     );
 
     if (existing.length > 0) {
       await pool.query(
         `UPDATE presensi SET id_absen = ?, id_kelas = ?, jumlah = ?, bulan = ? WHERE id_presensi = ?`,
-        [id_absen, resolvedKelas, jumlah, bulan, existing[0].id_presensi]
+        [idAbsen, resolvedKelas, jumlah, bulan, existing[0].id_presensi]
       );
     } else {
       await pool.query(
         `INSERT INTO presensi (tahun, semester, bulan, tanggal, id_kelas, id_siswa, id_absen, jumlah)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [tahun, semester, bulan, tanggal, resolvedKelas, id_siswa, id_absen, jumlah]
+        [tahun, semester, bulan, tanggal, resolvedKelas, idSiswa, idAbsen, jumlah]
       );
     }
 
     return apiSuccess(
-      { id_siswa, id_kelas: resolvedKelas, id_absen, tanggal, jumlah },
+      { id_siswa: idSiswa, id_kelas: resolvedKelas, id_absen: idAbsen, tanggal, jumlah },
       'Data presensi berhasil disimpan',
       undefined,
       201

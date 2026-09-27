@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
-import { requireApiAuth } from '@/lib/api-auth-guard';
+import { requireApiAuth, STAFF_ROLES } from '@/lib/api-auth-guard';
 import { apiSuccess, apiError, apiOptionsResponse } from '@/lib/api-response';
 
 export const runtime = 'nodejs';
@@ -14,7 +14,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = await requireApiAuth(req);
+  const authResult = await requireApiAuth(req, STAFF_ROLES);
   if (!authResult.authorized) {
     return authResult.errorResponse!;
   }

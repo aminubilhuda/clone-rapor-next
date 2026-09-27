@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID, JABATAN } from '@/lib/constants';
-import { requireApiAuth } from '@/lib/api-auth-guard';
+import { requireApiAuth, ALL_ROLES } from '@/lib/api-auth-guard';
 import { apiSuccess, apiError, apiOptionsResponse } from '@/lib/api-response';
 
 export const runtime = 'nodejs';
@@ -11,7 +11,7 @@ export async function OPTIONS() {
 }
 
 export async function GET(req: NextRequest) {
-  const authResult = await requireApiAuth(req);
+  const authResult = await requireApiAuth(req, ALL_ROLES);
   if (!authResult.authorized || !authResult.user) {
     return authResult.errorResponse!;
   }
