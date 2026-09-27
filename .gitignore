@@ -51,6 +51,9 @@ public/fallback-*.js
 .codex/
 .claude/
 
+# graphify artifacts
+graphify-out/
+
 # vercel
 .vercel
 
