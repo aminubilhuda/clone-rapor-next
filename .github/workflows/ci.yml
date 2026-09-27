@@ -15,9 +15,12 @@ jobs:
           node-version: 22
           cache: npm
       - name: Install dependencies
-        run: npm ci
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: 'true'
+        run: |
+          if ! PUPPETEER_SKIP_DOWNLOAD=true npm ci > /tmp/npmci.log 2>&1; then
+            MSG=$(tail -c 1500 /tmp/npmci.log | tr '\n' '|')
+            echo "::error title=npm ci failed::$MSG"
+            exit 1
+          fi
       - name: Typecheck
         run: npm run typecheck
       - name: Unit tests
