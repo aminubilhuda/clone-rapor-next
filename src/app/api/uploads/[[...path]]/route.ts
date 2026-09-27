@@ -9,9 +9,7 @@ const CONTENT_TYPES: Record<string, string> = {
   'jpg': 'image/jpeg',
   'jpeg': 'image/jpeg',
   'gif': 'image/gif',
-  'svg': 'image/svg+xml',
   'webp': 'image/webp',
-  'pdf': 'application/pdf',
 };
 
 export async function GET(
@@ -32,12 +30,18 @@ export async function GET(
   try {
     const data = await readFile(filePath);
     const ext = path[path.length - 1].split('.').pop()?.toLowerCase() || '';
-    const contentType = CONTENT_TYPES[ext] || 'application/octet-stream';
+    const contentType = CONTENT_TYPES[ext];
+
+    if (!contentType) {
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+    }
 
     return new NextResponse(data, {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
+        'X-Content-Type-Options': 'nosniff',
+        'Content-Security-Policy': "default-src 'none'; img-src 'self'; style-src 'none'",
       },
     });
   } catch {

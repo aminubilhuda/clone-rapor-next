@@ -4,31 +4,14 @@ import { auth } from '@/lib/auth';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
-import { writeFile, unlink, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { saveUploadedImage, deleteUploadedFile, UploadValidationError } from '@/lib/upload';
 
 async function saveProfileFile(file: File, currentFilename: string | null): Promise<string | null> {
   if (!file || file.size === 0) return currentFilename;
 
   try {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const ext = file.name.split('.').pop() || 'jpg';
-    const filename = `profile_${Date.now()}.${ext}`;
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'profile');
-    const filepath = join(uploadDir, filename);
-
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(filepath, buffer);
-
-    if (currentFilename) {
-      try {
-        const oldPath = join(uploadDir, currentFilename);
-        await unlink(oldPath);
-      } catch {}
-    }
-
+    const filename = await saveUploadedImage(file, 'profile', 'profile');
+    await deleteUploadedFile('profile', currentFilename);
     return filename;
   } catch (err: any) {
     if (err?.code === 'EACCES') {
@@ -111,6 +94,9 @@ export async function updateUserProfile(formData: FormData) {
     if (e.code === 'ER_DUP_ENTRY') {
       return { success: false, error: 'Username sudah digunakan' } as const;
     }
-    return { success: false, error: e?.message || 'Gagal menyimpan profil' } as const;
+    if (e instanceof UploadValidationError || String(e?.message || '').startsWith('Izin folder upload')) {
+      return { success: false, error: e.message } as const;
+    }
+    return { success: false, error: 'Gagal menyimpan profil' } as const;
   }
 }

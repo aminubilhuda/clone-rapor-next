@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
-import { join, resolve } from 'path';
+import { join, resolve, sep } from 'path';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 
@@ -25,7 +25,7 @@ export async function GET() {
 
     try {
       const logoPath = resolve(join(process.cwd(), 'public', 'uploads', 'sekolah', rows[0].logo));
-      if (!logoPath.startsWith(SEKOLAH_DIR)) {
+      if (!logoPath.startsWith(`${SEKOLAH_DIR}${sep}`)) {
         return new NextResponse(DEFAULT_SVG, {
           headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400' },
         });
@@ -38,16 +38,21 @@ export async function GET() {
         'jpg': 'image/jpeg',
         'jpeg': 'image/jpeg',
         'gif': 'image/gif',
-        'svg': 'image/svg+xml',
         'ico': 'image/x-icon',
       };
 
-      const contentType = contentTypes[ext || ''] || 'image/png';
+      const contentType = contentTypes[ext || ''];
+      if (!contentType) {
+        return new NextResponse(DEFAULT_SVG, {
+          headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400' },
+        });
+      }
 
       return new NextResponse(data, {
         headers: {
           'Content-Type': contentType,
           'Cache-Control': 'public, max-age=3600',
+          'X-Content-Type-Options': 'nosniff',
         },
       });
     } catch {

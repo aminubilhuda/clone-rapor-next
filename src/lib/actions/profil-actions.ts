@@ -5,35 +5,14 @@ import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
-import { writeFile, unlink, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { saveUploadedImage, deleteUploadedFile, UploadValidationError } from '@/lib/upload';
 
 async function saveFile(file: File, currentFilename: string | null): Promise<string | null> {
   if (!file || file.size === 0) return currentFilename;
 
   try {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Generate unique filename
-    const ext = file.name.split('.').pop() || 'png';
-    const filename = `logo_${Date.now()}.${ext}`;
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'sekolah');
-    const filepath = join(uploadDir, filename);
-
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(filepath, buffer);
-
-    // Delete old file if exists
-    if (currentFilename) {
-      try {
-        const oldPath = join(uploadDir, currentFilename);
-        await unlink(oldPath);
-      } catch {
-        // Ignore if old file doesn't exist
-      }
-    }
-
+    const filename = await saveUploadedImage(file, 'sekolah', 'logo');
+    await deleteUploadedFile('sekolah', currentFilename);
     return filename;
   } catch (err: any) {
     if (err?.code === 'EACCES') {
@@ -147,6 +126,9 @@ export async function updateProfil(formData: FormData) {
     return { success: true } as const;
   } catch (e: any) {
     console.error('Error updateProfil:', e);
-    return { success: false, error: e?.message || 'Gagal menyimpan data' } as const;
+    if (e instanceof UploadValidationError || e?.code === 'EACCES' || String(e?.message || '').startsWith('Izin folder upload')) {
+      return { success: false, error: e.message } as const;
+    }
+    return { success: false, error: 'Gagal menyimpan data' } as const;
   }
 }
