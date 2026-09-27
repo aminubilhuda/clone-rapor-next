@@ -18,7 +18,7 @@ export interface SekolahInfo {
 
 export function escapeHtml(s: string): string {
   if (!s) return '';
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 export function r(value: any): number {
@@ -65,7 +65,7 @@ export function generateRaporHTML(
   semester: string
 ): string {
   const logoUrl = sekolah.logo
-    ? `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/uploads/sekolah/${sekolah.logo}`
+    ? `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/uploads/sekolah/${encodeURIComponent(sekolah.logo)}`
     : '';
 
   const siswaPages = siswaList.map((siswa) => `
@@ -73,8 +73,8 @@ export function generateRaporHTML(
       <div class="header">
         ${logoUrl ? `<img src="${logoUrl}" class="logo" alt="Logo" />` : '<div class="logo-placeholder"></div>'}
         <div class="header-text">
-          <h1 class="school-name">${sekolah.nama_sekolah}</h1>
-          <p class="school-addr">${sekolah.alamat}</p>
+          <h1 class="school-name">${escapeHtml(sekolah.nama_sekolah)}</h1>
+          <p class="school-addr">${escapeHtml(sekolah.alamat)}</p>
         </div>
       </div>
 
@@ -84,12 +84,12 @@ export function generateRaporHTML(
 
       <div class="info-box">
         <table class="info-table">
-          <tr><td class="info-label">Nama Siswa</td><td class="info-colon">:</td><td class="info-value">${siswa.nama_siswa}</td></tr>
-          <tr><td class="info-label">NIS</td><td class="info-colon">:</td><td class="info-value">${siswa.nis || '-'}</td></tr>
-          <tr><td class="info-label">NISN</td><td class="info-colon">:</td><td class="info-value">${siswa.nisn || '-'}</td></tr>
-          <tr><td class="info-label">Kelas</td><td class="info-colon">:</td><td class="info-value">${siswa.nama_kelas}</td></tr>
-          <tr><td class="info-label">Tahun Pelajaran</td><td class="info-colon">:</td><td class="info-value">${tahunPelajaran}</td></tr>
-          <tr><td class="info-label">Semester</td><td class="info-colon">:</td><td class="info-value">${semester}</td></tr>
+          <tr><td class="info-label">Nama Siswa</td><td class="info-colon">:</td><td class="info-value">${escapeHtml(siswa.nama_siswa)}</td></tr>
+          <tr><td class="info-label">NIS</td><td class="info-colon">:</td><td class="info-value">${siswa.nis ? escapeHtml(siswa.nis) : '-'}</td></tr>
+          <tr><td class="info-label">NISN</td><td class="info-colon">:</td><td class="info-value">${siswa.nisn ? escapeHtml(siswa.nisn) : '-'}</td></tr>
+          <tr><td class="info-label">Kelas</td><td class="info-colon">:</td><td class="info-value">${escapeHtml(siswa.nama_kelas)}</td></tr>
+          <tr><td class="info-label">Tahun Pelajaran</td><td class="info-colon">:</td><td class="info-value">${escapeHtml(tahunPelajaran)}</td></tr>
+          <tr><td class="info-label">Semester</td><td class="info-colon">:</td><td class="info-value">${escapeHtml(semester)}</td></tr>
         </table>
       </div>
 
@@ -100,10 +100,10 @@ export function generateRaporHTML(
       <div class="footer">
         <div class="signature-block">
           <p class="sig-date">........................, ........................</p>
-          <p class="sig-title">Kepala ${sekolah.nama_sekolah}</p>
+          <p class="sig-title">Kepala ${escapeHtml(sekolah.nama_sekolah)}</p>
           <div class="sig-line"></div>
-          <p class="sig-name">${sekolah.nama_kepsek}</p>
-          <p class="sig-nip">NIP. ${sekolah.nip_kepsek}</p>
+          <p class="sig-name">${escapeHtml(sekolah.nama_kepsek)}</p>
+          <p class="sig-nip">NIP. ${escapeHtml(sekolah.nip_kepsek)}</p>
         </div>
       </div>
     </div>

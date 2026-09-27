@@ -115,7 +115,7 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      window.open(url, '_blank', 'noopener');
     } catch (err: unknown) {
       console.error(err);
       alert(err instanceof Error ? err.message : 'Gagal mencetak rapor. Silakan coba lagi.');

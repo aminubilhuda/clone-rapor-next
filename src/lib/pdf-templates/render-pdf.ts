@@ -25,11 +25,11 @@ async function launchPuppeteerBrowser() {
 
   const customChromePath = process.env.CHROME_PATH?.trim();
   const validExecutablePath = customChromePath && existsSync(customChromePath) ? customChromePath : undefined;
+  const noSandbox = process.env.PUPPETEER_NO_SANDBOX !== '0';
   const launchOptions = {
     headless: true as const,
     args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
+      ...(noSandbox ? ['--no-sandbox', '--disable-setuid-sandbox'] : []),
       '--disable-dev-shm-usage',
       '--disable-gpu',
     ],

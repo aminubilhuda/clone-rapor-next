@@ -12,8 +12,15 @@ export interface ApiJwtPayload {
   exp?: number;
 }
 
-const JWT_SECRET = process.env.AUTH_SECRET || process.env.JWT_SECRET || 'rapor-secret-key-development-2026-xyz';
 const DEFAULT_EXPIRY_SECONDS = 7 * 24 * 60 * 60; // 7 days
+
+function getJwtSecret(): string {
+  const secret = process.env.AUTH_SECRET || process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('AUTH_SECRET atau JWT_SECRET wajib diisi.');
+  }
+  return secret;
+}
 
 function base64UrlEncode(str: string): string {
   return Buffer.from(str)
@@ -49,7 +56,7 @@ export function signApiJwt(payload: Omit<ApiJwtPayload, 'iat' | 'exp'>, expiresI
   const data = `${encodedHeader}.${encodedPayload}`;
 
   const signature = crypto
-    .createHmac('sha256', JWT_SECRET)
+    .createHmac('sha256', getJwtSecret())
     .update(data)
     .digest('base64')
     .replace(/=/g, '')
@@ -68,7 +75,7 @@ export function verifyApiJwt(token: string): ApiJwtPayload | null {
     const data = `${encodedHeader}.${encodedPayload}`;
 
     const expectedSignature = crypto
-      .createHmac('sha256', JWT_SECRET)
+      .createHmac('sha256', getJwtSecret())
       .update(data)
       .digest('base64')
       .replace(/=/g, '')

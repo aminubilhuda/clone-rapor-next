@@ -20,6 +20,13 @@ import { pdfResponse, renderRaporPdf, renderRaporPdfBatch } from '@/lib/pdf-temp
 
 const VALID_JENIS: JenisRapor[] = ['pelengkap', 'tengah_semester', 'semester', 'p5bk', 'buku_induk'];
 
+const HTML_SECURITY_HEADERS = {
+  'Content-Type': 'text/html; charset=utf-8',
+  'Cache-Control': 'private, no-store',
+  'X-Content-Type-Options': 'nosniff',
+  'Content-Security-Policy': "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'",
+};
+
 function buildFooterTemplate(nama_kelas: string, nama_siswa: string, nis: string, nisn: string): string {
   const info = `${nama_kelas || '-'} | ${nama_siswa || '-'} | ${nis || '-'}${nisn ? '/' + nisn : ''}`;
   const escaped = info.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -250,10 +257,7 @@ export async function POST(req: NextRequest) {
 
       if (outputFormat === 'html') {
         return new NextResponse(html, {
-          headers: {
-            'Content-Type': 'text/html; charset=utf-8',
-            'Cache-Control': 'private, no-store',
-          },
+          headers: HTML_SECURITY_HEADERS,
         });
       }
 
@@ -419,7 +423,7 @@ export async function POST(req: NextRequest) {
 
       if (outputFormat === 'html') {
         const wrappedHtml = wrapHtmlForPrint(html, siswaMidList.length === 1 ? siswaMidList[0] : undefined);
-        return new NextResponse(wrappedHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        return new NextResponse(wrappedHtml, { headers: HTML_SECURITY_HEADERS });
       }
 
       const firstSiswaMid = siswaMidList[0];
@@ -670,7 +674,7 @@ export async function POST(req: NextRequest) {
 
       if (outputFormat === 'html') {
         const wrappedHtml = wrapHtmlForPrint(html, siswaSemList.length === 1 ? siswaSemList[0] : undefined);
-        return new NextResponse(wrappedHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+        return new NextResponse(wrappedHtml, { headers: HTML_SECURITY_HEADERS });
       }
 
       const filename = `rapor-semester-${Date.now()}.pdf`;
@@ -726,7 +730,7 @@ export async function POST(req: NextRequest) {
 
     if (outputFormat === 'html') {
       const wrappedHtml = wrapHtmlForPrint(html, siswaList.length === 1 ? siswaList[0] : undefined);
-      return new NextResponse(wrappedHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      return new NextResponse(wrappedHtml, { headers: HTML_SECURITY_HEADERS });
     }
 
     const footerDefault = buildFooterTemplate(siswaList[0].nama_kelas, siswaList[0].nama_siswa, siswaList[0].nis || '-', siswaList[0].nisn || '-');

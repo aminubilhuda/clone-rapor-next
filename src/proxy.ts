@@ -8,13 +8,25 @@ import { getRequestOrigin } from '@/lib/url-helper';
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 
 function getRateLimitKey(request: NextRequest): string {
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp?.trim()) return realIp.trim();
   const forwarded = request.headers.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
-  return ip;
+  if (forwarded) {
+    const parts = forwarded.split(',').map((p) => p.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
+  return '127.0.0.1';
 }
 
 function checkRateLimit(key: string): { allowed: boolean; retryAfter?: number } {
   const now = Date.now();
+
+  if (loginAttempts.size > 5000) {
+    for (const [k, v] of loginAttempts) {
+      if (now > v.resetAt) loginAttempts.delete(k);
+    }
+  }
+
   const record = loginAttempts.get(key);
 
   if (!record || now > record.resetAt) {
@@ -36,8 +48,11 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const origin = getRequestOrigin(request);
 
-  // Rate limiting for login API
-  if (pathname === '/api/auth/callback/credentials' && request.method === 'POST') {
+  // Rate limiting for login APIs
+  if (
+    (pathname === '/api/auth/callback/credentials' || pathname === '/api/v1/auth/login') &&
+    request.method === 'POST'
+  ) {
     const key = getRateLimitKey(request);
     const { allowed, retryAfter } = checkRateLimit(key);
 
@@ -81,5 +96,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/login', '/tu/:path*', '/guru/:path*', '/siswa/:path*', '/api/auth/callback/credentials'],
+  matcher: ['/login', '/tu/:path*', '/guru/:path*', '/siswa/:path*', '/api/auth/callback/credentials', '/api/v1/auth/login'],
 };

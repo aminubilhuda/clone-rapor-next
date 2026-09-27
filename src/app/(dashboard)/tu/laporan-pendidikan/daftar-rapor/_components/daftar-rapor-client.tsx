@@ -165,7 +165,7 @@ export default function DaftarRaporClient({
       if (previewWindow) {
         previewWindow.location.href = url;
       } else {
-        window.open(url, '_blank');
+        window.open(url, '_blank', 'noopener');
       }
     } catch (err: any) {
       previewWindow?.close();
