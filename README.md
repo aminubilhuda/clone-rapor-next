@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Deploy di Server Sendiri
+
+Jalankan di server: `bash deploy.sh`
+
+Manajer proses dipilih lewat variabel `DEPLOY_MANAGER` di `.env.local`:
+
+- `DEPLOY_MANAGER=pm2` (default) — deploy.sh menjalankan `pm2 reload ecosystem.config.js`.
+- `DEPLOY_MANAGER=aapanel` — deploy.sh melewati PM2; restart Node Project dari panel aaPanel
+  (Website > Node Project > clone-rapor-next > Restart).
+
+Catatan: server yang memakai aaPanel Node Manager sebaiknya tidak menjalankan proses PM2
+untuk aplikasi yang sama agar tidak terjadi rebutan port.
