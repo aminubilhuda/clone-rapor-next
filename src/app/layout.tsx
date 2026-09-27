@@ -4,7 +4,6 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/lib/auth';
 import { ToastProvider } from '@/components/ui/toast-provider';
-import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register';
 import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 
@@ -77,7 +76,6 @@ export default async function RootLayout({
             {children}
           </ToastProvider>
         </SessionProvider>
-        <ServiceWorkerRegister />
       </body>
     </html>
   );

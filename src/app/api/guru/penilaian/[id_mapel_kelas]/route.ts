@@ -66,7 +66,6 @@ export async function POST(
   if (!Array.isArray(entries)) {
     return NextResponse.json({ error: 'Format data nilai tidak valid' }, { status: 400 });
   }
-
   for (const entry of entries) {
     const idSiswaEntry = Number(entry?.id_siswa);
     if (!Number.isInteger(idSiswaEntry) || idSiswaEntry <= 0) {
