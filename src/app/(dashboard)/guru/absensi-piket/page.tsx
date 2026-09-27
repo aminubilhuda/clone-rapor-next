@@ -1,13 +1,14 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { cekPiketHariIni } from '@/lib/actions/presensi-actions';
+import { getTodayHarianId, isGuruPiketToday } from '@/lib/piket';
 import AbsensiPiketClient from './_components/absensi-piket-client';
 
 export default async function AbsensiPiketPage() {
   const session = await auth();
   if (!session?.user || session.user.jabatan !== 3) redirect('/login');
 
-  const hariPiket = await cekPiketHariIni();
+  const hariId = await getTodayHarianId();
+  const hariPiket = hariId ? await isGuruPiketToday(Number(session.user.id_user)) : false;
 
   if (!hariPiket) {
     return (
@@ -20,7 +21,11 @@ export default async function AbsensiPiketPage() {
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-[#1A1A2E] mb-2">Tidak Bertugas Hari Ini</h3>
-          <p className="text-sm text-[#6B7280]">Anda tidak memiliki jadwal piket pada hari ini.</p>
+          <p className="text-sm text-[#6B7280]">
+            {hariId === null
+              ? 'Hari Minggu tidak ada jadwal piket.'
+              : 'Anda tidak memiliki jadwal piket pada hari ini.'}
+          </p>
         </div>
       </div>
     );

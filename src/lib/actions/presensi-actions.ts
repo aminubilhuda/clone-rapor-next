@@ -11,11 +11,7 @@ export async function cekPiketHariIni() {
   if (authResult.error || !authResult.user) return false;
 
   try {
-    const [rows]: any = await pool.query(
-      `SELECT 1 FROM piket_harian WHERE id_user = ? AND id_harian = WEEKDAY(NOW()) + 1 LIMIT 1`,
-      [authResult.user.id_user]
-    );
-    return rows.length > 0;
+    return await isGuruPiketToday(Number(authResult.user.id_user));
   } catch {
     return false;
   }
