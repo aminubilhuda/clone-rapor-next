@@ -1,36 +1,13 @@
 import type { NextConfig } from "next";
-import withPWAInit from "@ducanh2912/next-pwa";
+import withSerwistInit from "@serwist/next";
 
-const withPWA = withPWAInit({
-  dest: "public",
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
+const withSerwist = withSerwistInit({
+  swSrc: "src/app/sw.ts",
+  swDest: "public/sw.js",
   disable: process.env.NODE_ENV === "development",
-  fallbacks: {
-    document: "/offline.html",
-  },
-  workboxOptions: {
-    runtimeCaching: [
-      {
-        urlPattern: /\.(?:js|css|woff2?|png|jpg|jpeg|svg|ico)$/,
-        handler: "CacheFirst",
-        options: {
-          cacheName: "static-assets",
-          expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
-        },
-      },
-      {
-        urlPattern: /\/api\/(nilai|rapor|sekolah)/,
-        handler: "NetworkFirst",
-        options: {
-          cacheName: "api-rapor-data",
-          networkTimeoutSeconds: 5,
-          expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 },
-        },
-      },
-    ],
-  },
+  register: false,
+  cacheOnNavigation: true,
+  reloadOnOnline: true,
 });
 
 const nextConfig: NextConfig = {
@@ -40,4 +17,4 @@ const nextConfig: NextConfig = {
   /* config options here */
 };
 
-export default withPWA(nextConfig);
+export default withSerwist(nextConfig);
