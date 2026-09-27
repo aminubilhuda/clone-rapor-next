@@ -15,6 +15,11 @@ export async function getSekolahAktif() {
   return sekolah;
 }
 
+export async function getPeriodeAktif(): Promise<{ tahun: number; semester: number }> {
+  const sekolah = await getSekolahAktif();
+  return { tahun: Number(sekolah.tahun), semester: Number(sekolah.semester) };
+}
+
 export async function getSekolahWithFilter() {
   const [rows]: any = await pool.query('SELECT * FROM sekolah WHERE id_sekolah = ?', [SEKOLAH_ID]);
   const sekolah = rows[0];

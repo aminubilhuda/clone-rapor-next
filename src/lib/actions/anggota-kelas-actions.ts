@@ -2,7 +2,7 @@
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
-import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function updateAnggotaKelas(formData: FormData) {
@@ -14,9 +14,7 @@ export async function updateAnggotaKelas(formData: FormData) {
   const idSiswa = formData.get('id_siswa') as string;
   const status = formData.get('status') as string;
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun || 1;
-  const semester = sekolah?.semester || 1;
+  const { tahun, semester } = await getPeriodeAktif();
 
   const [kelasRows]: any = await pool.query('SELECT id_tingkat FROM kelas WHERE id_kelas = ?', [idKelas]);
   const idTingkat = kelasRows[0]?.id_tingkat || 1;
@@ -59,9 +57,7 @@ export async function bulkAddAnggotaKelas(idKelas: number, idSiswaList: number[]
   const authResult = await requireTuAdmin();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun || 1;
-  const semester = sekolah?.semester || 1;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     // Query id_tingkat sekali — tidak perlu diulang di setiap iterasi

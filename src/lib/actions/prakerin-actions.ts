@@ -2,7 +2,7 @@
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
-import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function updatePrakerin(formData: FormData) {
@@ -17,9 +17,7 @@ export async function updatePrakerin(formData: FormData) {
   const instruktur = formData.get('instruktur') as string;
   const idUser = formData.get('id_user') as string;
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun || 1;
-  const semester = sekolah?.semester || 1;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     if (id) {
@@ -66,9 +64,7 @@ export async function importPrakerin(rows: {
   const authResult = await requireTuAdmin();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun || 1;
-  const semester = sekolah?.semester || 1;
+  const { tahun, semester } = await getPeriodeAktif();
 
   const invalidRows = rows
     .map((r, i) => (!r.mitra ? i + 1 : null))

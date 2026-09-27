@@ -2,7 +2,7 @@
 
 import { requireTuAdmin, requireTuAdminOrGuru } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
-import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 import { JABATAN } from '@/lib/constants';
 
@@ -45,9 +45,7 @@ export async function saveProyekKokurikuler(formData: FormData) {
     return { success: false, error: 'Kelas dan Nama Kegiatan wajib diisi' } as const;
   }
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun || 1;
-  const semester = sekolah?.semester || 1;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     if (id) {

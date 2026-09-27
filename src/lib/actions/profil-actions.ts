@@ -3,7 +3,7 @@
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
-import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 import { saveUploadedImage, deleteUploadedFile, UploadValidationError } from '@/lib/upload';
 
@@ -50,7 +50,7 @@ export async function updateProfil(formData: FormData) {
       return { success: false, error: 'Data kepala sekolah tidak valid' } as const;
     }
 
-    const periode = await getSekolahWithFilter();
+    const periode = await getPeriodeAktif();
 
     // Get current logo filenames
     const [current]: any = await pool.query(

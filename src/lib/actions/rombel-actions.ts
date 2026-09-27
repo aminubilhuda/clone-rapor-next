@@ -2,6 +2,7 @@
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { withTransaction } from '@/lib/db';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function updateWaliKelas(formData: FormData) {
@@ -10,8 +11,7 @@ export async function updateWaliKelas(formData: FormData) {
 
   const idKelas = formData.get('id_kelas') as string;
   const idUser = formData.get('id_user') as string;
-  const tahun = formData.get('tahun') as string;
-  const semester = formData.get('semester') as string;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     await withTransaction(async (conn) => {

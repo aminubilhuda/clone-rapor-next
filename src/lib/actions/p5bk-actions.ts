@@ -2,7 +2,7 @@
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
-import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 function generateKode() {
@@ -21,9 +21,7 @@ export async function updateP5BK(formData: FormData) {
   const deskripsiSingkat = formData.get('deskripsi_singkat') as string;
   const subElemenIdsRaw = formData.get('sub_elemen_ids') as string;
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun || 1;
-  const semester = sekolah?.semester || 1;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     await withTransaction(async (conn) => {

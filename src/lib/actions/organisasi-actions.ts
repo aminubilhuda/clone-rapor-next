@@ -2,6 +2,7 @@
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function updateOrganisasi(formData: FormData) {
@@ -45,8 +46,7 @@ export async function updatePembinaOrganisasi(formData: FormData) {
 
   const idOrganisasi = formData.get('id_organisasi') as string;
   const idUser = formData.get('id_user') as string;
-  const tahun = formData.get('tahun') as string;
-  const semester = formData.get('semester') as string;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     await withTransaction(async (conn) => {
@@ -84,8 +84,7 @@ export async function addSiswaOrganisasi(formData: FormData) {
 
   const idOrganisasi = formData.get('id_organisasi') as string;
   const idSiswa = formData.get('id_siswa') as string;
-  const tahun = formData.get('tahun') as string;
-  const semester = formData.get('semester') as string;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     const inserted = await withTransaction(async (conn) => {

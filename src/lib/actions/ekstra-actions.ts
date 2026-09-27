@@ -3,6 +3,7 @@
 import { requireTuAdmin, requireTuAdminOrGuru } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
 import { SEKOLAH_ID, JABATAN } from '@/lib/constants';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
 export async function updateEkstra(formData: FormData) {
@@ -46,8 +47,7 @@ export async function updatePembinaEkstra(formData: FormData) {
 
   const idEskul = formData.get('id_eskul') as string;
   const idUser = formData.get('id_user') as string;
-  const tahun = formData.get('tahun') as string;
-  const semester = formData.get('semester') as string;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     await withTransaction(async (conn) => {
@@ -107,10 +107,9 @@ export async function addSiswaEkstra(formData: FormData) {
 
   const idEskul = formData.get('id_eskul') as string;
   const idSiswa = formData.get('id_siswa') as string;
-  const tahun = formData.get('tahun') as string;
-  const semester = formData.get('semester') as string;
   const predikat = formData.get('predikat') as string || '';
   const keterangan = formData.get('keterangan') as string || '';
+  const { tahun, semester } = await getPeriodeAktif();
 
   if (!(await canManageEskul(authResult.user, Number(idEskul)))) {
     return { success: false, error: 'Anda bukan pembina ekstrakurikuler ini' } as const;

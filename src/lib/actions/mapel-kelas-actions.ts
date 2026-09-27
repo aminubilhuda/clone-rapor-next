@@ -2,7 +2,7 @@
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool, withTransaction } from '@/lib/db';
-import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 import type { PoolConnection } from 'mysql2/promise';
 
@@ -97,9 +97,7 @@ export async function updateMapelKelas(formData: FormData) {
   const idMapel = formData.get('id_mapel') as string;
   const idUser = formData.get('id_user') as string;
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun || 1;
-  const semester = sekolah?.semester || 1;
+  const { tahun, semester } = await getPeriodeAktif();
 
   try {
     if (id) {
@@ -139,19 +137,18 @@ export async function copyMapelKelasFromPreviousYear() {
   const authResult = await requireTuAdmin();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
-  const sekolah = await getSekolahWithFilter();
-  const semester = sekolah?.semester || 1;
+  const { tahun: tahunAktif, semester } = await getPeriodeAktif();
 
   // Cari tahun pelajaran sebelumnya
   const [prevTahunRows]: any = await pool.query(
     'SELECT id_tahun_pelajaran FROM tahun_pelajaran WHERE id_tahun_pelajaran < ? ORDER BY id_tahun_pelajaran DESC LIMIT 1',
-    [sekolah?.tahun || 0]
+    [tahunAktif]
   );
   if (prevTahunRows.length === 0) {
     return { success: false, error: 'Tahun pelajaran sebelumnya tidak ditemukan.' } as const;
   }
   const tahunLalu = prevTahunRows[0].id_tahun_pelajaran;
-  const tahunBaru = sekolah?.tahun;
+  const tahunBaru = tahunAktif;
 
   try {
     // Ambil data mapel_kelas dari tahun lalu
@@ -237,9 +234,7 @@ export async function copyMapelKelasFromSameYear() {
   const authResult = await requireTuAdmin();
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
-  const sekolah = await getSekolahWithFilter();
-  const tahun = sekolah?.tahun;
-  const semesterAktif = sekolah?.semester;
+  const { tahun, semester: semesterAktif } = await getPeriodeAktif();
 
   if (!tahun || !semesterAktif || semesterAktif !== 2) {
     return { success: false, error: 'Fitur ini hanya tersedia di semester 2 (Genap).' } as const;

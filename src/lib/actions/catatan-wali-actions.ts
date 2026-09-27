@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { requireGuru } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
-import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getPeriodeAktif } from '@/lib/sekolah-helper';
 import type { RowDataPacket } from 'mysql2';
 
 interface SaveCatatanWaliInput {
@@ -30,7 +30,7 @@ export async function saveCatatanWali(input: SaveCatatanWaliInput) {
   }
 
   try {
-    const sekolah = await getSekolahWithFilter();
+    const sekolah = await getPeriodeAktif();
     const [allowedRows] = await pool.query<RowDataPacket[]>(
       `SELECT 1
        FROM kelas_wali kw
