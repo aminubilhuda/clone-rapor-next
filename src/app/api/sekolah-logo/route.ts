@@ -17,7 +17,7 @@ export async function GET() {
     const logo = (rows as SekolahLogoRow[])[0]?.logo;
 
     if (logo && basename(logo) === logo) {
-      await access(join(process.cwd(), 'public', 'uploads', 'sekolah', logo));
+      await access(join(process.cwd(), 'storage', 'uploads', 'sekolah', logo));
       return NextResponse.json({ logo });
     }
 

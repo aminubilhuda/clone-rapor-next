@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
     if (jenis === 'pelengkap') {
       const configuredProvinceLogo = basename(String(s.logo_prov || ''));
       const provinceLogoPath = configuredProvinceLogo
-        ? join(process.cwd(), 'public', 'uploads', 'sekolah', configuredProvinceLogo)
+        ? join(process.cwd(), 'storage', 'uploads', 'sekolah', configuredProvinceLogo)
         : '';
       const provinceLogo = provinceLogoPath && existsSync(provinceLogoPath)
         ? configuredProvinceLogo

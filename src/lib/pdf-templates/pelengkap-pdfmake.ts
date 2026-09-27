@@ -20,7 +20,7 @@ const PAGE_MARGINS: [number, number, number, number] = [
   mm(17),
   mm(14),
 ];
-const UPLOAD_DIRECTORY = join(process.cwd(), 'public', 'uploads', 'sekolah');
+const UPLOAD_DIRECTORY = join(process.cwd(), 'storage', 'uploads', 'sekolah');
 const FALLBACK_PROVINCE_LOGO = 'logo-provinsi-jawa-timur.png';
 
 const borderlessLayout: CustomTableLayout = {

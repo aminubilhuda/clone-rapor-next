@@ -26,7 +26,9 @@ echo "==> [3/5] Build"
 npm run build
 
 echo "==> [4/5] Apply pending DB migrations"
+mkdir -p storage/uploads
 bash scripts/db-migrate.sh || echo "!! migrasi dilewati (lihat pesan di atas)"
+bash scripts/migrate-uploads.sh || echo "!! migrasi uploads dilewati (lihat pesan di atas)"
 
 echo "==> [5/5] Restart app (manager: $DEPLOY_MANAGER)"
 if [ "$DEPLOY_MANAGER" = "aapanel" ]; then

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join, resolve, sep } from 'path';
+import { auth } from '@/lib/auth';
 
-const UPLOADS_DIR = resolve(join(process.cwd(), 'public', 'uploads'));
+const UPLOADS_DIR = resolve(join(process.cwd(), 'storage', 'uploads'));
 
 const CONTENT_TYPES: Record<string, string> = {
   'png': 'image/png',
@@ -21,8 +22,16 @@ export async function GET(
     return NextResponse.json({ error: 'No path provided' }, { status: 400 });
   }
 
+  // Logo sekolah harus tetap publik (halaman login & render PDF); lainnya wajib login.
+  if (path[0] !== 'sekolah') {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
+
   // Prevent path traversal
-  const filePath = resolve(join(process.cwd(), 'public', 'uploads', ...path));
+  const filePath = resolve(join(process.cwd(), 'storage', 'uploads', ...path));
   if (!filePath.startsWith(`${UPLOADS_DIR}${sep}`)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }

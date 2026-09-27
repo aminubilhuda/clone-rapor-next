@@ -3,6 +3,7 @@ import { join, basename } from 'path';
 import crypto from 'crypto';
 
 const MAX_SIZE_BYTES = 2 * 1024 * 1024;
+export const UPLOAD_ROOT = join(process.cwd(), 'storage', 'uploads');
 
 export class UploadValidationError extends Error {}
 
@@ -38,7 +39,7 @@ export async function saveUploadedImage(file: File, subdir: string, prefix: stri
     throw new UploadValidationError('Format file harus JPG, PNG, atau WEBP');
   }
 
-  const uploadDir = join(process.cwd(), 'public', 'uploads', subdir);
+  const uploadDir = join(UPLOAD_ROOT, subdir);
   await mkdir(uploadDir, { recursive: true });
 
   const filename = `${prefix}_${crypto.randomUUID()}.${ext}`;
@@ -49,6 +50,6 @@ export async function saveUploadedImage(file: File, subdir: string, prefix: stri
 export async function deleteUploadedFile(subdir: string, filename: string | null | undefined): Promise<void> {
   if (!filename) return;
   try {
-    await unlink(join(process.cwd(), 'public', 'uploads', subdir, basename(filename)));
+    await unlink(join(UPLOAD_ROOT, subdir, basename(filename)));
   } catch {}
 }

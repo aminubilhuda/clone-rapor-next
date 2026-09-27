@@ -5,7 +5,7 @@ import { pool } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 
 const DEFAULT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#DC2626"/><text x="16" y="22" text-anchor="middle" font-size="18" font-weight="bold" fill="white" font-family="Arial">E</text></svg>`;
-const SEKOLAH_DIR = resolve(join(process.cwd(), 'public', 'uploads', 'sekolah'));
+const SEKOLAH_DIR = resolve(join(process.cwd(), 'storage', 'uploads', 'sekolah'));
 
 export async function GET() {
   try {
@@ -24,7 +24,7 @@ export async function GET() {
     }
 
     try {
-      const logoPath = resolve(join(process.cwd(), 'public', 'uploads', 'sekolah', rows[0].logo));
+      const logoPath = resolve(join(process.cwd(), 'storage', 'uploads', 'sekolah', rows[0].logo));
       if (!logoPath.startsWith(`${SEKOLAH_DIR}${sep}`)) {
         return new NextResponse(DEFAULT_SVG, {
           headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400' },

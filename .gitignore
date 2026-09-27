@@ -54,6 +54,9 @@ public/fallback-*.js
 # graphify artifacts
 graphify-out/
 
+# runtime uploads
+storage/
+
 # vercel
 .vercel
 

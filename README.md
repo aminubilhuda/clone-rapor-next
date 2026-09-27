@@ -47,3 +47,8 @@ Manajer proses dipilih lewat variabel `DEPLOY_MANAGER` di `.env.local`:
 
 Catatan: server yang memakai aaPanel Node Manager sebaiknya tidak menjalankan proses PM2
 untuk aplikasi yang sama agar tidak terjadi rebutan port.
+
+Uploads (logo sekolah, foto profil) disimpan di `storage/uploads` — di luar `public` — dan
+hanya disajikan lewat `/api/uploads` (logo sekolah publik, lainnya wajib login).
+`deploy.sh` menjalankan `scripts/migrate-uploads.sh` sekali untuk memindahkan file lama
+dari `public/uploads` ke `storage/uploads` (dengan backup otomatis).
