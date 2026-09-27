@@ -338,15 +338,11 @@ export async function promoteAllKelas() {
 
       let existingLulusanSet = new Set<number>();
       if (semuaIdSiswaXII.length > 0) {
-        try {
-          const [existingLulusanRows]: any = await conn.query(
-            'SELECT id_siswa FROM lulusan WHERE id_siswa IN (?) AND tahun = ? AND semester = ?',
-            [semuaIdSiswaXII, activeTahun, activeSemester]
-          );
-          existingLulusanSet = new Set(existingLulusanRows.map((el: any) => el.id_siswa));
-        } catch {
-          // Abaikan jika tabel lulusan belum ada
-        }
+        const [existingLulusanRows]: any = await conn.query(
+          'SELECT id_siswa FROM lulusan WHERE id_siswa IN (?) AND tahun = ? AND semester = ?',
+          [semuaIdSiswaXII, activeTahun, activeSemester]
+        );
+        existingLulusanSet = new Set(existingLulusanRows.map((el: any) => el.id_siswa));
       }
 
       for (const kelasXII of kelasXIIRows) {
@@ -363,14 +359,10 @@ export async function promoteAllKelas() {
           const tanggalLulus = new Date().toISOString().slice(0, 10);
           const lulusanValues = toGraduate.map((siswa: any) => [activeTahun, activeSemester, siswa.id_siswa, tanggalLulus]);
 
-          try {
-            await conn.query(
-              'INSERT INTO lulusan (tahun, semester, id_siswa, tanggal_lulus) VALUES ?',
-              [lulusanValues]
-            );
-          } catch {
-            // Abaikan jika lulusan insert terabaikan
-          }
+          await conn.query(
+            'INSERT INTO lulusan (tahun, semester, id_siswa, tanggal_lulus) VALUES ?',
+            [lulusanValues]
+          );
 
           const idSiswaAktif = toGraduate.map((siswa: any) => siswa.id_siswa);
           await conn.query('UPDATE siswa SET aktif = 0 WHERE id_siswa IN (?)', [idSiswaAktif]);
