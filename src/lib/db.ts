@@ -19,6 +19,25 @@ if (process.env.NODE_ENV !== 'production') globalForDb.pool = pool;
 
 export { pool };
 
+export async function withTransaction<T>(
+  fn: (conn: mysql.PoolConnection) => Promise<T>
+): Promise<T> {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    const result = await fn(conn);
+    await conn.commit();
+    return result;
+  } catch (error) {
+    try {
+      await conn.rollback();
+    } catch {}
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
+
 // Typed wrapper over pool.query. Returns the row array as T[] so call sites
 // avoid `const [rows]: any = await pool.query(...)`.
 // ponytail: opt-in — adopt incrementally; existing `: any` call sites still work.

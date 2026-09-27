@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 export async function updateOrganisasi(formData: FormData) {
@@ -49,25 +49,27 @@ export async function updatePembinaOrganisasi(formData: FormData) {
   const semester = formData.get('semester') as string;
 
   try {
-    const [existing]: any = await pool.query(
-      'SELECT id_pembina_organisasi FROM pembina_organisasi WHERE id_organisasi = ? AND tahun = ? AND semester = ?',
-      [idOrganisasi, tahun, semester]
-    );
+    await withTransaction(async (conn) => {
+      const [existing]: any = await conn.query(
+        'SELECT id_pembina_organisasi FROM pembina_organisasi WHERE id_organisasi = ? AND tahun = ? AND semester = ? FOR UPDATE',
+        [idOrganisasi, tahun, semester]
+      );
 
-    if (idUser) {
-      if (existing.length > 0) {
-        await pool.query('UPDATE pembina_organisasi SET id_user = ? WHERE id_pembina_organisasi = ?', [idUser, existing[0].id_pembina_organisasi]);
+      if (idUser) {
+        if (existing.length > 0) {
+          await conn.query('UPDATE pembina_organisasi SET id_user = ? WHERE id_pembina_organisasi = ?', [idUser, existing[0].id_pembina_organisasi]);
+        } else {
+          await conn.query(
+            'INSERT INTO pembina_organisasi (tahun, semester, id_organisasi, id_user) VALUES (?, ?, ?, ?)',
+            [tahun, semester, idOrganisasi, idUser]
+          );
+        }
       } else {
-        await pool.query(
-          'INSERT INTO pembina_organisasi (tahun, semester, id_organisasi, id_user) VALUES (?, ?, ?, ?)',
-          [tahun, semester, idOrganisasi, idUser]
-        );
+        if (existing.length > 0) {
+          await conn.query('DELETE FROM pembina_organisasi WHERE id_pembina_organisasi = ?', [existing[0].id_pembina_organisasi]);
+        }
       }
-    } else {
-      if (existing.length > 0) {
-        await pool.query('DELETE FROM pembina_organisasi WHERE id_pembina_organisasi = ?', [existing[0].id_pembina_organisasi]);
-      }
-    }
+    });
 
     revalidatePath('/tu/organisasi');
     return { success: true } as const;
@@ -86,18 +88,23 @@ export async function addSiswaOrganisasi(formData: FormData) {
   const semester = formData.get('semester') as string;
 
   try {
-    const [existing]: any = await pool.query(
-      'SELECT id_siswa_organisasi FROM siswa_organisasi WHERE id_organisasi = ? AND id_siswa = ? AND tahun = ? AND semester = ?',
-      [idOrganisasi, idSiswa, tahun, semester]
-    );
-    if (existing.length > 0) {
+    const inserted = await withTransaction(async (conn) => {
+      const [existing]: any = await conn.query(
+        'SELECT id_siswa_organisasi FROM siswa_organisasi WHERE id_organisasi = ? AND id_siswa = ? AND tahun = ? AND semester = ? FOR UPDATE',
+        [idOrganisasi, idSiswa, tahun, semester]
+      );
+      if (existing.length > 0) return false;
+
+      await conn.query(
+        'INSERT INTO siswa_organisasi (tahun, semester, id_organisasi, id_siswa) VALUES (?, ?, ?, ?)',
+        [tahun, semester, idOrganisasi, idSiswa]
+      );
+      return true;
+    });
+
+    if (!inserted) {
       return { success: false, error: 'Siswa sudah terdaftar di organisasi ini' } as const;
     }
-
-    await pool.query(
-      'INSERT INTO siswa_organisasi (tahun, semester, id_organisasi, id_siswa) VALUES (?, ?, ?, ?)',
-      [tahun, semester, idOrganisasi, idSiswa]
-    );
 
     revalidatePath('/tu/organisasi');
     return { success: true } as const;

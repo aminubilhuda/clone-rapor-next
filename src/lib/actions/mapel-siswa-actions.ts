@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { getSekolahAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
@@ -59,26 +59,28 @@ export async function toggleMapelSiswa(formData: FormData) {
   const idTingkat = kelasRows[0]?.id_tingkat;
 
   try {
-    const [existing]: any = await pool.query(
-      'SELECT id_mapel_siswa FROM mapel_siswa WHERE id_siswa = ? AND id_mapel = ? AND id_kelas = ? AND tahun = ? AND semester = ?',
-      [idSiswa, idMapel, idKelas, tahun, semester]
-    );
+    await withTransaction(async (conn) => {
+      const [existing]: any = await conn.query(
+        'SELECT id_mapel_siswa FROM mapel_siswa WHERE id_siswa = ? AND id_mapel = ? AND id_kelas = ? AND tahun = ? AND semester = ? FOR UPDATE',
+        [idSiswa, idMapel, idKelas, tahun, semester]
+      );
 
-    if (diikuti) {
-      if (existing.length > 0) {
-        await pool.query('UPDATE mapel_siswa SET aktif = 1 WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
+      if (diikuti) {
+        if (existing.length > 0) {
+          await conn.query('UPDATE mapel_siswa SET aktif = 1 WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
+        } else {
+          await conn.query(
+            `INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif)
+             VALUES (?, ?, ?, ?, ?, ?, 1)`,
+            [tahun, semester, idTingkat, idKelas, idMapel, idSiswa]
+          );
+        }
       } else {
-        await pool.query(
-          `INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif)
-           VALUES (?, ?, ?, ?, ?, ?, 1)`,
-          [tahun, semester, idTingkat, idKelas, idMapel, idSiswa]
-        );
+        if (existing.length > 0) {
+          await conn.query('DELETE FROM mapel_siswa WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
+        }
       }
-    } else {
-      if (existing.length > 0) {
-        await pool.query('DELETE FROM mapel_siswa WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
-      }
-    }
+    });
 
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
@@ -102,27 +104,30 @@ export async function toggleMapelSiswaBatch(formData: FormData) {
   const idTingkat = kelasRows[0]?.id_tingkat;
 
   try {
-    for (const entry of entries) {
-      const [existing]: any = await pool.query(
-        'SELECT id_mapel_siswa FROM mapel_siswa WHERE id_siswa = ? AND id_mapel = ? AND id_kelas = ? AND tahun = ? AND semester = ?',
-        [entry.id_siswa, idMapel, idKelas, tahun, semester]
-      );
-      if (entry.diikuti) {
-        if (existing.length > 0) {
-          await pool.query('UPDATE mapel_siswa SET aktif = 1 WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
+    await withTransaction(async (conn) => {
+      for (const entry of entries) {
+        const [existing]: any = await conn.query(
+          'SELECT id_mapel_siswa FROM mapel_siswa WHERE id_siswa = ? AND id_mapel = ? AND id_kelas = ? AND tahun = ? AND semester = ? FOR UPDATE',
+          [entry.id_siswa, idMapel, idKelas, tahun, semester]
+        );
+        if (entry.diikuti) {
+          if (existing.length > 0) {
+            await conn.query('UPDATE mapel_siswa SET aktif = 1 WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
+          } else {
+            await conn.query(
+              `INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif)
+               VALUES (?, ?, ?, ?, ?, ?, 1)`,
+              [tahun, semester, idTingkat, idKelas, idMapel, entry.id_siswa]
+            );
+          }
         } else {
-          await pool.query(
-            `INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif)
-             VALUES (?, ?, ?, ?, ?, ?, 1)`,
-            [tahun, semester, idTingkat, idKelas, idMapel, entry.id_siswa]
-          );
-        }
-      } else {
-        if (existing.length > 0) {
-          await pool.query('DELETE FROM mapel_siswa WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
+          if (existing.length > 0) {
+            await conn.query('DELETE FROM mapel_siswa WHERE id_mapel_siswa = ?', [existing[0].id_mapel_siswa]);
+          }
         }
       }
-    }
+    });
+
     revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
   } catch (e: any) {

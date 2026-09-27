@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin, requireTuAdminOrGuru } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 import { JABATAN } from '@/lib/constants';
@@ -140,22 +140,24 @@ export async function copyProyekKokurikuler(formData: FormData) {
     }
 
     // 3. For each target class, insert new proyek_kelas and duplicate tujuan
-    for (const idKelas of targetKelasIds) {
-      const [res]: any = await pool.query(
-        `INSERT INTO proyek_kelas (kode, tahun, semester, id_kelas, id_tema, id_user, judul_proyek, deskripsi_singkat)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [generateKode(), src.tahun, src.semester, idKelas, src.id_tema, src.id_user, src.judul_proyek, src.deskripsi_singkat]
-      );
-      const newProyekId = res.insertId;
-
-      if (srcTujuan.length > 0) {
-        const inserts = srcTujuan.map((t) => [newProyekId, t.id_dimensi, t.deskripsi]);
-        await pool.query(
-          'INSERT INTO proyek_tujuan (id_proyek_kelas, id_dimensi, deskripsi) VALUES ?',
-          [inserts]
+    await withTransaction(async (conn) => {
+      for (const idKelas of targetKelasIds) {
+        const [res]: any = await conn.query(
+          `INSERT INTO proyek_kelas (kode, tahun, semester, id_kelas, id_tema, id_user, judul_proyek, deskripsi_singkat)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [generateKode(), src.tahun, src.semester, idKelas, src.id_tema, src.id_user, src.judul_proyek, src.deskripsi_singkat]
         );
+        const newProyekId = res.insertId;
+
+        if (srcTujuan.length > 0) {
+          const inserts = srcTujuan.map((t) => [newProyekId, t.id_dimensi, t.deskripsi]);
+          await conn.query(
+            'INSERT INTO proyek_tujuan (id_proyek_kelas, id_dimensi, deskripsi) VALUES ?',
+            [inserts]
+          );
+        }
       }
-    }
+    });
 
     revalidatePath('/tu/kokurikuler');
     revalidatePath('/guru/kokurikuler');
@@ -174,10 +176,12 @@ export async function deleteKokurikulerProyek(id: number) {
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
-    await pool.query('DELETE FROM nilai_kokurikuler WHERE id_proyek_kelas = ?', [id]);
-    await pool.query('DELETE FROM proyek_tujuan WHERE id_proyek_kelas = ?', [id]);
-    await pool.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [id]);
-    await pool.query('DELETE FROM proyek_kelas WHERE id_proyek_kelas = ?', [id]);
+    await withTransaction(async (conn) => {
+      await conn.query('DELETE FROM nilai_kokurikuler WHERE id_proyek_kelas = ?', [id]);
+      await conn.query('DELETE FROM proyek_tujuan WHERE id_proyek_kelas = ?', [id]);
+      await conn.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [id]);
+      await conn.query('DELETE FROM proyek_kelas WHERE id_proyek_kelas = ?', [id]);
+    });
     revalidatePath('/tu/kokurikuler');
     revalidatePath('/guru/kokurikuler');
     return { success: true } as const;
@@ -294,8 +298,10 @@ export async function deleteTujuan(id: number, idProyekKelas?: number) {
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
-    await pool.query('DELETE FROM nilai_kokurikuler WHERE id_proyek_tujuan = ?', [id]);
-    await pool.query('DELETE FROM proyek_tujuan WHERE id_proyek_tujuan = ?', [id]);
+    await withTransaction(async (conn) => {
+      await conn.query('DELETE FROM nilai_kokurikuler WHERE id_proyek_tujuan = ?', [id]);
+      await conn.query('DELETE FROM proyek_tujuan WHERE id_proyek_tujuan = ?', [id]);
+    });
     revalidatePath('/tu/kokurikuler');
     if (idProyekKelas) revalidatePath(`/tu/kokurikuler/${idProyekKelas}`);
     revalidatePath('/guru/kokurikuler');
@@ -433,22 +439,24 @@ export async function saveNilaiKokurikuler(formData: FormData) {
       }
     }
 
-    if (updates.length > 0) {
-      const cases = updates.map(() => `WHEN id_nilai_kokurikuler = ? THEN ?`).join(' ');
-      const caseParams = updates.flatMap((u) => [u.id, u.nilai]);
-      const ids = updates.map((u) => u.id);
-      await pool.query(
-        `UPDATE nilai_kokurikuler SET nilai = CASE ${cases} END WHERE id_nilai_kokurikuler IN (?)`,
-        [...caseParams, ids]
-      );
-    }
+    await withTransaction(async (conn) => {
+      if (updates.length > 0) {
+        const cases = updates.map(() => `WHEN id_nilai_kokurikuler = ? THEN ?`).join(' ');
+        const caseParams = updates.flatMap((u) => [u.id, u.nilai]);
+        const ids = updates.map((u) => u.id);
+        await conn.query(
+          `UPDATE nilai_kokurikuler SET nilai = CASE ${cases} END WHERE id_nilai_kokurikuler IN (?)`,
+          [...caseParams, ids]
+        );
+      }
 
-    if (inserts.length > 0) {
-      await pool.query(
-        `INSERT INTO nilai_kokurikuler (tahun, semester, id_proyek_kelas, id_proyek_tujuan, id_siswa, nilai) VALUES ?`,
-        [inserts]
-      );
-    }
+      if (inserts.length > 0) {
+        await conn.query(
+          `INSERT INTO nilai_kokurikuler (tahun, semester, id_proyek_kelas, id_proyek_tujuan, id_siswa, nilai) VALUES ?`,
+          [inserts]
+        );
+      }
+    });
 
     revalidatePath('/tu/kokurikuler');
     revalidatePath('/guru/kokurikuler');

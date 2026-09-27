@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
@@ -26,53 +26,55 @@ export async function updateP5BK(formData: FormData) {
   const semester = sekolah?.semester || 1;
 
   try {
-    let proyekId: number;
+    await withTransaction(async (conn) => {
+      let proyekId: number;
 
-    if (id) {
-      await pool.query(
-        `UPDATE proyek_kelas SET id_kelas = ?, id_tema = ?, id_user = ?, judul_proyek = ?, deskripsi_singkat = ? WHERE id_proyek_kelas = ?`,
-        [idKelas, idTema, idUser, judulProyek, deskripsiSingkat, id]
-      );
-      proyekId = Number(id);
-    } else {
-      const [result]: any = await pool.query(
-        `INSERT INTO proyek_kelas (kode, tahun, semester, id_kelas, id_tema, id_user, judul_proyek, deskripsi_singkat)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [generateKode(), tahun, semester, idKelas, idTema, idUser, judulProyek, deskripsiSingkat]
-      );
-      proyekId = result.insertId;
-    }
-
-    // Save sub_elemen selections
-    if (subElemenIdsRaw) {
-      const subElemenIds: number[] = JSON.parse(subElemenIdsRaw);
-      await pool.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [proyekId]);
-
-      if (subElemenIds.length > 0) {
-        // Batch: ambil dimensi & elemen untuk semua sub_elemen sekaligus
-        const [subRows]: any = await pool.query(
-          'SELECT id_sub_elemen, id_dimensi, id_elemen FROM sub_elemen WHERE id_sub_elemen IN (?)',
-          [subElemenIds]
+      if (id) {
+        await conn.query(
+          `UPDATE proyek_kelas SET id_kelas = ?, id_tema = ?, id_user = ?, judul_proyek = ?, deskripsi_singkat = ? WHERE id_proyek_kelas = ?`,
+          [idKelas, idTema, idUser, judulProyek, deskripsiSingkat, id]
         );
-        const subMap = new Map<number, { id_dimensi: number; id_elemen: number }>();
-        for (const sub of subRows) {
-          subMap.set(sub.id_sub_elemen, { id_dimensi: sub.id_dimensi, id_elemen: sub.id_elemen });
-        }
+        proyekId = Number(id);
+      } else {
+        const [result]: any = await conn.query(
+          `INSERT INTO proyek_kelas (kode, tahun, semester, id_kelas, id_tema, id_user, judul_proyek, deskripsi_singkat)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [generateKode(), tahun, semester, idKelas, idTema, idUser, judulProyek, deskripsiSingkat]
+        );
+        proyekId = result.insertId;
+      }
 
-        const newInserts: any[][] = [];
-        for (const idSub of subElemenIds) {
-          const info = subMap.get(idSub);
-          if (!info) continue;
-          newInserts.push([proyekId, info.id_dimensi, info.id_elemen, idSub]);
-        }
-        if (newInserts.length > 0) {
-          await pool.query(
-            'INSERT INTO proyek_subelemen (id_proyek_kelas, id_dimensi, id_elemen, id_sub_elemen) VALUES ?',
-            [newInserts]
+      // Save sub_elemen selections
+      if (subElemenIdsRaw) {
+        const subElemenIds: number[] = JSON.parse(subElemenIdsRaw);
+        await conn.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [proyekId]);
+
+        if (subElemenIds.length > 0) {
+          // Batch: ambil dimensi & elemen untuk semua sub_elemen sekaligus
+          const [subRows]: any = await conn.query(
+            'SELECT id_sub_elemen, id_dimensi, id_elemen FROM sub_elemen WHERE id_sub_elemen IN (?)',
+            [subElemenIds]
           );
+          const subMap = new Map<number, { id_dimensi: number; id_elemen: number }>();
+          for (const sub of subRows) {
+            subMap.set(sub.id_sub_elemen, { id_dimensi: sub.id_dimensi, id_elemen: sub.id_elemen });
+          }
+
+          const newInserts: any[][] = [];
+          for (const idSub of subElemenIds) {
+            const info = subMap.get(idSub);
+            if (!info) continue;
+            newInserts.push([proyekId, info.id_dimensi, info.id_elemen, idSub]);
+          }
+          if (newInserts.length > 0) {
+            await conn.query(
+              'INSERT INTO proyek_subelemen (id_proyek_kelas, id_dimensi, id_elemen, id_sub_elemen) VALUES ?',
+              [newInserts]
+            );
+          }
         }
       }
-    }
+    });
 
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
@@ -224,22 +226,24 @@ export async function saveNilaiP5BK(formData: FormData) {
       }
     }
 
-    if (updates.length > 0) {
-      const cases = updates.map(() => `WHEN id_nilai_proyek = ? THEN ?`).join(' ');
-      const caseParams = updates.flatMap((u) => [u.id, u.nilai]);
-      const ids = updates.map((u) => u.id);
-      await pool.query(
-        `UPDATE nilai_proyek SET nilai = CASE ${cases} END, tahun = ?, semester = ? WHERE id_nilai_proyek IN (?)`,
-        [...caseParams, tahun, semester, ids]
-      );
-    }
+    await withTransaction(async (conn) => {
+      if (updates.length > 0) {
+        const cases = updates.map(() => `WHEN id_nilai_proyek = ? THEN ?`).join(' ');
+        const caseParams = updates.flatMap((u) => [u.id, u.nilai]);
+        const ids = updates.map((u) => u.id);
+        await conn.query(
+          `UPDATE nilai_proyek SET nilai = CASE ${cases} END, tahun = ?, semester = ? WHERE id_nilai_proyek IN (?)`,
+          [...caseParams, tahun, semester, ids]
+        );
+      }
 
-    if (inserts.length > 0) {
-      await pool.query(
-        `INSERT INTO nilai_proyek (tahun, semester, proyek, id_kelas, id_mapel, id_dimensi, id_elemen, id_sub_elemen, id_siswa, nilai) VALUES ?`,
-        [inserts]
-      );
-    }
+      if (inserts.length > 0) {
+        await conn.query(
+          `INSERT INTO nilai_proyek (tahun, semester, proyek, id_kelas, id_mapel, id_dimensi, id_elemen, id_sub_elemen, id_siswa, nilai) VALUES ?`,
+          [inserts]
+        );
+      }
+    });
 
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
@@ -253,7 +257,11 @@ export async function deleteP5BK(id: number) {
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   try {
-    await pool.query('DELETE FROM proyek_kelas WHERE id_proyek_kelas = ?', [id]);
+    await withTransaction(async (conn) => {
+      await conn.query('DELETE FROM nilai_proyek WHERE proyek = ?', [id]);
+      await conn.query('DELETE FROM proyek_subelemen WHERE id_proyek_kelas = ?', [id]);
+      await conn.query('DELETE FROM proyek_kelas WHERE id_proyek_kelas = ?', [id]);
+    });
     revalidatePath('/tu/p5bk');
     return { success: true } as const;
   } catch (e: any) {

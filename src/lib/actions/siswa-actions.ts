@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { normalizePhone } from '@/lib/utils/normalize-phone';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
@@ -580,15 +580,17 @@ export async function generateUsernamePasswordBulk() {
     `);
 
     let updated = 0;
-    for (const s of rows) {
-      const nisnStr = String(s.nisn).trim();
-      const hash = await bcrypt.hash(nisnStr, 10);
-      await pool.query(
-        `UPDATE siswa SET username = ?, password = ? WHERE id_siswa = ?`,
-        [nisnStr, hash, s.id_siswa]
-      );
-      updated++;
-    }
+    await withTransaction(async (conn) => {
+      for (const s of rows) {
+        const nisnStr = String(s.nisn).trim();
+        const hash = await bcrypt.hash(nisnStr, 10);
+        await conn.query(
+          `UPDATE siswa SET username = ?, password = ? WHERE id_siswa = ?`,
+          [nisnStr, hash, s.id_siswa]
+        );
+        updated++;
+      }
+    });
 
     revalidatePath('/tu/kesiswaan');
     return { success: true, count: updated } as const;

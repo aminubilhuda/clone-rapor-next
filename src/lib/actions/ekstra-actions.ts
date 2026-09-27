@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin, requireTuAdminOrGuru } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { SEKOLAH_ID, JABATAN } from '@/lib/constants';
 import { revalidatePath } from 'next/cache';
 
@@ -50,25 +50,27 @@ export async function updatePembinaEkstra(formData: FormData) {
   const semester = formData.get('semester') as string;
 
   try {
-    const [existing]: any = await pool.query(
-      'SELECT id_pembina_eskul FROM pembina_eskul WHERE id_eskul = ? AND tahun = ? AND semester = ?',
-      [idEskul, tahun, semester]
-    );
+    await withTransaction(async (conn) => {
+      const [existing]: any = await conn.query(
+        'SELECT id_pembina_eskul FROM pembina_eskul WHERE id_eskul = ? AND tahun = ? AND semester = ? FOR UPDATE',
+        [idEskul, tahun, semester]
+      );
 
-    if (idUser) {
-      if (existing.length > 0) {
-        await pool.query('UPDATE pembina_eskul SET id_user = ? WHERE id_pembina_eskul = ?', [idUser, existing[0].id_pembina_eskul]);
+      if (idUser) {
+        if (existing.length > 0) {
+          await conn.query('UPDATE pembina_eskul SET id_user = ? WHERE id_pembina_eskul = ?', [idUser, existing[0].id_pembina_eskul]);
+        } else {
+          await conn.query(
+            'INSERT INTO pembina_eskul (tahun, semester, id_eskul, id_user) VALUES (?, ?, ?, ?)',
+            [tahun, semester, idEskul, idUser]
+          );
+        }
       } else {
-        await pool.query(
-          'INSERT INTO pembina_eskul (tahun, semester, id_eskul, id_user) VALUES (?, ?, ?, ?)',
-          [tahun, semester, idEskul, idUser]
-        );
+        if (existing.length > 0) {
+          await conn.query('DELETE FROM pembina_eskul WHERE id_pembina_eskul = ?', [existing[0].id_pembina_eskul]);
+        }
       }
-    } else {
-      if (existing.length > 0) {
-        await pool.query('DELETE FROM pembina_eskul WHERE id_pembina_eskul = ?', [existing[0].id_pembina_eskul]);
-      }
-    }
+    });
 
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
@@ -115,18 +117,23 @@ export async function addSiswaEkstra(formData: FormData) {
   }
 
   try {
-    const [existing]: any = await pool.query(
-      'SELECT id_siswa_eskul FROM siswa_eskul WHERE id_eskul = ? AND id_siswa = ? AND tahun = ? AND semester = ?',
-      [idEskul, idSiswa, tahun, semester]
-    );
-    if (existing.length > 0) {
+    const inserted = await withTransaction(async (conn) => {
+      const [existing]: any = await conn.query(
+        'SELECT id_siswa_eskul FROM siswa_eskul WHERE id_eskul = ? AND id_siswa = ? AND tahun = ? AND semester = ? FOR UPDATE',
+        [idEskul, idSiswa, tahun, semester]
+      );
+      if (existing.length > 0) return false;
+
+      await conn.query(
+        'INSERT INTO siswa_eskul (tahun, semester, id_eskul, id_siswa, predikat, keterangan) VALUES (?, ?, ?, ?, ?, ?)',
+        [tahun, semester, idEskul, idSiswa, predikat, keterangan]
+      );
+      return true;
+    });
+
+    if (!inserted) {
       return { success: false, error: 'Siswa sudah terdaftar di ekstrakurikuler ini' } as const;
     }
-
-    await pool.query(
-      'INSERT INTO siswa_eskul (tahun, semester, id_eskul, id_siswa, predikat, keterangan) VALUES (?, ?, ?, ?, ?, ?)',
-      [tahun, semester, idEskul, idSiswa, predikat, keterangan]
-    );
 
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
@@ -211,12 +218,15 @@ export async function bulkUpdateSiswaEkstra(items: { id_siswa_eskul: number; pre
       }
     }
 
-    for (const item of items) {
-      await pool.query(
-        'UPDATE siswa_eskul SET predikat = ?, keterangan = ? WHERE id_siswa_eskul = ?',
-        [item.predikat || '', item.keterangan || '', item.id_siswa_eskul]
-      );
-    }
+    await withTransaction(async (conn) => {
+      for (const item of items) {
+        await conn.query(
+          'UPDATE siswa_eskul SET predikat = ?, keterangan = ? WHERE id_siswa_eskul = ?',
+          [item.predikat || '', item.keterangan || '', item.id_siswa_eskul]
+        );
+      }
+    });
+
     revalidatePath('/tu/ekstra');
     return { success: true } as const;
   } catch (e: any) {

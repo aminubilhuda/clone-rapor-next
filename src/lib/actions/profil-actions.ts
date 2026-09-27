@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { SEKOLAH_ID } from '@/lib/constants';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
@@ -82,45 +82,47 @@ export async function updateProfil(formData: FormData) {
     const updateQuery = `UPDATE sekolah SET ${setClauses}, logo = ?, logo_prov = ? WHERE id_sekolah = ?`;
     values.push(logoFilename || '', logoProvFilename || '', SEKOLAH_ID);
 
-    await pool.query(updateQuery, values);
+    await withTransaction(async (conn) => {
+      await conn.query(updateQuery, values);
 
-    const [kepalaRows]: any = await pool.query(
-      `SELECT id_kepala_sekolah
-       FROM kepala_sekolah
-       WHERE tahun = ? AND semester = ? AND deleted_at IS NULL
-       ORDER BY id_kepala_sekolah DESC
-       LIMIT 1`,
-      [periode.tahun, periode.semester]
-    );
-    const kepalaId = kepalaRows[0]?.id_kepala_sekolah;
+      const [kepalaRows]: any = await conn.query(
+        `SELECT id_kepala_sekolah
+         FROM kepala_sekolah
+         WHERE tahun = ? AND semester = ? AND deleted_at IS NULL
+         ORDER BY id_kepala_sekolah DESC
+         LIMIT 1`,
+        [periode.tahun, periode.semester]
+      );
+      const kepalaId = kepalaRows[0]?.id_kepala_sekolah;
 
-    if (kepalaId) {
-      await pool.query(
-        `UPDATE kepala_sekolah
-         SET nama = ?, nip = ?, nuptk = ?, deleted_at = NULL
-         WHERE id_kepala_sekolah = ?`,
-        [kepala.nama || '', kepala.nip || '', kepala.nuptk || '', kepalaId]
-      );
-      await pool.query(
-        `UPDATE kepala_sekolah
-         SET deleted_at = NOW()
-         WHERE tahun = ? AND semester = ?
-           AND id_kepala_sekolah <> ? AND deleted_at IS NULL`,
-        [periode.tahun, periode.semester, kepalaId]
-      );
-    } else {
-      await pool.query(
-        `INSERT INTO kepala_sekolah (tahun, semester, nama, nip, nuptk)
-         VALUES (?, ?, ?, ?, ?)`,
-        [
-          periode.tahun,
-          periode.semester,
-          kepala.nama || '',
-          kepala.nip || '',
-          kepala.nuptk || '',
-        ]
-      );
-    }
+      if (kepalaId) {
+        await conn.query(
+          `UPDATE kepala_sekolah
+           SET nama = ?, nip = ?, nuptk = ?, deleted_at = NULL
+           WHERE id_kepala_sekolah = ?`,
+          [kepala.nama || '', kepala.nip || '', kepala.nuptk || '', kepalaId]
+        );
+        await conn.query(
+          `UPDATE kepala_sekolah
+           SET deleted_at = NOW()
+           WHERE tahun = ? AND semester = ?
+             AND id_kepala_sekolah <> ? AND deleted_at IS NULL`,
+          [periode.tahun, periode.semester, kepalaId]
+        );
+      } else {
+        await conn.query(
+          `INSERT INTO kepala_sekolah (tahun, semester, nama, nip, nuptk)
+           VALUES (?, ?, ?, ?, ?)`,
+          [
+            periode.tahun,
+            periode.semester,
+            kepala.nama || '',
+            kepala.nip || '',
+            kepala.nuptk || '',
+          ]
+        );
+      }
+    });
 
     revalidatePath('/tu/profil');
     return { success: true } as const;

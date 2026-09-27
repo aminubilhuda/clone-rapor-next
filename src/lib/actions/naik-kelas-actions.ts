@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { getSekolahAktif } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
@@ -115,34 +115,38 @@ export async function promoteKelas(formData: FormData) {
   const tahunBaru = tahunRows[0].id_tahun_pelajaran;
 
   try {
-    const [siswaRows]: any = await pool.query(
-      'SELECT id_siswa FROM siswa_kelas WHERE id_kelas = ? AND id_tingkat = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL',
-      [idKelas, idTingkatLama, activeTahun, activeSemester]
-    );
-
-    if (siswaRows.length > 0) {
-      const idSiswaList = siswaRows.map((s: any) => s.id_siswa);
-      const [existingRows]: any = await pool.query(
-        'SELECT id_siswa FROM siswa_kelas WHERE id_kelas = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL AND id_siswa IN (?)',
-        [idKelasBaru, tahunBaru, targetSemester, idSiswaList]
+    const promotedCount = await withTransaction(async (conn) => {
+      const [siswaRows]: any = await conn.query(
+        'SELECT id_siswa FROM siswa_kelas WHERE id_kelas = ? AND id_tingkat = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL FOR UPDATE',
+        [idKelas, idTingkatLama, activeTahun, activeSemester]
       );
-      const existingSet = new Set(existingRows.map((e: any) => e.id_siswa));
-      const toInsert = siswaRows.filter((s: any) => !existingSet.has(s.id_siswa));
 
-      if (toInsert.length > 0) {
-        const values = toInsert.map((siswa: any) => [tahunBaru, targetSemester, idTingkatBaru, idKelasBaru, siswa.id_siswa, 1]);
-        await pool.query(
-          'INSERT INTO siswa_kelas (tahun, semester, id_tingkat, id_kelas, id_siswa, status) VALUES ?',
-          [values]
+      if (siswaRows.length > 0) {
+        const idSiswaList = siswaRows.map((s: any) => s.id_siswa);
+        const [existingRows]: any = await conn.query(
+          'SELECT id_siswa FROM siswa_kelas WHERE id_kelas = ? AND tahun = ? AND semester = ? AND deleted_at IS NULL AND id_siswa IN (?) FOR UPDATE',
+          [idKelasBaru, tahunBaru, targetSemester, idSiswaList]
         );
+        const existingSet = new Set(existingRows.map((e: any) => e.id_siswa));
+        const toInsert = siswaRows.filter((s: any) => !existingSet.has(s.id_siswa));
+
+        if (toInsert.length > 0) {
+          const values = toInsert.map((siswa: any) => [tahunBaru, targetSemester, idTingkatBaru, idKelasBaru, siswa.id_siswa, 1]);
+          await conn.query(
+            'INSERT INTO siswa_kelas (tahun, semester, id_tingkat, id_kelas, id_siswa, status) VALUES ?',
+            [values]
+          );
+        }
       }
-    }
+
+      return siswaRows.length;
+    });
 
     revalidatePath('/tu/naik-kelas');
     return {
       success: true,
-      count: siswaRows.length,
-      message: `Berhasil menaikkan ${siswaRows.length} siswa`
+      count: promotedCount,
+      message: `Berhasil menaikkan ${promotedCount} siswa`
     } as const;
   } catch (e: any) {
     console.error('Error promoteKelas:', e);

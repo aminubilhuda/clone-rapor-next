@@ -1,15 +1,17 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
+import type { PoolConnection } from 'mysql2/promise';
 
 // Mapel agama: hanya enroll siswa dengan agama tertentu
 const PA_ISLAM_ID = 1;
 const PA_KRISTEN_ID = 2;
 
 async function autoEnrollSiswa(
+  conn: PoolConnection,
   tahun: number,
   semester: number,
   kelasDisalin: { id_kelas: number; id_mapel: number }[]
@@ -25,7 +27,7 @@ async function autoEnrollSiswa(
   const idKelasList = [...mapelByKelas.keys()];
   if (idKelasList.length === 0) return 0;
 
-  const [kelasRows]: any = await pool.query(
+  const [kelasRows]: any = await conn.query(
     'SELECT id_kelas, id_tingkat FROM kelas WHERE id_kelas IN (?)',
     [idKelasList]
   );
@@ -37,7 +39,7 @@ async function autoEnrollSiswa(
   let totalEnrolled = 0;
 
   // Batch: fetch all existing enrollments for all target classes
-  const [existingRows]: any = await pool.query(
+  const [existingRows]: any = await conn.query(
     'SELECT id_siswa, id_mapel FROM mapel_siswa WHERE tahun = ? AND semester = ? AND id_kelas IN (?) AND deleted_at IS NULL',
     [tahun, semester, idKelasList]
   );
@@ -52,7 +54,7 @@ async function autoEnrollSiswa(
     if (!idTingkat) continue;
 
     // Get all active students in this class with their agama
-    const [siswaRows]: any = await pool.query(
+    const [siswaRows]: any = await conn.query(
       `SELECT sk.id_siswa, s.agama
        FROM siswa_kelas sk
        JOIN siswa s ON sk.id_siswa = s.id_siswa
@@ -77,7 +79,7 @@ async function autoEnrollSiswa(
   }
 
   if (newInserts.length > 0) {
-    await pool.query(
+    await conn.query(
       'INSERT INTO mapel_siswa (tahun, semester, id_tingkat, id_kelas, id_mapel, id_siswa, aktif) VALUES ?',
       [newInserts]
     );
@@ -205,15 +207,15 @@ export async function copyMapelKelasFromPreviousYear() {
       }
     }
 
-    if (newInserts.length > 0) {
-      await pool.query(
-        'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES ?',
-        [newInserts]
-      );
-    }
-
-    // Auto-enroll siswa untuk mapel yang baru disalin
-    const totalEnrolled = await autoEnrollSiswa(tahunBaru, semester, insertedMapel);
+    const totalEnrolled = await withTransaction(async (conn) => {
+      if (newInserts.length > 0) {
+        await conn.query(
+          'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES ?',
+          [newInserts]
+        );
+      }
+      return autoEnrollSiswa(conn, tahunBaru, semester, insertedMapel);
+    });
 
     // Format hasil
     const hasil = Array.from(kelasMap.values()).map((h) => ({
@@ -297,14 +299,15 @@ export async function copyMapelKelasFromSameYear() {
       }
     }
 
-    if (newInserts.length > 0) {
-      await pool.query(
-        'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES ?',
-        [newInserts]
-      );
-    }
-
-    const totalEnrolled = await autoEnrollSiswa(tahun, semesterAktif, insertedMapel);
+    const totalEnrolled = await withTransaction(async (conn) => {
+      if (newInserts.length > 0) {
+        await conn.query(
+          'INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user) VALUES ?',
+          [newInserts]
+        );
+      }
+      return autoEnrollSiswa(conn, tahun, semesterAktif, insertedMapel);
+    });
 
     const hasil = Array.from(kelasMap.values()).map((h) => ({
       kelas: h.nama_kelas,

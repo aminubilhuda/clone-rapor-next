@@ -1,7 +1,7 @@
 'use server';
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard';
-import { pool } from '@/lib/db';
+import { pool, withTransaction } from '@/lib/db';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 
@@ -70,8 +70,17 @@ export async function importPrakerin(rows: {
   const tahun = sekolah?.tahun || 1;
   const semester = sekolah?.semester || 1;
 
-  let count = 0;
-  const errors: string[] = [];
+  const invalidRows = rows
+    .map((r, i) => (!r.mitra ? i + 1 : null))
+    .filter((v): v is number => v !== null);
+  if (invalidRows.length > 0) {
+    return {
+      success: false,
+      error: `Mitra wajib diisi pada baris: ${invalidRows.join(', ')}`,
+      count: 0,
+      errors: invalidRows.map((n) => `Baris ${n}: mitra wajib diisi`),
+    };
+  }
 
   // Batch: ambil semua mitra yang sudah ada untuk periode ini
   const [existingRows]: any = await pool.query(
@@ -83,30 +92,30 @@ export async function importPrakerin(rows: {
     existingMitra.set(row.mitra, row.id_prakerin);
   }
 
-  for (let i = 0; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r.mitra) { errors.push(`Baris ${i + 1}: mitra wajib diisi`); continue; }
-    try {
-      const existingId = existingMitra.get(r.mitra);
-      if (existingId) {
-        await pool.query(
-          `UPDATE prakerin SET lokasi = ?, tanggal_mulai = ?, tanggal_akhir = ?, instruktur = ?
-           WHERE id_prakerin = ?`,
-          [r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null, existingId]
-        );
-      } else {
-        await pool.query(
-          `INSERT INTO prakerin (tahun, semester, mitra, lokasi, tanggal_mulai, tanggal_akhir, instruktur)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
-          [tahun, semester, r.mitra, r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null]
-        );
+  try {
+    await withTransaction(async (conn) => {
+      for (const r of rows) {
+        const existingId = existingMitra.get(r.mitra);
+        if (existingId) {
+          await conn.query(
+            `UPDATE prakerin SET lokasi = ?, tanggal_mulai = ?, tanggal_akhir = ?, instruktur = ?
+             WHERE id_prakerin = ?`,
+            [r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null, existingId]
+          );
+        } else {
+          await conn.query(
+            `INSERT INTO prakerin (tahun, semester, mitra, lokasi, tanggal_mulai, tanggal_akhir, instruktur)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [tahun, semester, r.mitra, r.lokasi || null, r.tanggal_mulai || null, r.tanggal_akhir || null, r.instruktur || null]
+          );
+        }
       }
-      count++;
-    } catch (e: any) {
-      errors.push(`Baris ${i + 1} (${r.mitra}): Gagal menyimpan data`);
-    }
+    });
+  } catch (e) {
+    console.error('importPrakerin error:', e);
+    return { success: false, error: 'Gagal import data, tidak ada baris yang disimpan', count: 0, errors: [] };
   }
 
   revalidatePath('/tu/prakerin');
-  return { success: errors.length === 0, count, errors } as const;
+  return { success: true, count: rows.length, errors: [] };
 }

@@ -1,7 +1,7 @@
 'use server'
 
 import { requireTuAdmin } from '@/lib/actions/auth-guard'
-import { pool } from '@/lib/db'
+import { pool, withTransaction } from '@/lib/db'
 import { SEKOLAH_ID } from '@/lib/constants'
 import { revalidatePath } from 'next/cache'
 
@@ -16,27 +16,29 @@ export async function savePengaturan(formData: FormData) {
   const semester = formData.get('semester') as string
 
   try {
-    await pool.query(
-      'UPDATE sekolah SET lokasi = ?, tahun = ?, semester = ? WHERE id_sekolah = ?',
-      [lokasi, tahun, semester, SEKOLAH_ID]
-    )
-
-    const [existing]: any = await pool.query(
-      'SELECT * FROM pembagian_raport WHERE tahun = ? AND semester = ?',
-      [tahun, semester]
-    )
-
-    if (existing.length > 0) {
-      await pool.query(
-        'UPDATE pembagian_raport SET tanggal_rapor = ?, tanggal_mid = ? WHERE tahun = ? AND semester = ?',
-        [tanggal_rapor, tanggal_mid, tahun, semester]
+    await withTransaction(async (conn) => {
+      await conn.query(
+        'UPDATE sekolah SET lokasi = ?, tahun = ?, semester = ? WHERE id_sekolah = ?',
+        [lokasi, tahun, semester, SEKOLAH_ID]
       )
-    } else {
-      await pool.query(
-        'INSERT INTO pembagian_raport (tahun, semester, tanggal_rapor, tanggal_mid) VALUES (?, ?, ?, ?)',
-        [tahun, semester, tanggal_rapor, tanggal_mid]
+
+      const [existing]: any = await conn.query(
+        'SELECT * FROM pembagian_raport WHERE tahun = ? AND semester = ?',
+        [tahun, semester]
       )
-    }
+
+      if (existing.length > 0) {
+        await conn.query(
+          'UPDATE pembagian_raport SET tanggal_rapor = ?, tanggal_mid = ? WHERE tahun = ? AND semester = ?',
+          [tanggal_rapor, tanggal_mid, tahun, semester]
+        )
+      } else {
+        await conn.query(
+          'INSERT INTO pembagian_raport (tahun, semester, tanggal_rapor, tanggal_mid) VALUES (?, ?, ?, ?)',
+          [tahun, semester, tanggal_rapor, tanggal_mid]
+        )
+      }
+    })
 
     revalidatePath('/tu/pengaturan')
     return { success: true } as const
