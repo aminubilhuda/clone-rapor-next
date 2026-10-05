@@ -49,12 +49,6 @@ export function resolveJabatan(jenisPtkStr: string | null): number {
   return 3; // Guru
 }
 
-export function resolveJenisSiswa(jenisPendaftaranStr: string | null): number {
-  const s = String(jenisPendaftaranStr || '').toLowerCase();
-  if (s.includes('pindah')) return 2;
-  return 1; // Siswa Baru / Lanjutan semester
-}
-
 export function resolveKelompokMapel(statusKurikulumStr: string | null): number {
   const s = String(statusKurikulumStr || '');
   return s.toLowerCase().includes('kelompok a') ? 1 : 2;

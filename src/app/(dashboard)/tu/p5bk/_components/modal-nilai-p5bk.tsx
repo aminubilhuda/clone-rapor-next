@@ -28,11 +28,6 @@ interface NilaiData {
   subElemenList: SubElemenItem[];
   existingNilai: Record<string, number>;
   proyek: ProyekNilai;
-  _debug?: {
-    id_kelas: number;
-    siswaCount: number;
-    subElemenCount: number;
-  };
 }
 
 interface ModalNilaiP5BKProps {
@@ -103,13 +98,6 @@ export default function ModalNilaiP5BK({
         ) : !nilaiData || nilaiData.siswa.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-[#6B7280] text-sm mb-2">Tidak ada siswa di kelas ini</div>
-            <div className="text-[#9CA3AF] text-xs space-y-1">
-              <div>Proyek ID: {p5bk?.id_proyek_kelas ?? '-'}</div>
-              <div>id_kelas: {nilaiData?._debug?.id_kelas ?? nilaiData?.proyek?.id_kelas ?? '-'}</div>
-              <div>Siswa count: {nilaiData?._debug?.siswaCount ?? '?'}</div>
-              <div>Sub Elemen count: {nilaiData?._debug?.subElemenCount ?? '?'}</div>
-              <div>Proyek data: {JSON.stringify(nilaiData?.proyek ?? {})}</div>
-            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>

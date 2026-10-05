@@ -191,36 +191,6 @@ export async function deleteKokurikulerProyek(id: number) {
 }
 
 /**
- * Get all proyek_tujuan rows for a given proyek_kelas.
- */
-export async function getTujuanByProyek(idProyek: number) {
-  const authResult = await requireTuAdminOrGuru();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
-
-  const ownershipError = await checkProyekOwnership(
-    authResult.user?.jabatan,
-    authResult.user?.id_user,
-    idProyek
-  );
-  if (ownershipError) return { success: false, error: ownershipError } as const;
-
-  try {
-    const [rows]: any = await pool.query(
-      `SELECT pt.id_proyek_tujuan, pt.id_dimensi, pt.deskripsi, dk.dimensi AS nama_dimensi
-       FROM proyek_tujuan pt
-       JOIN dimensi_kokurikuler dk ON pt.id_dimensi = dk.id_dimensi
-       WHERE pt.id_proyek_kelas = ? AND pt.deleted_at IS NULL
-       ORDER BY pt.id_proyek_tujuan ASC`,
-      [idProyek]
-    );
-    return { success: true, data: rows } as const;
-  } catch (e: any) {
-    console.error('Get tujuan error:', e);
-    return { success: false, error: 'Gagal mengambil data tujuan' } as const;
-  }
-}
-
-/**
  * Save (create/update) a proyek_tujuan.
  */
 export async function saveTujuan(formData: FormData) {

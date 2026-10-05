@@ -169,37 +169,6 @@ export async function removeSiswaEkstra(idSiswaEkstra: number) {
   }
 }
 
-export async function updateSiswaEkstra(formData: FormData) {
-  const authResult = await requireTuAdminOrGuru();
-  if (authResult.error || !authResult.user) return { success: false, error: authResult.error } as const;
-
-  const id = formData.get('id_siswa_eskul') as string;
-  const predikat = formData.get('predikat') as string || '';
-  const keterangan = formData.get('keterangan') as string || '';
-
-  try {
-    const [rows]: any = await pool.query(
-      'SELECT id_eskul FROM siswa_eskul WHERE id_siswa_eskul = ? LIMIT 1',
-      [id]
-    );
-    if (rows.length === 0) {
-      return { success: false, error: 'Data anggota tidak ditemukan' } as const;
-    }
-    if (!(await canManageEskul(authResult.user, Number(rows[0].id_eskul)))) {
-      return { success: false, error: 'Anda bukan pembina ekstrakurikuler ini' } as const;
-    }
-
-    await pool.query(
-      'UPDATE siswa_eskul SET predikat = ?, keterangan = ? WHERE id_siswa_eskul = ?',
-      [predikat, keterangan, id]
-    );
-    revalidatePath('/tu/ekstra');
-    return { success: true } as const;
-  } catch {
-    return { success: false, error: 'Gagal mengupdate anggota' } as const;
-  }
-}
-
 export async function bulkUpdateSiswaEkstra(items: { id_siswa_eskul: number; predikat: string; keterangan: string }[]) {
   const authResult = await requireTuAdminOrGuru();
   if (authResult.error || !authResult.user) return { success: false, error: authResult.error } as const;

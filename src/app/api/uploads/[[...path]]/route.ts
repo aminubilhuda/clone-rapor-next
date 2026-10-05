@@ -14,7 +14,7 @@ const CONTENT_TYPES: Record<string, string> = {
 };
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   context: { params: Promise<{ path?: string[] }> }
 ) {
   const { path } = await context.params;

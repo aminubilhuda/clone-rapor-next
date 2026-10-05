@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseJsonArray, toPositiveInt, isValidDateString } from '../validate';
+import { parseJsonArray, isValidDateString } from '../validate';
 
 describe('parseJsonArray', () => {
   it('parses a JSON array', () => {
@@ -19,20 +19,6 @@ describe('parseJsonArray', () => {
   it('rejects non-array JSON', () => {
     const result = parseJsonArray('{"a":1}');
     expect(result.ok).toBe(false);
-  });
-});
-
-describe('toPositiveInt', () => {
-  it('accepts positive integers', () => {
-    expect(toPositiveInt('5')).toBe(5);
-    expect(toPositiveInt(12)).toBe(12);
-  });
-
-  it('rejects zero, negative, and non-numeric', () => {
-    expect(toPositiveInt(0)).toBeNull();
-    expect(toPositiveInt('-3')).toBeNull();
-    expect(toPositiveInt('abc')).toBeNull();
-    expect(toPositiveInt(null)).toBeNull();
   });
 });
 

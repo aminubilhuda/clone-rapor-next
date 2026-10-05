@@ -4,53 +4,6 @@ import { requireTuAdmin } from '@/lib/actions/auth-guard';
 import { pool } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-export async function updatePiketHarian(formData: FormData) {
-  const authResult = await requireTuAdmin();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
-
-  const id = formData.get('id_piket_harian') as string;
-  const idHarian = formData.get('id_harian') as string;
-  const idUser = formData.get('id_user') as string;
-
-  const idHarianNum = Number(idHarian);
-  const idUserNum = Number(idUser);
-  if (!Number.isInteger(idHarianNum) || idHarianNum <= 0 || !Number.isInteger(idUserNum) || idUserNum <= 0) {
-    return { success: false, error: 'Hari dan pegawai wajib dipilih' } as const;
-  }
-
-  try {
-    if (id) {
-      await pool.query(
-        `UPDATE piket_harian SET id_harian = ?, id_user = ? WHERE id_piket_harian = ?`,
-        [idHarianNum, idUserNum, id]
-      );
-    } else {
-      await pool.query(
-        `INSERT INTO piket_harian (id_harian, id_user) VALUES (?, ?)`,
-        [idHarianNum, idUserNum]
-      );
-    }
-
-    revalidatePath('/tu/piket-harian');
-    return { success: true } as const;
-  } catch {
-    return { success: false, error: 'Gagal menyimpan data' } as const;
-  }
-}
-
-export async function deletePiketHarian(id: number) {
-  const authResult = await requireTuAdmin();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
-
-  try {
-    await pool.query('DELETE FROM piket_harian WHERE id_piket_harian = ?', [id]);
-    revalidatePath('/tu/piket-harian');
-    return { success: true } as const;
-  } catch {
-    return { success: false, error: 'Gagal menghapus data' } as const;
-  }
-}
-
 export async function addPiketHarian(idHarian: number, idUser: number) {
   const authResult = await requireTuAdmin();
   if (authResult.error) return { success: false, error: authResult.error } as const;

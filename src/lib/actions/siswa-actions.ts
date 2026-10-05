@@ -540,34 +540,6 @@ export async function deleteSiswa(id: number) {
   }
 }
 
-export async function nonaktifkanSiswa(id: number) {
-  const authResult = await requireTuAdmin();
-  if (authResult.error) return { success: false, error: authResult.error } as const;
-
-  const conn = await pool.getConnection();
-  try {
-    await conn.beginTransaction();
-    await conn.query('UPDATE siswa SET aktif = 0 WHERE id_siswa = ?', [id]);
-    await conn.query(
-      'UPDATE siswa_kelas SET deleted_at = NOW(), status = 2 WHERE id_siswa = ? AND deleted_at IS NULL',
-      [id]
-    );
-    await conn.query(
-      'UPDATE mapel_siswa SET deleted_at = NOW() WHERE id_siswa = ? AND deleted_at IS NULL',
-      [id]
-    );
-    await conn.commit();
-    revalidatePath('/tu/kesiswaan');
-    revalidatePath('/tu/mapel-siswa');
-    return { success: true } as const;
-  } catch {
-    await conn.rollback();
-    return { success: false, error: 'Gagal menonaktifkan siswa' } as const;
-  } finally {
-    conn.release();
-  }
-}
-
 export async function generateUsernamePasswordBulk() {
   const authResult = await requireTuAdmin();
   if (authResult.error) return { success: false, error: authResult.error } as const;

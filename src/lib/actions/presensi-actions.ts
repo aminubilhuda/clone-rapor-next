@@ -6,18 +6,6 @@ import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { revalidatePath } from 'next/cache';
 import { isGuruPiketToday } from '@/lib/piket';
 
-export async function cekPiketHariIni() {
-  const authResult = await requireGuru();
-  if (authResult.error || !authResult.user) return false;
-
-  try {
-    return await isGuruPiketToday(Number(authResult.user.id_user));
-  } catch (e) {
-    console.error('cekPiketHariIni error:', e);
-    return false;
-  }
-}
-
 export async function getKelasList() {
   const authResult = await requireGuru();
   if (authResult.error) return [];

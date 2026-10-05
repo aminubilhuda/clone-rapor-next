@@ -8,7 +8,6 @@ export type AllowedRole = 'super_admin' | 'tu_admin' | 'guru' | 'siswa';
 
 export const ALL_ROLES: AllowedRole[] = ['super_admin', 'tu_admin', 'guru', 'siswa'];
 export const STAFF_ROLES: AllowedRole[] = ['super_admin', 'tu_admin', 'guru'];
-export const GURU_UP_ROLES: AllowedRole[] = ['super_admin', 'tu_admin', 'guru'];
 
 export interface ApiAuthResult {
   authorized: boolean;

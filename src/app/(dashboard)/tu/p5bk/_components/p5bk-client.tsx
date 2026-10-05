@@ -71,7 +71,7 @@ export default function P5BKClient({ data, refKelas, refTema, refUser, dimensiTr
     setModalNilai(true);
     const result = await getDataNilaiP5BK(row.id_proyek_kelas);
     if (result.success) {
-      setNilaiData({ ...result.data, _debug: result.debug });
+      setNilaiData(result.data);
     } else {
       showToast(result.error || 'Gagal mengambil data nilai', 'error');
       setModalNilai(false);

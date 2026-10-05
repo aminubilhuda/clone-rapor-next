@@ -156,30 +156,6 @@ export async function updateTujuanMulti(formData: FormData) {
   }
 }
 
-export async function updateTujuanSingle(formData: FormData) {
-  const authResult = await requireGuru();
-  if (authResult.error || !authResult.user) {
-    return { success: false, error: authResult.error || 'Unauthorized' } as const;
-  }
-  const idTujuan = Number(formData.get('id_tujuan'));
-  const tujuan = (formData.get('tujuan') as string)?.trim();
-
-  if (!tujuan) return { success: false, error: 'Tujuan pembelajaran wajib diisi' } as const;
-
-  try {
-    await pool.query(
-      `UPDATE tujuan_pembelajaran
-       SET tujuan = ?
-       WHERE id_tujuan = ? AND id_user = ?`,
-      [tujuan, idTujuan, authResult.user.id_user]
-    );
-    revalidatePath('/guru/tujuan-pembelajaran');
-    return { success: true } as const;
-  } catch {
-    return { success: false, error: 'Gagal mengupdate TP' } as const;
-  }
-}
-
 export async function deleteTujuanByKode(kode: string, idMapel: number) {
   const authResult = await requireGuru();
   if (authResult.error || !authResult.user) {
@@ -208,9 +184,8 @@ export async function getTpFromPreviousYear(idMapel: number) {
   try {
     const sekolah = await getSekolahWithFilter();
 
-    let prevTahun = sekolah.tahun - 1;
+    const prevTahun = sekolah.tahun - 1;
     const prevSemester = sekolah.semester === 1 ? 2 : 1;
-    if (sekolah.semester === 1) prevTahun = sekolah.tahun - 1;
 
     const [rows]: any = await pool.query(
       `SELECT DISTINCT tp.urut AS kode, tp.tujuan, tp.kktp,
@@ -249,9 +224,8 @@ export async function copyTujuan(formData: FormData) {
 
   try {
     const sekolah = await getSekolahWithFilter();
-    let prevTahun = sekolah.tahun - 1;
+    const prevTahun = sekolah.tahun - 1;
     const prevSemester = sekolah.semester === 1 ? 2 : 1;
-    if (sekolah.semester === 1) prevTahun = sekolah.tahun - 1;
 
     // Batch: ambil sumber TP untuk semua kode sekaligus
     const [srcRows]: any = await pool.query(

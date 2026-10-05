@@ -180,8 +180,6 @@ export async function promoteAllKelas() {
     const [allTingkatRows]: any = await conn.query(
       'SELECT id_tingkat, tabjad, akhir FROM tingkat ORDER BY id_tingkat ASC'
     );
-    const tingkatMap = new Map<number, any>();
-    allTingkatRows.forEach((t: any) => tingkatMap.set(t.id_tingkat, t));
 
     // Helper untuk cari id_tingkat berikutnya
     const getNextTingkatId = (currentId: number): number | null => {

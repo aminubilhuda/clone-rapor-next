@@ -86,7 +86,6 @@ export async function updateUserProfile(formData: FormData) {
       );
     }
 
-    revalidatePath('/profile');
     revalidatePath('/tu');
     revalidatePath('/guru');
     return { success: true } as const;

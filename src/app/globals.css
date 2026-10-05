@@ -41,13 +41,6 @@
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 16px);
 }
-.pt-safe {
-  padding-top: env(safe-area-inset-top, 0px);
-}
-.mb-safe {
-  margin-bottom: env(safe-area-inset-bottom, 16px);
-}
-
 /* Disable tap highlight on mobile for clean native feel */
 * {
   -webkit-tap-highlight-color: transparent;

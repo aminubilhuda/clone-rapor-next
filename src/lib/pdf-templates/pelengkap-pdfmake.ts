@@ -225,7 +225,6 @@ function approvalBlock(
 
 function buildCover(
   siswa: PelengkapSiswaInfo,
-  sekolah: PelengkapSekolahInfo,
   logoProvinsi: string,
   logoSekolah: string | null,
   pageBreak: boolean,
@@ -483,7 +482,7 @@ export function createPelengkapRaporDefinition(
 
   siswaList.forEach((siswa, index) => {
     content.push(
-      buildCover(siswa, sekolah, logoProvinsi, logoSekolah, index > 0),
+      buildCover(siswa, logoProvinsi, logoSekolah, index > 0),
       buildSchoolPage(siswa, sekolah),
       buildStudentPage(siswa, sekolah),
       buildTransferPage(siswa),

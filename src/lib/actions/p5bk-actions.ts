@@ -157,11 +157,6 @@ export async function getDataNilaiP5BK(idProyek: number) {
     return {
       success: true,
       data: { siswa: siswaRows, subElemenList: subElemenRows, existingNilai, proyek },
-      debug: {
-        id_kelas: proyek.id_kelas,
-        siswaCount: siswaRows.length,
-        subElemenCount: subElemenRows.length,
-      },
     } as const;
   } catch {
     return { success: false, error: 'Gagal mengambil data nilai' } as const;

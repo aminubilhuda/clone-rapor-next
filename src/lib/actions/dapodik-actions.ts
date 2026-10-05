@@ -75,35 +75,6 @@ async function setSyncStatus(syncing: boolean, progress: string | null = null) {
   }
 }
 
-export async function getDapodikConfig() {
-  const authResult = await requireTuAdmin()
-  if (authResult.error) return { config: null, logs: [] } as const
-
-  try {
-    const [cfgRows]: any = await pool.query(
-      'SELECT * FROM dapodik_config WHERE id = 1 LIMIT 1'
-    )
-    const [logs]: any = await pool.query(
-      'SELECT * FROM dapodik_log ORDER BY id DESC LIMIT 50'
-    )
-
-    let config = null
-    if (cfgRows[0]) {
-      const { token, ...rest } = cfgRows[0]
-      config = {
-        ...rest,
-        has_token: Boolean(token),
-        token_preview: token ? `${String(token).slice(0, 4)}••••` : null,
-      }
-    }
-
-    return { config, logs } as const
-  } catch (e) {
-    console.error('getDapodikConfig error:', e)
-    return { config: null, logs: [] } as const
-  }
-}
-
 export async function saveDapodikConfig(formData: FormData) {
   const authResult = await requireTuAdmin()
   if (authResult.error) return { success: false, error: authResult.error } as const
