@@ -26,12 +26,24 @@ async function getKelasList() {
 async function getSubjects(kelasId: number, tahun: number, semester: number) {
   try {
     const [rows]: any = await pool.query(`
-      SELECT m.id_mapel, m.nama_mapel
+      SELECT m.id_mapel, m.nama_mapel, m.parent_id, p.nama_mapel AS nama_induk
       FROM mapel_kelas mk
       JOIN mapel m ON mk.id_mapel = m.id_mapel
+      LEFT JOIN mapel p ON m.parent_id = p.id_mapel
       WHERE mk.id_kelas = ? AND mk.tahun = ? AND mk.semester = ?
-      ORDER BY m.urut ASC
-    `, [kelasId, tahun, semester]);
+        AND NOT EXISTS (
+          SELECT 1
+          FROM mapel_siswa ms2
+          JOIN mapel c ON c.id_mapel = ms2.id_mapel
+          WHERE c.parent_id = m.id_mapel
+            AND ms2.tahun = ? AND ms2.semester = ? AND ms2.aktif = 1
+        )
+      ORDER BY COALESCE(p.urut, m.urut) ASC,
+        (m.parent_id IS NULL) DESC,
+        m.urut ASC,
+        COALESCE(p.nama_mapel, m.nama_mapel) ASC,
+        m.id_mapel ASC
+    `, [kelasId, tahun, semester, tahun, semester]);
     return rows;
   } catch (error) {
     console.error('Subjects fetch error:', error);

@@ -93,30 +93,78 @@ export async function updateMapelKelas(formData: FormData) {
   if (authResult.error) return { success: false, error: authResult.error } as const;
 
   const id = formData.get('id_mapel_kelas') as string;
-  const idKelas = formData.get('id_kelas') as string;
-  const idMapel = formData.get('id_mapel') as string;
+  const idKelas = Number(formData.get('id_kelas'));
+  const idMapel = Number(formData.get('id_mapel'));
   const idUser = formData.get('id_user') as string;
-
   const { tahun, semester } = await getPeriodeAktif();
 
+  if (!Number.isInteger(idKelas) || !Number.isInteger(idMapel)) {
+    return { success: false, error: 'Kelas atau mapel tidak valid' } as const;
+  }
+
   try {
-    if (id) {
-      await pool.query(
-        `UPDATE mapel_kelas SET id_kelas = ?, id_mapel = ?, id_user = ? WHERE id_mapel_kelas = ?`,
-        [idKelas, idMapel, idUser || null, id]
-      );
-    } else {
-      await pool.query(
-        `INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user)
-         VALUES (?, ?, ?, ?, ?)`,
-        [tahun, semester, idKelas, idMapel, idUser || null]
-      );
-    }
+    await withTransaction(async (conn) => {
+      let perluEnroll = !id;
+
+      if (id) {
+        const [currentRows]: any = await conn.query(
+          'SELECT id_mapel, id_kelas FROM mapel_kelas WHERE id_mapel_kelas = ?',
+          [id]
+        );
+        const current = currentRows[0];
+        const mapelBerubah = current && Number(current.id_mapel) !== idMapel;
+        perluEnroll = Boolean(
+          current &&
+            (Number(current.id_mapel) !== idMapel || Number(current.id_kelas) !== idKelas)
+        );
+
+        if (mapelBerubah) {
+          const [childRows]: any = await conn.query(
+            'SELECT COUNT(*) AS jumlah FROM mapel WHERE parent_id = ?',
+            [idMapel]
+          );
+          if (Number(childRows[0]?.jumlah || 0) > 0) {
+            throw new Error('Mapel induk tidak bisa diberi guru atau kelas');
+          }
+        }
+
+        await conn.query(
+          'UPDATE mapel_kelas SET id_kelas = ?, id_mapel = ?, id_user = ? WHERE id_mapel_kelas = ?',
+          [idKelas, idMapel, idUser || null, id]
+        );
+      } else {
+        const [childRows]: any = await conn.query(
+          'SELECT COUNT(*) AS jumlah FROM mapel WHERE parent_id = ?',
+          [idMapel]
+        );
+        if (Number(childRows[0]?.jumlah || 0) > 0) {
+          throw new Error('Mapel induk tidak bisa diberi guru atau kelas');
+        }
+
+        await conn.query(
+          `INSERT INTO mapel_kelas (tahun, semester, id_kelas, id_mapel, id_user)
+           VALUES (?, ?, ?, ?, ?)`,
+          [tahun, semester, idKelas, idMapel, idUser || null]
+        );
+      }
+
+      // Hanya enroll saat mapel/kelas baru. Mengubah guru tidak boleh
+      // mengembalikan siswa yang sengaja dikeluarkan lewat mapel-siswa.
+      if (perluEnroll) {
+        await autoEnrollSiswa(conn, tahun, semester, [
+          { id_kelas: idKelas, id_mapel: idMapel },
+        ]);
+      }
+    });
 
     revalidatePath('/tu/mapel-kelas');
+    revalidatePath('/tu/mapel-siswa');
     return { success: true } as const;
-  } catch {
-    return { success: false, error: 'Gagal menyimpan data' } as const;
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Gagal menyimpan data',
+    } as const;
   }
 }
 
@@ -160,6 +208,9 @@ export async function copyMapelKelasFromPreviousYear() {
       JOIN mapel m ON mk.id_mapel = m.id_mapel
       LEFT JOIN users u ON mk.id_user = u.id_user
       WHERE mk.tahun = ? AND mk.semester = ?
+        AND NOT EXISTS (
+          SELECT 1 FROM mapel c WHERE c.parent_id = m.id_mapel
+        )
       ORDER BY k.nama_kelas, m.nama_mapel
     `, [tahunLalu, semester]);
 
@@ -251,6 +302,9 @@ export async function copyMapelKelasFromSameYear() {
       JOIN mapel m ON mk.id_mapel = m.id_mapel
       LEFT JOIN users u ON mk.id_user = u.id_user
       WHERE mk.tahun = ? AND mk.semester = ?
+        AND NOT EXISTS (
+          SELECT 1 FROM mapel c WHERE c.parent_id = m.id_mapel
+        )
       ORDER BY k.nama_kelas, m.nama_mapel
     `, [tahun, semesterSumber]);
 

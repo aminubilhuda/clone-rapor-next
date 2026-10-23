@@ -6,6 +6,14 @@ import { getSekolahAktif } from '@/lib/sekolah-helper';
 import { parseJsonArray } from '@/lib/validate';
 import { revalidatePath } from 'next/cache';
 
+async function pastikanBukanInduk(idMapel: number) {
+  const [rows]: any = await pool.query(
+    'SELECT COUNT(*) AS jumlah FROM mapel WHERE parent_id = ?',
+    [idMapel]
+  );
+  return Number(rows[0]?.jumlah || 0) === 0;
+}
+
 export async function toggleMapelSiswa(formData: FormData) {
   const authResult = await requireTuAdmin();
   if (authResult.error) return { success: false, error: authResult.error } as const;
@@ -22,6 +30,10 @@ export async function toggleMapelSiswa(formData: FormData) {
   const idTingkat = kelasRows[0]?.id_tingkat;
 
   try {
+    if (!(await pastikanBukanInduk(Number(idMapel)))) {
+      return { success: false, error: 'Mapel induk tidak punya enrollment siswa' } as const;
+    }
+
     await withTransaction(async (conn) => {
       const [existing]: any = await conn.query(
         'SELECT id_mapel_siswa FROM mapel_siswa WHERE id_siswa = ? AND id_mapel = ? AND id_kelas = ? AND tahun = ? AND semester = ? FOR UPDATE',
@@ -74,6 +86,10 @@ export async function toggleMapelSiswaBatch(formData: FormData) {
   const idTingkat = kelasRows[0]?.id_tingkat;
 
   try {
+    if (!(await pastikanBukanInduk(idMapel))) {
+      return { success: false, error: 'Mapel induk tidak punya enrollment siswa' } as const;
+    }
+
     await withTransaction(async (conn) => {
       for (const entry of entries) {
         const [existing]: any = await conn.query(

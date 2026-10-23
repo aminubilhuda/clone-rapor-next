@@ -341,6 +341,17 @@ export default function MapelKelasClient({ data, refKelas, refMapel, refUser }: 
                         if (col.key === '_no') {
                           return <td key={col.key} className="px-4 py-3">{safePage * actualPerPage + i + 1}</td>;
                         }
+                        if (col.key === 'nama_mapel') {
+                          return (
+                            <td key={col.key} className="px-4 py-3">
+                              {row.parent_id ? <span className="text-gray-400 mr-1.5">↳</span> : null}
+                              {row.nama_mapel}
+                              {row.parent_id && row.nama_induk ? (
+                                <span className="block text-[11px] text-gray-400 ml-4">{row.nama_induk}</span>
+                              ) : null}
+                            </td>
+                          );
+                        }
                         if (col.key === 'nama_guru') {
                           const val = guruOptions.find(o => o.value === row.id_user) || null;
                           return (

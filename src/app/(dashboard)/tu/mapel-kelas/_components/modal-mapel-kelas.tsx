@@ -20,7 +20,7 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
   const autoKelas = kelasFilter && !isEdit;
 
   const filteredMapel = refMapel.filter((m: any) =>
-    m.nama_mapel.toLowerCase().includes(cariMapel.toLowerCase())
+    `${m.nama_mapel} ${m.nama_induk ?? ''}`.toLowerCase().includes(cariMapel.toLowerCase())
   );
 
   if (!open) return null;
@@ -77,8 +77,15 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
               {isEdit ? (
                 <select name="id_mapel" defaultValue={mapelKelas?.id_mapel ?? ''} required className="w-full bg-[#F8F9FB] border border-[rgba(0,0,0,0.08)] rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-[#DC2626] outline-none transition-all">
                   <option value="">Pilih Mapel</option>
+                  {mapelKelas && !refMapel.some((m: any) => m.id_mapel === mapelKelas.id_mapel) && (
+                    <option value={mapelKelas.id_mapel}>
+                      {mapelKelas.nama_mapel} (induk — data lama)
+                    </option>
+                  )}
                   {refMapel.map((m: any) => (
-                    <option key={m.id_mapel} value={m.id_mapel}>{m.nama_mapel}</option>
+                    <option key={m.id_mapel} value={m.id_mapel}>
+                      {m.parent_id && m.nama_induk ? `${m.nama_induk} › ${m.nama_mapel}` : m.nama_mapel}
+                    </option>
                   ))}
                 </select>
               ) : (
@@ -96,7 +103,12 @@ export default function ModalMapelKelas({ open, onClose, mapelKelas, refKelas, r
                       return (
                         <label key={m.id_mapel} className={`flex items-center gap-2 text-sm py-1 px-2 rounded ${disabled ? 'text-gray-400 bg-gray-50 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'}`}>
                           <input type="checkbox" name="id_mapel" value={m.id_mapel} disabled={disabled} />
-                          {m.nama_mapel}
+                          <span>
+                            {m.parent_id && m.nama_induk ? (
+                              <span className="text-gray-400">{m.nama_induk} › </span>
+                            ) : null}
+                            {m.nama_mapel}
+                          </span>
                           {disabled && <span className="text-xs text-gray-400 ml-auto">(Sudah ada)</span>}
                         </label>
                       );

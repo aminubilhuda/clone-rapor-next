@@ -13,6 +13,8 @@ interface KelasItem {
 interface Subject {
   id_mapel: number;
   nama_mapel: string;
+  parent_id: number | null;
+  nama_induk: string | null;
 }
 
 interface Student {
@@ -226,7 +228,12 @@ export default function MapelSiswaGrid({
               <th rowSpan={2} scope="col" className="text-left px-3 py-2 font-semibold min-w-24 sticky left-[14rem] bg-[#DC2626] z-10 align-middle">Agama</th>
               {subjects.map((mapel) => (
                 <th key={mapel.id_mapel} scope="col" className="text-center px-2 py-2 font-semibold min-w-16 max-w-20 align-middle">
-                  <span className="text-[11px] leading-tight">{mapel.nama_mapel}</span>
+                  <span className="block text-[11px] leading-tight">
+                    {mapel.parent_id && mapel.nama_induk ? (
+                      <span className="block text-[9px] font-normal opacity-80">{mapel.nama_induk}</span>
+                    ) : null}
+                    {mapel.nama_mapel}
+                  </span>
                 </th>
               ))}
             </tr>
