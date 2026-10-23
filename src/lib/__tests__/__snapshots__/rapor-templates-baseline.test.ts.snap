@@ -1,0 +1,336 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`baseline rapor tanpa hierarki > semester tidak berubah 1`] = `
+"<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: 210mm 330mm; margin: 6.2mm 15.7mm 12mm 14.5mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; color: #000; line-height: 1.1; }
+  .page { padding: 0; padding-bottom: 10px; }
+  .page-break { page-break-after: always; }
+  table { font-size: 9pt; }
+  thead { display: table-header-group; }
+  tr, td, th { page-break-inside: avoid; break-inside: avoid; }
+  .divider-double { border-bottom: 1.5pt double #555; margin: 6px 0 10px; }
+  @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+
+    <div class="page">
+      <table style="width:100%;border-collapse:collapse;margin-top:0;font-size:9pt;">
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Nama</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">SISWA CONTOH</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Kelas</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">XI RPL</td>
+        </tr>
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">NIS / NISN</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">123 / 456</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Fase</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">F</td>
+        </tr>
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Nama Sekolah</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">SMK NEGERI 1 CONTOH</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Semester</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">GANJIL</td>
+        </tr>
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Alamat</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">JL. PENDIDIKAN NO. 1</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Tahun Pelajaran</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">2026-2027</td>
+        </tr>
+      </table>
+      <div class="divider-double"></div>
+
+      <h2 style="text-align:center;font-size:13.5pt;font-weight:bold;margin:10px 0;">LAPORAN HASIL BELAJAR</h2>
+
+      <table style="width:100%;border-collapse:collapse;" border="1">
+        <thead style="display:table-header-group;">
+          <tr style="background:#E4E6EB;">
+            <td style="width:5%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">No</td>
+            <td style="width:25%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Mata Pelajaran</td>
+            <td style="width:10%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Nilai</td>
+            <td style="width:60%;text-align:center;vertical-align:middle;height:30px;font-weight:bold;border:1px solid #000;">Capaian Kompetensi</td>
+          </tr>
+        </thead>
+        <tr><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">A. Mata Pelajaran Umum</td></tr><tr>
+          <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">1</td>
+          <td style="width:25%;text-align:left;height:48px;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">Matematika</td>
+          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;color:black;" rowspan="2">80</td>
+          <td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;">Baik dalam menyelesaikan persamaan.</td>
+        </tr>
+        <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">Cukup dalam menyelesaikan operasi dasar.</td></tr>,<tr><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">B. Mata Pelajaran Kejuruan</td></tr><tr>
+          <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">1</td>
+          <td style="width:25%;text-align:left;height:48px;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">Rekayasa Perangkat Lunak</td>
+          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;color:black;" rowspan="2">78</td>
+          <td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;">Baik dalam merancang aplikasi.</td>
+        </tr>
+        <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">Cukup dalam menggunakan alat dasar.</td></tr>
+      </table>
+
+      
+      <div style="page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;margin-top:20px;">
+          <tr><td style="width:100%;text-align:left;font-weight:bold;">PRAKTIK KERJA INDUSTRI</td></tr>
+        </table>
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
+          <tr>
+            <td style="width:5%;text-align:center;font-weight:bold;border:1px solid #000;">No</td>
+            <td style="width:20%;text-align:center;font-weight:bold;border:1px solid #000;">Mitra DU/DI</td>
+            <td style="width:15%;text-align:center;font-weight:bold;border:1px solid #000;">Lokasi</td>
+            <td style="width:10%;text-align:center;font-weight:bold;border:1px solid #000;">Lamanya (Bulan)</td>
+            <td style="width:50%;text-align:center;font-weight:bold;border:1px solid #000;">Keterangan</td>
+          </tr>
+          <tr><td style="width:5%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:20%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:15%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:10%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td><td style="width:50%;text-align:center;padding:10px 8px;height:20px;border:1px solid #000;">-</td></tr>
+        </table>
+      </div>
+
+      <div style="page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;margin-top:20px;">
+          <tr><td style="width:100%;text-align:left;font-weight:bold;">Kokurikuler</td></tr>
+        </table>
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
+          <tr>
+            <td style="width:100%;text-align:left;padding:5px;height:35px;border:1px solid #000;">
+              -
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
+          <tr style="background:#E4E6EB;">
+            <td style="width:5%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">No</td>
+            <td style="width:30%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Ekstrakurikuler</td>
+            <td style="width:15%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Predikat</td>
+            <td style="width:50%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Keterangan</td>
+          </tr>
+          <tr><td style="width:5%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:30%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:15%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:50%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td></tr>
+        </table>
+      </div>
+
+      <div style="page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
+          <tr style="background:#E4E6EB;">
+            <td style="width:5%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">No</td>
+            <td style="width:95%;text-align:center;font-weight:bold;height:25px;vertical-align:middle;border:1px solid #000;">Organisasi</td>
+          </tr>
+          <tr><td style="width:5%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td><td style="width:95%;text-align:center;padding:10px 8px;border:1px solid #000;">-</td></tr>
+        </table>
+      </div>
+
+      <div style="page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
+          <tr style="background:#E4E6EB;">
+            <td style="width:60%;text-align:left;padding:5px;border:1px solid #000;font-weight:bold;height:25px;vertical-align:middle;">Absen</td>
+            <td style="width:40%;text-align:left;padding:5px;border:1px solid #000;font-weight:bold;height:25px;vertical-align:middle;">Jumlah</td>
+          </tr>
+          
+      <tr>
+        <td style="width:60%;text-align:left;height:20px;padding:5px;border:1px solid #000;">Sakit</td>
+        <td style="width:40%;text-align:left;height:20px;padding:5px;border:1px solid #000;">1 Hari</td>
+      </tr>
+        </table>
+      </div>
+
+      <div style="page-break-inside:avoid;">
+        <h3 style="text-align:left;font-size:9pt;margin:15px 0 5px;font-weight:bold;">CATATAN WALI KELAS</h3>
+        <table style="width:100%;border-collapse:collapse;" border="1">
+          <tr><td style="width:100%;text-align:left;padding:10px 5px;height:70px;border:1px solid #000;">Catatan contoh.</td></tr>
+        </table>
+      </div>
+
+      <div style="page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;margin-top:20px;">
+          <tr><td style="text-align:center;font-weight:bold;">Tanggapan Orang Tua/Wali Murid</td></tr>
+        </table>
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" border="1">
+          <tr><td style="width:100%;text-align:left;height:50px;padding:5px;border:1px solid #000;"></td></tr>
+        </table>
+      </div>
+
+      
+
+      <div style="page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;margin-top:25px;">
+          <tr>
+            <td style="width:40%;text-align:center;padding:5px;">Mengetahui,</td>
+            <td style="width:20%;"></td>
+            <td style="width:40%;text-align:center;padding:5px;">Contoh, 20 Desember 2026</td>
+          </tr>
+          <tr>
+            <td style="width:40%;text-align:center;padding:5px;">Orang Tua / Wali Peserta Didik</td>
+            <td style="width:20%;"></td>
+            <td style="width:40%;text-align:center;padding:5px;">Wali Kelas</td>
+          </tr>
+          <tr>
+            <td style="width:40%;height:40px;"></td>
+            <td style="width:20%;height:40px;"></td>
+            <td style="width:40%;height:40px;"></td>
+          </tr>
+          <tr>
+            <td style="width:40%;text-align:center;padding:5px;">(....................................................)</td>
+            <td style="width:20%;"></td>
+            <td style="width:40%;text-align:center;padding:5px;font-weight:bold;text-decoration:underline;">Wali Kelas</td>
+          </tr>
+          <tr>
+            <td style="width:40%;"></td>
+            <td style="width:20%;"></td>
+            <td style="width:40%;text-align:center;padding:5px;">NIP. 19800101 200501 1 001</td>
+          </tr>
+          <tr><td colspan="3" style="height:15px;"></td></tr>
+          <tr><td colspan="3" style="text-align:center;padding:5px;">Mengesahkan,</td></tr>
+          <tr><td colspan="3" style="text-align:center;padding:5px;">Kepala Sekolah,</td></tr>
+          <tr><td colspan="3" style="text-align:center;height:55px;"></td></tr>
+          <tr><td colspan="3" style="text-align:center;padding:5px;font-weight:bold;text-decoration:underline;">Kepala Sekolah</td></tr>
+          <tr><td colspan="3" style="text-align:center;padding:5px;">NIP. 19700101 199001 1 001</td></tr>
+        </table>
+      </div>
+    </div>
+</body>
+</html>"
+`;
+
+exports[`baseline rapor tanpa hierarki > tengah semester tidak berubah 1`] = `
+"<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: 210mm 330mm; margin: 6.2mm 15.7mm 12mm 14.5mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; color: #000; line-height: 1.1; }
+  .page { padding: 0; padding-bottom: 10px; }
+  .page-break { page-break-after: always; }
+  table { font-size: 9pt; }
+  thead { display: table-header-group; }
+  tr, td, th { page-break-inside: avoid; break-inside: avoid; }
+  .divider-double { border-bottom: 1.5pt double #555; margin: 6px 0 10px; }
+  @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+
+    <div class="page">
+      <table style="width:100%;border-collapse:collapse;margin-top:0;font-size:9pt;">
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Nama</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">SISWA CONTOH</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Kelas</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">XI RPL</td>
+        </tr>
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">NIS / NISN</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">123 / 456</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Fase</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">F</td>
+        </tr>
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Nama Sekolah</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">SMK NEGERI 1 CONTOH</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Semester</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">GANJIL</td>
+        </tr>
+        <tr>
+          <td style="text-align:left;height:20px;white-space:nowrap;padding-right:4px;">Alamat</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">JL. PENDIDIKAN NO. 1</td>
+          <td style="width:5%;"></td>
+          <td style="text-align:left;white-space:nowrap;padding-right:4px;">Tahun Pelajaran</td>
+          <td style="text-align:center;width:1%;">:</td>
+          <td style="text-align:left;">2026-2027</td>
+        </tr>
+      </table>
+      <div class="divider-double"></div>
+
+      <h2 style="text-align:center;font-size:13.5pt;font-weight:bold;margin:10px 0;">LAPORAN HASIL BELAJAR TENGAH SEMESTER</h2>
+
+      <table style="width:100%;border-collapse:collapse;" border="1">
+        <tr style="background:#FFFEC5;">
+          <td style="width:5%;text-align:center;vertical-align:middle;height:26px;font-weight:bold;border:1px solid #000;">No</td>
+          <td style="width:60%;text-align:center;vertical-align:middle;font-weight:bold;border:1px solid #000;">Mata Pelajaran</td>
+          <td style="width:15%;text-align:center;vertical-align:middle;font-weight:bold;border:1px solid #000;">Nilai</td>
+          <td style="width:15%;text-align:center;vertical-align:middle;font-weight:bold;border:1px solid #000;">Predikat</td>
+        </tr>
+        <tr style="background:#FFFEC5;"><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">A. Mata Pelajaran Umum</td></tr><tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">1</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">Matematika</td><td style="width:15%;text-align:center;border:1px solid #000;color:black;">80</td><td style="width:15%;text-align:center;border:1px solid #000;">B</td></tr><tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">2</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">Bahasa Indonesia</td><td style="width:15%;text-align:center;border:1px solid #000;color:black;">85</td><td style="width:15%;text-align:center;border:1px solid #000;">A</td></tr>,<tr style="background:#FFFEC5;"><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">B. Mata Pelajaran Kejuruan</td></tr><tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">1</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">Rekayasa Perangkat Lunak</td><td style="width:15%;text-align:center;border:1px solid #000;color:black;">78</td><td style="width:15%;text-align:center;border:1px solid #000;">B</td></tr><tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">2</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">Basis Data</td><td style="width:15%;text-align:center;border:1px solid #000;color:black;">82</td><td style="width:15%;text-align:center;border:1px solid #000;">B</td></tr>
+      </table>
+
+      <h3 style="text-align:left;font-size:9pt;margin:15px 0 5px;font-weight:bold;">KETIDAKHADIRAN</h3>
+      <table style="width:50%;border-collapse:collapse;" border="1">
+        <tr><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Absen</td><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;font-weight:bold;">Jumlah</td></tr>
+        
+      <tr><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;">Sakit</td><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;">1 Hari</td></tr>
+    
+      </table>
+
+      
+      <h3 style="text-align:left;font-size:9pt;margin:15px 0 5px;font-weight:bold;">CATATAN AKADEMIK</h3>
+      <table style="width:100%;border-collapse:collapse;" border="1">
+        <tr><td style="width:100%;text-align:left;padding:5px;height:35px;">Catatan contoh.</td></tr>
+      </table>
+
+      <table style="width:100%;border-collapse:collapse;margin-top:25px;">
+        <tr>
+          <td style="width:40%;text-align:center;padding:5px;">Mengetahui,</td>
+          <td style="width:20%;"></td>
+          <td style="width:40%;text-align:center;padding:5px;">Contoh, 23 Oktober 2026</td>
+        </tr>
+        <tr>
+          <td style="width:40%;text-align:center;padding:5px;">Orang Tua / Wali Peserta Didik</td>
+          <td style="width:20%;"></td>
+          <td style="width:40%;text-align:center;padding:5px;">Wali Kelas</td>
+        </tr>
+        <tr>
+          <td style="width:40%;text-align:center;height:40px;"></td>
+          <td style="width:20%;height:40px;"></td>
+          <td style="width:40%;text-align:center;padding:5px;height:40px;"></td>
+        </tr>
+        <tr>
+          <td style="width:40%;text-align:center;padding:5px;">(....................................................)</td>
+          <td style="width:20%;"></td>
+          <td style="width:40%;text-align:center;padding:5px;font-weight:bold;text-decoration:underline;">Wali Kelas</td>
+        </tr>
+        <tr>
+          <td style="width:40%;text-align:center;padding:5px;"></td>
+          <td style="width:20%;"></td>
+          <td style="width:40%;text-align:center;padding:5px;">NIP. 19800101 200501 1 001</td>
+        </tr>
+        <tr><td colspan="3" style="height:10px;"></td></tr>
+        <tr><td colspan="3" style="text-align:center;padding:5px;">Mengesahkan,</td></tr>
+        <tr><td colspan="3" style="text-align:center;padding:5px;">Kepala Sekolah,</td></tr>
+        <tr><td colspan="3" style="text-align:center;height:40px;"></td></tr>
+        <tr><td colspan="3" style="text-align:center;padding:5px;font-weight:bold;text-decoration:underline;">Kepala Sekolah</td></tr>
+      </table>
+    </div>
+</body>
+</html>"
+`;
