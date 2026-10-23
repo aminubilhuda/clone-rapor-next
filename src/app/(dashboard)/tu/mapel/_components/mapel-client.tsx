@@ -40,11 +40,26 @@ export default function MapelClient({ mapel, refKelompok }: MapelClientProps) {
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
   const [selected, setSelected] = useState<any | null>(null);
+  const [defaultParentId, setDefaultParentId] = useState<number | null>(null);
+  const refInduk = mapel.filter((m) => m.parent_id == null);
 
-  const openTambah = () => { setSelected(null); setModalEdit(true); };
-  const openEdit = (row: any) => { setSelected(row); setModalEdit(true); };
+  const openTambah = (parent?: any) => {
+    setSelected(null);
+    setDefaultParentId(parent?.id_mapel ?? null);
+    setModalEdit(true);
+  };
+  const openEdit = (row: any) => {
+    setSelected(row);
+    setDefaultParentId(null);
+    setModalEdit(true);
+  };
   const openHapus = (row: any) => { setSelected(row); setModalHapus(true); };
-  const closeModals = () => { setModalEdit(false); setModalHapus(false); setSelected(null); };
+  const closeModals = () => {
+    setModalEdit(false);
+    setModalHapus(false);
+    setSelected(null);
+    setDefaultParentId(null);
+  };
 
   const handleSave = async (formData: FormData) => {
     const result = await updateMapel(formData);
@@ -72,7 +87,7 @@ export default function MapelClient({ mapel, refKelompok }: MapelClientProps) {
       <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
         <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4 flex items-center justify-between">
           <h5 className="font-semibold text-[#1A1A2E]">Daftar Mata Pelajaran</h5>
-          <button onClick={openTambah} className="bg-[#DC2626] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
+          <button onClick={() => openTambah()} className="bg-[#DC2626] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#B91C1C] active:scale-[0.98] transition-all">
             + Tambah Mapel
           </button>
         </div>
@@ -122,6 +137,13 @@ export default function MapelClient({ mapel, refKelompok }: MapelClientProps) {
                           return (
                             <td key={col.key} className="px-4 py-3">
                               <div className="flex items-center gap-2">
+                                {!row.parent_id && (
+                                  <button onClick={() => openTambah(row)} className="text-emerald-600/70 hover:text-emerald-700 transition-colors" title="Tambah sub-mapel">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                  </button>
+                                )}
                                 <button onClick={() => openEdit(row)} className="text-[#DC2626]/70 hover:text-[#DC2626] transition-colors" title="Edit">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -133,6 +155,27 @@ export default function MapelClient({ mapel, refKelompok }: MapelClientProps) {
                                   </svg>
                                 </button>
                               </div>
+                            </td>
+                          );
+                        }
+                        if (col.key === 'nama_mapel') {
+                          const isInduk = Number(row.jumlah_anak || 0) > 0;
+                          return (
+                            <td key={col.key} className="px-4 py-3">
+                              {row.parent_id ? (
+                                <span className="text-gray-400 mr-1.5">↳</span>
+                              ) : null}
+                              <span className={isInduk ? 'font-semibold text-[#1A1A2E]' : ''}>
+                                {row.nama_mapel}
+                              </span>
+                              {isInduk && (
+                                <span className="ml-2 inline-flex items-center bg-red-50 text-[#DC2626] text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                                  Induk
+                                </span>
+                              )}
+                              {row.parent_id && row.nama_induk ? (
+                                <span className="block text-[11px] text-gray-400 ml-4">{row.nama_induk}</span>
+                              ) : null}
                             </td>
                           );
                         }
@@ -181,6 +224,8 @@ export default function MapelClient({ mapel, refKelompok }: MapelClientProps) {
         onClose={closeModals}
         mapel={selected}
         refKelompok={refKelompok}
+        refInduk={refInduk}
+        defaultParentId={defaultParentId}
         onSave={handleSave}
       />
 
