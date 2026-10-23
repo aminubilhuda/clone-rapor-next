@@ -8,6 +8,7 @@ export interface MapelSemester {
   tujuan_max: string;
   deskripsi_min: string;
   tujuan_min: string;
+  children?: MapelSemester[];
 }
 
 export interface KelompokSemester {
@@ -60,19 +61,31 @@ export function generateSemesterRaporHTML(
   waliKelas: { nama: string; nip: string },
 ): string {
   const siswaPages = siswaList.map((siswa) => {
-    const mapelRows = siswa.kelompok_mapels.flatMap((km) => {
-      const kelompokHeader = `<tr><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">${escapeHtml(km.huruf)}. ${escapeHtml(km.kelompok)}</td></tr>`;
-      const subjectRows = km.mapels.map((m, i) => {
-        const nilaiDisplay = m.nilai === 0 ? "0" : String(r(m.nilai));
-        const nilaiStyle = m.nilai === 0 || m.nilai < 75 ? 'color:red;' : 'color:black;';
-        return `<tr>
-          <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${i + 1}</td>
+    const renderMapelRows = (m: MapelSemester, nomor: number) => {
+      const nilaiDisplay = m.nilai === 0 ? "0" : String(r(m.nilai));
+      const nilaiStyle = m.nilai === 0 || m.nilai < 75 ? 'color:red;' : 'color:black;';
+      return `<tr>
+          <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${nomor}</td>
           <td style="width:25%;text-align:left;height:48px;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td>
           <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}" rowspan="2">${nilaiDisplay}</td>
           <td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td>
         </tr>
         <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
+    };
+
+    const mapelRows = siswa.kelompok_mapels.flatMap((km) => {
+      const kelompokHeader = `<tr><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">${escapeHtml(km.huruf)}. ${escapeHtml(km.kelompok)}</td></tr>`;
+
+      let nomor = 0;
+      const subjectRows = km.mapels.flatMap((m) => {
+        if (m.children?.length) {
+          const indukRow = `<tr><td colspan="4" style="padding:5px;font-weight:bold;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td></tr>`;
+          return [indukRow, ...m.children.map((child, i) => renderMapelRows(child, i + 1))];
+        }
+        nomor += 1;
+        return [renderMapelRows(m, nomor)];
       });
+
       return kelompokHeader + subjectRows.join('');
     });
 

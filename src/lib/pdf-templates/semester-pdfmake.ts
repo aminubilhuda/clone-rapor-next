@@ -6,7 +6,7 @@ import type {
   TDocumentDefinitions,
 } from 'pdfmake/interfaces';
 import type { SekolahInfo } from './rapor-template';
-import type { SiswaSemesterRapor } from './semester-template';
+import type { MapelSemester, SiswaSemesterRapor } from './semester-template';
 import { mm, pdfMake } from './pdfmake-runtime';
 
 const PAGE_SIZE = { width: mm(210), height: mm(330) };
@@ -160,11 +160,11 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
       {},
     ]);
 
-    kelompok.mapels.forEach((mapel, index) => {
+    const pushMapel = (mapel: MapelSemester, nomor: number) => {
       const nilai = Math.round(Number(mapel.nilai) || 0);
       const nilaiColor = nilai === 0 || nilai < 75 ? '#ff0000' : '#000000';
       body.push([
-        { text: String(index + 1), rowSpan: 2, alignment: 'center', margin: [0, mm(4), 0, 0] },
+        { text: String(nomor), rowSpan: 2, alignment: 'center', margin: [0, mm(4), 0, 0] },
         {
           text: value(mapel.nama_mapel),
           rowSpan: 2,
@@ -190,7 +190,23 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
           text: competenceText(mapel.deskripsi_min, mapel.tujuan_min),
         },
       ]);
-    });
+    };
+
+    let nomor = 0;
+    for (const mapel of kelompok.mapels) {
+      if (mapel.children?.length) {
+        body.push([
+          { text: value(mapel.nama_mapel), colSpan: 4, bold: true },
+          {},
+          {},
+          {},
+        ]);
+        mapel.children.forEach((child, index) => pushMapel(child, index + 1));
+        continue;
+      }
+      nomor += 1;
+      pushMapel(mapel, nomor);
+    }
   }
 
   return {

@@ -13,10 +13,11 @@ import {
   PelengkapSiswaInfo,
 } from '@/lib/pdf-templates/pelengkap-template';
 import { generatePelengkapRaporPdf } from '@/lib/pdf-templates/pelengkap-pdfmake';
-import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, PresensiData } from '@/lib/pdf-templates/tengah-semester-template';
+import { generateTengahSemesterRaporHTML, SiswaMidRapor, KelompokMapelData, PresensiData, MapelNilai } from '@/lib/pdf-templates/tengah-semester-template';
 import { generateTengahSemesterRaporPdf } from '@/lib/pdf-templates/tengah-semester-pdfmake';
 import { generateSemesterRaporHTML, SiswaSemesterRapor, KelompokSemester, MapelSemester, PrakerinItem, EskulItem, OrganisasiItem } from '@/lib/pdf-templates/semester-template';
 import { generateSemesterRaporPdf } from '@/lib/pdf-templates/semester-pdfmake';
+import { buildMapelHierarki, type MapelHierarkiRow } from '@/lib/mapel-hierarki';
 import { pdfResponse, renderRaporPdf, renderRaporPdfBatch } from '@/lib/pdf-templates/render-pdf';
 
 const VALID_JENIS: JenisRapor[] = ['pelengkap', 'tengah_semester', 'semester', 'p5bk', 'buku_induk'];
@@ -302,8 +303,23 @@ export async function POST(req: NextRequest) {
         'SELECT * FROM kelompok_mapel WHERE deleted_at IS NULL ORDER BY id_kelompok ASC'
       );
 
+      const [mapelMasterRows]: any = await pool.query(
+        'SELECT id_mapel, parent_id, nama_mapel, urut FROM mapel'
+      );
+      const mapelById = new Map<number, MapelHierarkiRow>(
+        mapelMasterRows.map((m: any) => [
+          Number(m.id_mapel),
+          {
+            id_mapel: Number(m.id_mapel),
+            parent_id: m.parent_id == null ? null : Number(m.parent_id),
+            nama_mapel: m.nama_mapel,
+            urut: Number(m.urut),
+          },
+        ]),
+      );
+
       const [mapelSiswaRows]: any = await pool.query(`
-        SELECT ms.id_siswa, m.id_mapel, m.nama_mapel, m.id_kelompok, m.urut
+        SELECT ms.id_siswa, m.id_mapel, m.nama_mapel, m.id_kelompok, m.urut, m.parent_id
         FROM mapel_siswa ms
         JOIN mapel m ON ms.id_mapel = m.id_mapel
         WHERE ms.tahun = ? AND ms.semester = ? AND ms.aktif = 1 AND ms.id_siswa IN (${placeholders})
@@ -378,17 +394,36 @@ export async function POST(req: NextRequest) {
         const siswaMapels = mapelSiswaRows
           .filter((m: any) => m.id_siswa === row.id_siswa);
 
-        const kelompokMapels: KelompokMapelData[] = kelompokRows.map((km: any) => ({
-          huruf: km.huruf,
-          kelompok: km.kelompok,
-          mapels: siswaMapels
-            .filter((m: any) => m.id_kelompok === km.id_kelompok)
-            .map((m: any) => ({
+        const kelompokMapels: KelompokMapelData[] = kelompokRows.map((km: any) => {
+          const hierarki = buildMapelHierarki(
+            siswaMapels.filter((m: any) => m.id_kelompok === km.id_kelompok),
+            mapelById,
+          );
+
+          const mapels: MapelNilai[] = hierarki.map((node) => {
+            if (node.is_parent) {
+              return {
+                nama_mapel: node.nama_mapel,
+                nilai: null,
+                kktp: 70,
+                children: node.items.map((child) => ({
+                  nama_mapel: child.nama_mapel,
+                  nilai: nilaiTsMap.get(`${row.id_siswa}-${child.id_mapel}`) ?? null,
+                  kktp: kktpMap.get(child.id_mapel) || 70,
+                })),
+              };
+            }
+
+            const m = node.items[0];
+            return {
               nama_mapel: m.nama_mapel,
               nilai: nilaiTsMap.get(`${row.id_siswa}-${m.id_mapel}`) ?? null,
               kktp: kktpMap.get(m.id_mapel) || 70,
-            })),
-        })).filter((km: KelompokMapelData) => km.mapels.length > 0);
+            };
+          });
+
+          return { huruf: km.huruf, kelompok: km.kelompok, mapels };
+        }).filter((km: KelompokMapelData) => km.mapels.length > 0);
 
         const presensi: PresensiData[] = absenRows.map((a: any) => {
           const found = presensiRows.find((p: any) => p.id_siswa === row.id_siswa && p.id_absen === a.id_absen);
@@ -468,8 +503,23 @@ export async function POST(req: NextRequest) {
         'SELECT * FROM kelompok_mapel WHERE deleted_at IS NULL ORDER BY id_kelompok ASC'
       );
 
+      const [mapelMasterRows]: any = await pool.query(
+        'SELECT id_mapel, parent_id, nama_mapel, urut FROM mapel'
+      );
+      const mapelById = new Map<number, MapelHierarkiRow>(
+        mapelMasterRows.map((m: any) => [
+          Number(m.id_mapel),
+          {
+            id_mapel: Number(m.id_mapel),
+            parent_id: m.parent_id == null ? null : Number(m.parent_id),
+            nama_mapel: m.nama_mapel,
+            urut: Number(m.urut),
+          },
+        ]),
+      );
+
       const [mapelSiswaRows]: any = await pool.query(`
-        SELECT ms.id_siswa, m.id_mapel, m.nama_mapel, m.id_kelompok, m.urut
+        SELECT ms.id_siswa, m.id_mapel, m.nama_mapel, m.id_kelompok, m.urut, m.parent_id
         FROM mapel_siswa ms
         JOIN mapel m ON ms.id_mapel = m.id_mapel
         WHERE ms.tahun = ? AND ms.semester = ? AND ms.aktif = 1 AND ms.id_siswa IN (${placeholders})
@@ -592,24 +642,51 @@ export async function POST(req: NextRequest) {
         const skInfo = siswaKelasMap.get(row.id_siswa) || { id_kelas: 0, id_tingkat: 0, nama_kelas: row.nama_kelas, fase: '' };
         const siswaMapels = mapelSiswaRows.filter((m: any) => m.id_siswa === row.id_siswa);
 
+        const buatMapelSemester = (m: any): MapelSemester => {
+          const nilai = nilaiMataMap.get(`${row.id_siswa}-${m.id_mapel}`) || 0;
+          const phList = phRows.filter(
+            (p: any) => p.id_siswa === row.id_siswa && p.id_mapel === m.id_mapel
+          );
+          const phMax = phList.length > 0
+            ? phList.reduce((a: any, b: any) => (a.nilai >= b.nilai ? a : b))
+            : null;
+          const phMin = phList.length > 0
+            ? phList.reduce((a: any, b: any) => (a.nilai <= b.nilai ? a : b))
+            : null;
+          return {
+            nama_mapel: m.nama_mapel,
+            nilai,
+            deskripsi_max: phMax ? findDeskripsi(phMax.nilai) : '',
+            tujuan_max: phMax?.id_tujuan ? tpMap.get(phMax.id_tujuan)?.tujuan || '' : '',
+            deskripsi_min: phMin ? findDeskripsi(phMin.nilai) : '',
+            tujuan_min: phMin?.id_tujuan ? tpMap.get(phMin.id_tujuan)?.tujuan || '' : '',
+          };
+        };
+
         const kelompokMapels: KelompokSemester[] = kelompokRows.map((km: any) => {
-          const kmMapels: MapelSemester[] = siswaMapels
-            .filter((m: any) => m.id_kelompok === km.id_kelompok)
-            .map((m: any) => {
-              const nilai = nilaiMataMap.get(`${row.id_siswa}-${m.id_mapel}`) || 0;
-              const phList = phRows.filter((p: any) => p.id_siswa === row.id_siswa && p.id_mapel === m.id_mapel);
-              const phMax = phList.length > 0 ? phList.reduce((a: any, b: any) => a.nilai >= b.nilai ? a : b) : null;
-              const phMin = phList.length > 0 ? phList.reduce((a: any, b: any) => a.nilai <= b.nilai ? a : b) : null;
-              return {
-                nama_mapel: m.nama_mapel,
-                nilai,
-                deskripsi_max: phMax ? findDeskripsi(phMax.nilai) : '',
-                tujuan_max: phMax?.id_tujuan ? tpMap.get(phMax.id_tujuan)?.tujuan || '' : '',
-                deskripsi_min: phMin ? findDeskripsi(phMin.nilai) : '',
-                tujuan_min: phMin?.id_tujuan ? tpMap.get(phMin.id_tujuan)?.tujuan || '' : '',
-              };
-            });
-          return { huruf: km.huruf, kelompok: km.kelompok, mapels: kmMapels };
+          const hierarki = buildMapelHierarki(
+            siswaMapels.filter((m: any) => m.id_kelompok === km.id_kelompok),
+            mapelById,
+          );
+
+          return {
+            huruf: km.huruf,
+            kelompok: km.kelompok,
+            mapels: hierarki.map((node) => {
+              if (node.is_parent) {
+                return {
+                  nama_mapel: node.nama_mapel,
+                  nilai: 0,
+                  deskripsi_max: '',
+                  tujuan_max: '',
+                  deskripsi_min: '',
+                  tujuan_min: '',
+                  children: node.items.map(buatMapelSemester),
+                };
+              }
+              return buatMapelSemester(node.items[0]);
+            }),
+          };
         }).filter((km: KelompokSemester) => km.mapels.length > 0);
 
         const siswaPrakerin: PrakerinItem[] = prakerinRows

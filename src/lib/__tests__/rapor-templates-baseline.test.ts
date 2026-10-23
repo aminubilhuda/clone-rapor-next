@@ -94,6 +94,92 @@ const semesterSiswa: SiswaSemesterRapor = {
   tahunPelajaran: '2026-2027',
 };
 
+describe('rapor dengan sub-mapel', () => {
+  it('tengah semester menampilkan induk sebagai header dan anak bernomor ulang', () => {
+    const siswa: SiswaMidRapor = {
+      ...midSiswa,
+      kelompok_mapels: [
+        {
+          huruf: 'B',
+          kelompok: 'Mata Pelajaran Kejuruan',
+          mapels: [
+            {
+              nama_mapel: 'Rekayasa Perangkat Lunak',
+              nilai: null,
+              kktp: 70,
+              children: [
+                { nama_mapel: 'Basis Data', nilai: 82, kktp: 70 },
+                { nama_mapel: 'Pemrograman Web', nilai: 88, kktp: 70 },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const html = generateTengahSemesterRaporHTML(
+      [siswa],
+      sekolah,
+      '2026-2027',
+      'Ganjil',
+      { nama: 'Wali Kelas', nip: '19800101 200501 1 001' }
+    );
+
+    expect(html).toContain(
+      '<td colspan="4" style="padding:5px;font-weight:bold;border:1px solid #000;">Rekayasa Perangkat Lunak</td>'
+    );
+    expect(html).toContain('>Basis Data</td>');
+    expect(html).toContain('>Pemrograman Web</td>');
+    expect(html).toMatch(/>1<\/td><td[^>]*>Basis Data/);
+    expect(html).toMatch(/>2<\/td><td[^>]*>Pemrograman Web/);
+  });
+
+  it('semester menampilkan induk tanpa nilai', () => {
+    const siswa: SiswaSemesterRapor = {
+      ...semesterSiswa,
+      kelompok_mapels: [
+        {
+          huruf: 'B',
+          kelompok: 'Mata Pelajaran Kejuruan',
+          mapels: [
+            {
+              nama_mapel: 'Rekayasa Perangkat Lunak',
+              nilai: 0,
+              deskripsi_max: '',
+              tujuan_max: '',
+              deskripsi_min: '',
+              tujuan_min: '',
+              children: [
+                {
+                  nama_mapel: 'Basis Data',
+                  nilai: 82,
+                  deskripsi_max: 'Baik dalam',
+                  tujuan_max: 'basis data.',
+                  deskripsi_min: 'Cukup dalam',
+                  tujuan_min: 'dasar basis data.',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const html = generateSemesterRaporHTML(
+      [siswa],
+      sekolah,
+      '2026-2027',
+      'Ganjil',
+      { nama: 'Wali Kelas', nip: '19800101 200501 1 001' }
+    );
+
+    expect(html).toContain(
+      '<td colspan="4" style="padding:5px;font-weight:bold;border:1px solid #000;">Rekayasa Perangkat Lunak</td>'
+    );
+    expect(html).toContain('>Basis Data</td>');
+  });
+});
+
 describe('baseline rapor tanpa hierarki', () => {
   it('tengah semester tidak berubah', () => {
     expect(

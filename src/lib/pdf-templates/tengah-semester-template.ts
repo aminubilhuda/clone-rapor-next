@@ -4,6 +4,7 @@ export interface MapelNilai {
   nama_mapel: string;
   nilai: number | null;
   kktp: number;
+  children?: MapelNilai[];
 }
 
 export interface KelompokMapelData {
@@ -51,14 +52,26 @@ export function generateTengahSemesterRaporHTML(
   waliKelas: { nama: string; nip: string },
 ): string {
   const siswaPages = siswaList.map((siswa) => {
+    const renderMapelRow = (m: MapelNilai, nomor: number) => {
+      const nilai = m.nilai ?? 0;
+      const predikat = getPredikat(m.nilai, m.kktp);
+      const style = getNilaiStyle(m.nilai, m.kktp);
+      return `<tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${style}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${predikat}</td></tr>`;
+    };
+
     const mapelRows = siswa.kelompok_mapels.flatMap((km) => {
       const kelompokHeader = `<tr style="background:#FFFEC5;"><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">${escapeHtml(km.huruf)}. ${escapeHtml(km.kelompok)}</td></tr>`;
-      const subjectRows = km.mapels.map((m, i) => {
-        const nilai = m.nilai ?? 0;
-        const predikat = getPredikat(m.nilai, m.kktp);
-        const style = getNilaiStyle(m.nilai, m.kktp);
-        return `<tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">${i + 1}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${style}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${predikat}</td></tr>`;
+
+      let nomor = 0;
+      const subjectRows = km.mapels.flatMap((m) => {
+        if (m.children?.length) {
+          const indukRow = `<tr><td colspan="4" style="padding:5px;font-weight:bold;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td></tr>`;
+          return [indukRow, ...m.children.map((child, i) => renderMapelRow(child, i + 1))];
+        }
+        nomor += 1;
+        return [renderMapelRow(m, nomor)];
       });
+
       return kelompokHeader + subjectRows.join('');
     });
 

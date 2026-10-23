@@ -169,10 +169,42 @@ function subjectTable(siswa: SiswaMidRapor): Content {
       {},
     ]);
 
-    kelompok.mapels.forEach((mapel, index) => {
+    let nomor = 0;
+    for (const mapel of kelompok.mapels) {
+      if (mapel.children?.length) {
+        body.push([
+          {
+            text: displayValue(mapel.nama_mapel),
+            colSpan: 4,
+            bold: true,
+          },
+          {},
+          {},
+          {},
+        ]);
+        mapel.children.forEach((child, index) => {
+          const nilai = child.nilai ?? 0;
+          body.push([
+            { text: String(index + 1), alignment: 'center' },
+            { text: displayValue(child.nama_mapel) },
+            {
+              text: String(nilai || 0),
+              alignment: 'center',
+              color: child.nilai === null || nilai < child.kktp ? '#ff0000' : '#000000',
+            },
+            {
+              text: getPredikat(child.nilai, child.kktp),
+              alignment: 'center',
+            },
+          ]);
+        });
+        continue;
+      }
+
+      nomor += 1;
       const nilai = mapel.nilai ?? 0;
       body.push([
-        { text: String(index + 1), alignment: 'center' },
+        { text: String(nomor), alignment: 'center' },
         { text: displayValue(mapel.nama_mapel) },
         {
           text: String(nilai || 0),
@@ -184,7 +216,7 @@ function subjectTable(siswa: SiswaMidRapor): Content {
           alignment: 'center',
         },
       ]);
-    });
+    }
   }
 
   return {
