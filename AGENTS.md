@@ -34,6 +34,10 @@ Server actions yang INSERT cukup SELECT tahun/semester langsung dari tabel `seko
 
 Tabel **master** (tanpa tahun/semester): `kelas`, `users`, `mapel`, `eskul`, `kompetensi_keahlian`, `deskripsi_rapor`, `piket_harian` — gak perlu filter.
 
+- Mapel konsentrasi Fase F boleh punya sub-mapel (`mapel.parent_id`, maks. 1 level).
+  Induk hanya menjadi header rapor jika pada periode itu ada anak yang diikuti siswa.
+  Panduan pengisian: `docs/mapel-konsentrasi.md`.
+
 ## Chrome DevTools MCP — Sudah Terpasang
 
 `chrome-devtools-mcp` sudah dikonfigurasi di `opencode.json`. Tools:
