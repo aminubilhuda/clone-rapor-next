@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
     // Runtime & tooling artifacts:
     "storage/**",
     "graphify-out/**",
+    ".playwright-mcp/**",
+    ".opencode/**",
     // Node CommonJS config (bukan kode aplikasi):
     "ecosystem.config.js",
   ]),

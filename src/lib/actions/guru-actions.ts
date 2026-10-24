@@ -3,6 +3,7 @@
 import { pool } from '@/lib/db';
 import { requireGuru } from '@/lib/actions/auth-guard';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
+import { getKelengkapanPembina } from '@/lib/kelengkapan-ekstra';
 
 export interface GuruTugas {
   isWaliKelas: boolean;
@@ -15,8 +16,10 @@ export interface GuruTugas {
   isKokurikuler: boolean;
   isGuruBK: boolean;
   kelasList: { id_kelas: number; nama_kelas: string }[];
-  ekstraList: { id_eskul: number; nama_eskul: string }[];
-  organisasiList: { id_organisasi: number; nama_organisasi: string }[];
+  ekstraList: { id_eskul: number; nama_eskul: string; belumLengkap: boolean }[];
+  organisasiList: { id_organisasi: number; nama_organisasi: string; belumLengkap: boolean }[];
+  ekstraBelum: number;
+  organisasiBelum: number;
 }
 
 export async function getGuruTugas(): Promise<GuruTugas | null> {
@@ -24,6 +27,7 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
   if (authResult.error || !authResult.user) return null;
 
   const idUser = authResult.user.id_user;
+  if (!idUser) return null;
   const sekolah = await getSekolahWithFilter();
   const { tahun, semester } = sekolah;
 
@@ -88,6 +92,14 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
       [idUser]
     );
 
+    const kelengkapan = await getKelengkapanPembina(idUser, tahun, semester);
+    const statusEskul = new Map(
+      kelengkapan.filter((k) => k.jenis === 'eskul').map((k) => [k.id, k.lengkap]),
+    );
+    const statusOrganisasi = new Map(
+      kelengkapan.filter((k) => k.jenis === 'organisasi').map((k) => [k.id, k.lengkap]),
+    );
+
     return {
       isWaliKelas: waliRows.length > 0,
       isPembinaEkstra: ekstraRows.length > 0,
@@ -99,8 +111,18 @@ export async function getGuruTugas(): Promise<GuruTugas | null> {
       isKokurikuler: kokurikulerRows.length > 0,
       isGuruBK: guruBKRows.length > 0,
       kelasList: waliRows.map((r: any) => ({ id_kelas: r.id_kelas, nama_kelas: r.nama_kelas })),
-      ekstraList: ekstraRows.map((r: any) => ({ id_eskul: r.id_eskul, nama_eskul: r.nama_eskul })),
-      organisasiList: orgRows.map((r: any) => ({ id_organisasi: r.id_organisasi, nama_organisasi: r.nama_organisasi })),
+      ekstraList: ekstraRows.map((r: any) => ({
+        id_eskul: r.id_eskul,
+        nama_eskul: r.nama_eskul,
+        belumLengkap: statusEskul.get(Number(r.id_eskul)) === false,
+      })),
+      organisasiList: orgRows.map((r: any) => ({
+        id_organisasi: r.id_organisasi,
+        nama_organisasi: r.nama_organisasi,
+        belumLengkap: statusOrganisasi.get(Number(r.id_organisasi)) === false,
+      })),
+      ekstraBelum: [...statusEskul.values()].filter((lengkap) => !lengkap).length,
+      organisasiBelum: [...statusOrganisasi.values()].filter((lengkap) => !lengkap).length,
     };
   } catch (e) {
     console.error('getGuruTugas error:', e);

@@ -2,6 +2,12 @@ import { pool } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import {
+  getKelengkapanPembina,
+  hrefKelengkapan,
+  labelKelengkapan,
+} from '@/lib/kelengkapan-ekstra';
 
 async function getGuruDashboard() {
   const session = await auth();
@@ -39,10 +45,12 @@ async function getGuruDashboard() {
 
     const [semesterRows]: any = await pool.query('SELECT * FROM semester WHERE id_semester = ?', [sekolah.semester]);
     const [tahunRows]: any = await pool.query('SELECT * FROM tahun_pelajaran WHERE id_tahun_pelajaran = ?', [sekolah.tahun]);
+    const tugas = await getKelengkapanPembina(Number(idUser), sekolah.tahun, sekolah.semester);
 
     return {
       user,
       sekolah,
+      tugas,
       stats: {
         jumlahKelasAmpuh,
         jumlahWali,
@@ -67,11 +75,53 @@ export default async function GuruDashboardPage() {
     return <div className="text-center py-20 text-red-500">Gagal memuat data dashboard.</div>;
   }
 
-  const { user, stats } = data;
+  const { user, stats, tugas } = data;
+  const belumLengkap = tugas.filter((item) => !item.lengkap);
 
   return (
     <div>
       <h4 className="text-xl font-semibold mb-6 text-[#1A1A2E]">Dashboard Guru</h4>
+
+      {belumLengkap.length > 0 && (
+        <div className="mb-8 rounded-xl border border-amber-200 bg-amber-50/70 p-5">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h5 className="font-semibold text-[#1A1A2E]">Perlu Diisi</h5>
+              <p className="text-sm text-[#6B7280] mt-0.5">
+                {belumLengkap.length} data ekstrakurikuler/organisasi yang Anda bina belum lengkap
+                untuk periode {stats.semester} {stats.tahunPelajaran}.
+              </p>
+              <ul className="mt-3 space-y-2">
+                {belumLengkap.map((item) => (
+                  <li
+                    key={`${item.jenis}-${item.id}`}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-white px-3 py-2"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-[#1A1A2E]">{item.nama}</div>
+                      <div className="text-xs text-amber-700">
+                        {item.jenis === 'eskul' ? 'Ekstrakurikuler' : 'Organisasi'} ·{' '}
+                        {labelKelengkapan(item)}
+                      </div>
+                    </div>
+                    <Link
+                      href={hrefKelengkapan(item)}
+                      className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-amber-600"
+                    >
+                      Isi sekarang
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] p-4">
