@@ -162,6 +162,7 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
         rowSpan: 2,
         alignment: 'left',
         verticalAlignment: 'middle',
+        ...(options.child ? { margin: [mm(4), 0, 0, 0] } : {}),
       },
       {
         text: String(nilai),
@@ -207,16 +208,19 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
             text: String(nomor),
             rowSpan: 1 + children.length * 2,
             alignment: 'center',
-            verticalAlignment: 'middle',
+            verticalAlignment: 'top',
+            margin: [0, mm(1.2), 0, 0],
           },
           {
             text: value(mapel.nama_mapel),
             bold: true,
             alignment: 'left',
             verticalAlignment: 'middle',
+            fillColor: '#F3F4F6',
+            margin: [0, mm(2), 0, mm(2)],
           },
-          { text: '', alignment: 'center' },
-          { text: '' },
+          { text: '—', alignment: 'center', verticalAlignment: 'middle', color: '#6B7280', fillColor: '#F3F4F6' },
+          { text: '', fillColor: '#F3F4F6' },
         ]);
 
         children.forEach((child, childIndex) => {

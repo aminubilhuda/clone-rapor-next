@@ -74,17 +74,17 @@ export function generateSemesterRaporHTML(
         <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
 
     const renderChildRows = (m: MapelSemester, nomorAnak: number) => `<tr>
-          <td style="width:25%;text-align:left;height:48px;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${nomorAnak}. ${escapeHtml(m.nama_mapel)}</td>
+          <td style="width:25%;text-align:left;height:48px;padding:3px 3px 3px 16px;vertical-align:middle;border:1px solid #000;" rowspan="2">${nomorAnak}. ${escapeHtml(m.nama_mapel)}</td>
           <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${gayaNilai(m)}" rowspan="2">${tampilNilai(m)}</td>
           <td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td>
         </tr>
         <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
 
     const renderParentRow = (m: MapelSemester, nomor: number, rowspan: number) => `<tr>
-          <td style="width:5%;text-align:center;vertical-align:middle;padding:3px;border:1px solid #000;" rowspan="${rowspan}">${nomor}</td>
-          <td style="width:25%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;font-weight:bold;">${escapeHtml(m.nama_mapel)}</td>
-          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;"></td>
-          <td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;"></td>
+          <td style="width:5%;text-align:center;vertical-align:top;padding:6px 3px 3px;border:1px solid #000;" rowspan="${rowspan}">${nomor}</td>
+          <td style="width:25%;text-align:left;height:32px;padding:4px 3px;vertical-align:middle;border:1px solid #000;font-weight:bold;background:#F3F4F6;">${escapeHtml(m.nama_mapel)}</td>
+          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;background:#F3F4F6;color:#6B7280;">&mdash;</td>
+          <td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;background:#F3F4F6;"></td>
         </tr>`;
 
     const mapelRows = siswa.kelompok_mapels.flatMap((km) => {

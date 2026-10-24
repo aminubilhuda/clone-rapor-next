@@ -4,6 +4,7 @@ import { createSemesterRaporDefinition } from '../pdf-templates/semester-pdfmake
 import type { SiswaSemesterRapor } from '../pdf-templates/semester-template';
 import { createTengahSemesterRaporDefinition } from '../pdf-templates/tengah-semester-pdfmake';
 import type { SiswaMidRapor } from '../pdf-templates/tengah-semester-template';
+import { mm } from '../pdf-templates/pdfmake-runtime';
 
 const sekolah = {
   nama_sekolah: 'SMK Negeri 1 Contoh',
@@ -20,6 +21,9 @@ interface TestCell {
   colSpan?: number;
   alignment?: string;
   verticalAlignment?: string;
+  fillColor?: string;
+  color?: string;
+  margin?: number[];
 }
 
 interface TestSubjectTable {
@@ -130,15 +134,24 @@ describe('pdfmake rapor dengan sub-mapel', () => {
       text: '2',
       rowSpan: 5,
       alignment: 'center',
-      verticalAlignment: 'middle',
+      verticalAlignment: 'top',
+      margin: [0, mm(1.2), 0, 0],
     });
-    expect(induk[1]).toMatchObject({ text: 'Rekayasa Perangkat Lunak', bold: true });
-    expect(induk[2].text).toBe('');
+    expect(induk[1]).toMatchObject({
+      text: 'Rekayasa Perangkat Lunak',
+      bold: true,
+      fillColor: '#F3F4F6',
+    });
+    expect(induk[2].text).toBe('—');
     expect(induk[3].text).toBe('');
 
     const basis = rowWith(table, '1. Basis Data');
     expect(basis[0].text).toBeUndefined();
-    expect(basis[1]).toMatchObject({ text: '1. Basis Data', rowSpan: 2 });
+    expect(basis[1]).toMatchObject({
+      text: '1. Basis Data',
+      rowSpan: 2,
+      margin: [mm(4), 0, 0, 0],
+    });
     expect(rowWith(table, '2. Pemrograman Web')[1].text).toBe('2. Pemrograman Web');
     expect(rowWith(table, 'Desain Visual')[0].text).toBe('3');
   });
@@ -163,13 +176,22 @@ describe('pdfmake rapor dengan sub-mapel', () => {
       text: '2',
       rowSpan: 3,
       alignment: 'center',
-      verticalAlignment: 'middle',
+      verticalAlignment: 'top',
+      margin: [0, mm(1.2), 0, 0],
     });
-    expect(induk[1]).toMatchObject({ text: 'Rekayasa Perangkat Lunak', bold: true });
+    expect(induk[1]).toMatchObject({
+      text: 'Rekayasa Perangkat Lunak',
+      bold: true,
+      fillColor: '#F3F4F6',
+    });
+    expect(induk[2].text).toBe('—');
 
     const basis = rowWith(table, '1. Basis Data');
     expect(basis[0].text).toBeUndefined();
-    expect(basis[1].text).toBe('1. Basis Data');
+    expect(basis[1]).toMatchObject({
+      text: '1. Basis Data',
+      margin: [mm(4), 0, 0, 0],
+    });
     expect(rowWith(table, '2. Pemrograman Web')[1].text).toBe('2. Pemrograman Web');
     expect(rowWith(table, 'Desain Visual')[0].text).toBe('3');
   });

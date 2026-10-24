@@ -179,18 +179,27 @@ function subjectTable(siswa: SiswaMidRapor): Content {
             text: String(nomor),
             rowSpan: 1 + children.length,
             alignment: 'center',
-            verticalAlignment: 'middle',
+            verticalAlignment: 'top',
+            margin: [0, mm(1.2), 0, 0],
           },
-          { text: displayValue(mapel.nama_mapel), bold: true },
-          { text: '', alignment: 'center' },
-          { text: '', alignment: 'center' },
+          {
+            text: displayValue(mapel.nama_mapel),
+            bold: true,
+            fillColor: '#F3F4F6',
+            margin: [0, mm(2), 0, mm(2)],
+          },
+          { text: '—', alignment: 'center', color: '#6B7280', fillColor: '#F3F4F6' },
+          { text: '', alignment: 'center', fillColor: '#F3F4F6' },
         ]);
 
         children.forEach((child, childIndex) => {
           const nilai = child.nilai ?? 0;
           body.push([
             {},
-            { text: `${childIndex + 1}. ${displayValue(child.nama_mapel)}` },
+            {
+              text: `${childIndex + 1}. ${displayValue(child.nama_mapel)}`,
+              margin: [mm(4), 0, 0, 0],
+            },
             {
               text: String(nilai || 0),
               alignment: 'center',

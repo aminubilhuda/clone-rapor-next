@@ -59,10 +59,10 @@ export function generateTengahSemesterRaporHTML(
 
     const renderChildRow = (m: MapelNilai, nomorAnak: number) => {
       const nilai = m.nilai ?? 0;
-      return `<tr><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">${nomorAnak}. ${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(m.nilai, m.kktp)}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(m.nilai, m.kktp)}</td></tr>`;
+      return `<tr><td style="width:50%;text-align:left;padding:4px 4px 4px 16px;border:1px solid #000;">${nomorAnak}. ${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(m.nilai, m.kktp)}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(m.nilai, m.kktp)}</td></tr>`;
     };
 
-    const renderParentRow = (m: MapelNilai, nomor: number, rowspan: number) => `<tr><td style="width:5%;text-align:center;vertical-align:middle;padding:3px;border:1px solid #000;" rowspan="${rowspan}">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;font-weight:bold;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;"></td><td style="width:15%;text-align:center;border:1px solid #000;"></td></tr>`;
+    const renderParentRow = (m: MapelNilai, nomor: number, rowspan: number) => `<tr><td style="width:5%;text-align:center;vertical-align:top;padding:6px 3px 3px;border:1px solid #000;" rowspan="${rowspan}">${nomor}</td><td style="width:50%;text-align:left;height:32px;padding:4px;border:1px solid #000;font-weight:bold;background:#F3F4F6;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;background:#F3F4F6;color:#6B7280;">&mdash;</td><td style="width:15%;text-align:center;border:1px solid #000;background:#F3F4F6;"></td></tr>`;
 
     const mapelRows = siswa.kelompok_mapels.flatMap((km) => {
       const kelompokHeader = `<tr style="background:#FFFEC5;"><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">${escapeHtml(km.huruf)}. ${escapeHtml(km.kelompok)}</td></tr>`;

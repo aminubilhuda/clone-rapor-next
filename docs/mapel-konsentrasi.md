@@ -275,9 +275,9 @@ No │ Mata Pelajaran                 │ Nilai │ Capaian Kompetensi
    │ 2. Pemrograman Web             │  88   │ Baik dalam ...
 ```
 
-- Sel `No` induk **menggabung seluruh blok** (`rowspan` = 1 baris induk + 2 baris per anak), nomor ditampilkan di tengah.
-- Baris induk: tebal, tanpa nilai/capaian.
-- Anak: nomor inline `1.`, `2.`, ... di kolom Mata Pelajaran, tanpa sel `No` sendiri.
+- Sel `No` induk **menggabung seluruh blok** (`rowspan` = 1 baris induk + 2 baris per anak) dan nomornya **rata atas** agar sejajar dengan nama induk.
+- Baris induk: tebal, berlatar abu tipis (`#F3F4F6`), nilai diisi `—`, capaian dikosongkan.
+- Anak: nomor inline `1.`, `2.`, ... di kolom Mata Pelajaran, menjorok 16 px, tanpa sel `No` sendiri.
 - Nilai dari `nilai_mata_pelajaran`; capaian dari TP anak.
 
 ### Rapor Tengah Semester
@@ -290,8 +290,8 @@ No │ Mata Pelajaran                 │ Nilai │ Predikat
    │ 2. Pemrograman Web             │  88   │ A
 ```
 
-- Sel `No` induk **menggabung seluruh blok** (`rowspan` = 1 baris induk + jumlah anak).
-- Baris induk: tebal, tanpa nilai/predikat.
+- Sel `No` induk **menggabung seluruh blok** (`rowspan` = 1 baris induk + jumlah anak), nomor rata atas.
+- Baris induk: tebal, berlatar abu tipis (`#F3F4F6`), nilai diisi `—`, predikat dikosongkan.
 - Nilai dari `nilai_sumatif_ts`; predikat dari KKTP anak.
 
 ## 11. Rollback

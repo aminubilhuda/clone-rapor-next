@@ -189,12 +189,15 @@ describe('rapor dengan sub-mapel', () => {
     ]);
 
     const induk = rowWith(html, 'Rekayasa Perangkat Lunak');
-    expect(induk).toMatch(/<td style="[^"]*vertical-align:middle[^"]*" rowspan="3">2<\/td>/);
+    expect(induk).toMatch(/<td style="[^"]*vertical-align:top[^"]*" rowspan="3">2<\/td>/);
     expect(induk).toMatch(/font-weight:bold[^>]*>Rekayasa Perangkat Lunak/);
+    expect(induk).toContain('background:#F3F4F6');
+    expect(induk).toContain('&mdash;');
     expect(induk.match(/<td/g)).toHaveLength(4);
 
     const basis = rowWith(html, 'Basis Data');
     expect(basis).toContain('>1. Basis Data<');
+    expect(basis).toContain('padding:4px 4px 4px 16px');
     expect(basis.match(/<td/g)).toHaveLength(3);
     expect(rowWith(html, 'Pemrograman Web')).toContain('>2. Pemrograman Web<');
     expect(rowWith(html, 'Desain Visual')).toMatch(/>3<\/td>/);
@@ -208,12 +211,15 @@ describe('rapor dengan sub-mapel', () => {
     ]);
 
     const induk = rowWith(html, 'Rekayasa Perangkat Lunak');
-    expect(induk).toMatch(/<td style="[^"]*vertical-align:middle[^"]*" rowspan="5">2<\/td>/);
+    expect(induk).toMatch(/<td style="[^"]*vertical-align:top[^"]*" rowspan="5">2<\/td>/);
     expect(induk).toMatch(/font-weight:bold[^>]*>Rekayasa Perangkat Lunak/);
+    expect(induk).toContain('background:#F3F4F6');
+    expect(induk).toContain('&mdash;');
     expect(induk.match(/<td/g)).toHaveLength(4);
 
     const basis = rowWith(html, 'Basis Data');
     expect(basis).toContain('>1. Basis Data<');
+    expect(basis).toContain('padding:3px 3px 3px 16px');
     expect(basis.match(/<td/g)).toHaveLength(3);
     expect(rowWith(html, 'Pemrograman Web')).toContain('>2. Pemrograman Web<');
     expect(rowWith(html, 'Desain Visual')).toMatch(/>3<\/td>/);
