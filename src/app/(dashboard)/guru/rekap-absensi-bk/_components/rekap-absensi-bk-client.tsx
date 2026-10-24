@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/toast-provider';
 import {
   getKelasListForBK,
@@ -30,6 +30,8 @@ const ABSEN_COLS = [
   { key: 'tanpa_berita', label: 'TB', full: 'Tanpa Berita', text: 'text-rose-600', dot: 'bg-rose-500', chip: 'bg-rose-50 text-rose-700' },
 ] as const;
 
+const selKey = (idSiswa: number, field: string) => `${idSiswa}-${field}`;
+
 export default function RekapAbsensiBKClient() {
   const { showToast } = useToast();
   const [kelasList, setKelasList] = useState<KelasItem[]>([]);
@@ -38,9 +40,8 @@ export default function RekapAbsensiBKClient() {
   const [loadingKelas, setLoadingKelas] = useState(true);
   const [loadingData, setLoadingData] = useState(false);
   const [search, setSearch] = useState('');
-  const [editingCell, setEditingCell] = useState<{ idSiswa: number; field: string } | null>(null);
-  const [editValue, setEditValue] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const cancelRef = useRef<string | null>(null);
 
   useEffect(() => {
     getKelasListForBK().then((data) => {
@@ -60,45 +61,39 @@ export default function RekapAbsensiBKClient() {
   const handleKelasChange = (idKelas: number) => {
     setSelectedKelas(idKelas);
     setSearch('');
-    setEditingCell(null);
+    setDraft({});
     if (idKelas) loadData(idKelas);
   };
 
-  const startEdit = (idSiswa: number, field: string, value: number) => {
-    setEditingCell({ idSiswa, field });
-    setEditValue(String(value));
-  };
+  const commitValue = async (idSiswa: number, field: string, raw: string, original: number) => {
+    const key = selKey(idSiswa, field);
+    const jumlah = Math.max(0, parseInt(raw || '0', 10) || 0);
+    const clearDraft = () =>
+      setDraft((prev) => {
+        if (!(key in prev)) return prev;
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
 
-  const handleSave = async (idSiswa: number, field: string) => {
-    const jumlah = parseInt(editValue) || 0;
+    if (jumlah === original) {
+      clearDraft();
+      return;
+    }
+
     const idAbsen = field === 'hadir' ? 1 : field === 'sakit' ? 2 : field === 'izin' ? 3 : 4;
-
-    setSaving(true);
     const result = await updatePresensiInline(idSiswa, selectedKelas!, idAbsen, jumlah);
-    setSaving(false);
 
     if (result.success) {
       setRekapData((prev) =>
-        prev.map((r) =>
-          r.id_siswa === idSiswa ? { ...r, [field]: jumlah } : r
-        )
+        prev.map((r) => (r.id_siswa === idSiswa ? { ...r, [field]: jumlah } : r))
       );
       showToast('Berhasil diupdate', 'success');
     } else {
       showToast(result.error || 'Gagal update', 'error');
     }
 
-    setEditingCell((prev) =>
-      prev?.idSiswa === idSiswa && prev?.field === field ? null : prev
-    );
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent, idSiswa: number, field: string) => {
-    if (e.key === 'Enter') {
-      handleSave(idSiswa, field);
-    } else if (e.key === 'Escape') {
-      setEditingCell(null);
-    }
+    clearDraft();
   };
 
   const filtered = rekapData.filter((r) =>
@@ -244,37 +239,47 @@ export default function RekapAbsensiBKClient() {
                           <td className="px-4 py-1.5 text-xs tabular-nums text-[#9CA3AF]">{i + 1}</td>
                           <td className="px-4 py-1.5 font-medium text-[#1A1A2E]">{row.nama_siswa}</td>
                           {ABSEN_COLS.map((col) => {
-                            const isEditing = editingCell?.idSiswa === row.id_siswa && editingCell?.field === col.key;
+                            const key = selKey(row.id_siswa, col.key);
                             const value = Number(row[col.key as keyof RekapItem]) || 0;
+                            const raw = draft[key] ?? (value === 0 ? '' : String(value));
                             return (
                               <td key={col.key} className="px-2 py-1.5 text-center">
-                                {isEditing ? (
-                                  <input
-                                    type="number"
-                                    inputMode="numeric"
-                                    value={editValue}
-                                    onChange={(e) => setEditValue(e.target.value)}
-                                    onKeyDown={(e) => handleKeyDown(e, row.id_siswa, col.key)}
-                                    onBlur={() => handleSave(row.id_siswa, col.key)}
-                                    onFocus={(e) => e.currentTarget.select()}
-                                    autoFocus
-                                    disabled={saving}
-                                    className="h-8 w-14 rounded-lg border border-[rgba(0,0,0,0.12)] bg-white text-center text-sm font-semibold tabular-nums outline-none focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20"
-                                  />
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => startEdit(row.id_siswa, col.key, value)}
-                                    title={`Edit ${col.full}`}
-                                    className="inline-flex h-8 min-w-9 items-center justify-center rounded-lg px-2 transition-colors hover:bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-red-500/20"
-                                  >
-                                    {value === 0 ? (
-                                      <span className="text-sm text-[#D1D5DB]">–</span>
-                                    ) : (
-                                      <span className={`text-sm font-semibold tabular-nums ${col.text}`}>{value}</span>
-                                    )}
-                                  </button>
-                                )}
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={raw}
+                                  placeholder="–"
+                                  aria-label={`${col.full} ${row.nama_siswa}`}
+                                  onChange={(e) => {
+                                    const next = e.target.value.replace(/[^\d]/g, '');
+                                    setDraft((prev) => ({ ...prev, [key]: next }));
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.currentTarget.blur();
+                                    } else if (e.key === 'Escape') {
+                                      cancelRef.current = key;
+                                      setDraft((prev) => {
+                                        if (!(key in prev)) return prev;
+                                        const next = { ...prev };
+                                        delete next[key];
+                                        return next;
+                                      });
+                                      e.currentTarget.blur();
+                                    }
+                                  }}
+                                  onBlur={(e) => {
+                                    if (cancelRef.current === key) {
+                                      cancelRef.current = null;
+                                      return;
+                                    }
+                                    void commitValue(row.id_siswa, col.key, e.currentTarget.value, value);
+                                  }}
+                                  onFocus={(e) => e.currentTarget.select()}
+                                  className={`h-8 w-12 rounded-md border border-[rgba(0,0,0,0.06)] bg-white text-center text-sm font-semibold tabular-nums outline-none transition-colors placeholder:font-normal placeholder:text-[#D1D5DB] hover:border-[rgba(0,0,0,0.12)] focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20 ${
+                                    raw !== '' ? col.text : 'text-[#1A1A2E]'
+                                  }`}
+                                />
                               </td>
                             );
                           })}
@@ -322,7 +327,7 @@ export default function RekapAbsensiBKClient() {
         {/* Footer hint */}
         {showTable && (
           <div className="shrink-0 border-t border-[rgba(0,0,0,0.04)] px-5 py-2.5">
-            <p className="text-xs text-[#6B7280]">Klik angka pada kolom H/S/I/TB untuk mengedit. Enter menyimpan, Esc membatalkan. Tanda – berarti 0.</p>
+            <p className="text-xs text-[#6B7280]">Ketik langsung pada kolom H/S/I/TB. Enter menyimpan, Esc membatalkan, kosong berarti 0.</p>
           </div>
         )}
       </div>
