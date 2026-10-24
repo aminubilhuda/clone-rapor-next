@@ -24,6 +24,7 @@ interface PiketHarianClientProps {
 export default function PiketHarianClient({ data, refUser }: PiketHarianClientProps) {
   const { showToast } = useToast();
   const [activeDropdown, setActiveDropdown] = useState<{ dayId: number; row: number } | null>(null);
+  const [userSearch, setUserSearch] = useState('');
   const [saving, setSaving] = useState(false);
 
   const dayMap: Record<number, any[]> = {};
@@ -102,7 +103,11 @@ export default function PiketHarianClient({ data, refUser }: PiketHarianClientPr
                         ) : (
                           <div className="relative">
                             <button
-                              onClick={() => setActiveDropdown(activeDropdown?.dayId === day.id && activeDropdown?.row === i ? null : { dayId: day.id, row: i })}
+                              onClick={() => {
+                                const same = activeDropdown?.dayId === day.id && activeDropdown?.row === i;
+                                setActiveDropdown(same ? null : { dayId: day.id, row: i });
+                                setUserSearch('');
+                              }}
                               disabled={saving || available.length === 0}
                               className="inline-flex items-center justify-center w-7 h-7 rounded-lg border border-dashed border-[rgba(0,0,0,0.15)] text-[#6B7280] hover:border-[#DC2626] hover:text-[#DC2626] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                             >
@@ -114,16 +119,45 @@ export default function PiketHarianClient({ data, refUser }: PiketHarianClientPr
                             {activeDropdown?.dayId === day.id && activeDropdown?.row === i && (
                               <>
                                 <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)} />
-                                <div className="absolute top-full left-0 mt-1 z-50 bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.06)] min-w-[180px] max-h-[180px] overflow-y-auto">
-                                  {available.map((u: any) => (
-                                    <button
-                                      key={u.id_user}
-                                      onClick={() => handleAdd(day.id, u.id_user)}
-                                      className="block w-full text-left px-3 py-2 text-sm text-[#1A1A2E] hover:bg-[#F8F9FB] transition-colors"
-                                    >
-                                      {u.nama}
-                                    </button>
-                                  ))}
+                                <div className="absolute left-0 top-full z-50 mt-1 w-64 overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white premium-shadow">
+                                  <div className="border-b border-[rgba(0,0,0,0.06)] p-2">
+                                    <div className="relative">
+                                      <svg className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                      </svg>
+                                      <input
+                                        type="text"
+                                        autoFocus
+                                        value={userSearch}
+                                        onChange={(e) => setUserSearch(e.target.value)}
+                                        placeholder="Cari guru..."
+                                        className="w-full rounded-lg border border-[rgba(0,0,0,0.08)] bg-[#F8F9FB] py-1.5 pl-8 pr-2 text-xs outline-none focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="max-h-[200px] overflow-y-auto">
+                                    {available.filter((u: any) =>
+                                      u.nama.toLowerCase().includes(userSearch.toLowerCase().trim()),
+                                    ).length === 0 ? (
+                                      <div className="px-3 py-3 text-center text-xs text-[#9CA3AF]">
+                                        Tidak ada guru yang cocok
+                                      </div>
+                                    ) : (
+                                      available
+                                        .filter((u: any) =>
+                                          u.nama.toLowerCase().includes(userSearch.toLowerCase().trim()),
+                                        )
+                                        .map((u: any) => (
+                                          <button
+                                            key={u.id_user}
+                                            onClick={() => handleAdd(day.id, u.id_user)}
+                                            className="block w-full px-3 py-2 text-left text-sm text-[#1A1A2E] transition-colors hover:bg-[#F8F9FB]"
+                                          >
+                                            {u.nama}
+                                          </button>
+                                        ))
+                                    )}
+                                  </div>
                                 </div>
                               </>
                             )}
