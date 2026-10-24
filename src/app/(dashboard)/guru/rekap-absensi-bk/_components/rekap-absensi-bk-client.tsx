@@ -24,10 +24,10 @@ interface RekapItem {
 }
 
 const ABSEN_COLS = [
-  { key: 'hadir', label: 'H', color: 'text-[#16A34A]', bg: 'bg-[#F0FDF4]' },
-  { key: 'sakit', label: 'S', color: 'text-[#EA580C]', bg: 'bg-[#FFF7ED]' },
-  { key: 'izin', label: 'I', color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]' },
-  { key: 'tanpa_berita', label: 'TB', color: 'text-[#DC2626]', bg: 'bg-[#FEF2F2]' },
+  { key: 'hadir', label: 'H', full: 'Hadir', text: 'text-emerald-600', dot: 'bg-emerald-500', chip: 'bg-emerald-50 text-emerald-700' },
+  { key: 'sakit', label: 'S', full: 'Sakit', text: 'text-amber-600', dot: 'bg-amber-500', chip: 'bg-amber-50 text-amber-700' },
+  { key: 'izin', label: 'I', full: 'Izin', text: 'text-sky-600', dot: 'bg-sky-500', chip: 'bg-sky-50 text-sky-700' },
+  { key: 'tanpa_berita', label: 'TB', full: 'Tanpa Berita', text: 'text-rose-600', dot: 'bg-rose-500', chip: 'bg-rose-50 text-rose-700' },
 ] as const;
 
 export default function RekapAbsensiBKClient() {
@@ -110,6 +110,12 @@ export default function RekapAbsensiBKClient() {
   const totalIzin = filtered.reduce((sum, r) => sum + r.izin, 0);
   const totalTB = filtered.reduce((sum, r) => sum + r.tanpa_berita, 0);
   const totalAll = totalHadir + totalSakit + totalIzin + totalTB;
+  const totalPerKolom: Record<string, number> = {
+    hadir: totalHadir,
+    sakit: totalSakit,
+    izin: totalIzin,
+    tanpa_berita: totalTB,
+  };
 
   const showEmpty = !loadingKelas && !selectedKelas;
   const showTable = !loadingData && selectedKelas && rekapData.length > 0;
@@ -191,93 +197,132 @@ export default function RekapAbsensiBKClient() {
 
           {/* Table */}
           {showTable && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-white z-10">
-                  <tr className="border-b border-[rgba(0,0,0,0.06)]">
-                    <th className="text-left px-5 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium w-10">No</th>
-                    <th className="text-left px-5 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium">Nama Siswa</th>
-                    {ABSEN_COLS.map((col) => (
-                      <th key={col.key} className="text-center px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium w-20">
-                        {col.label}
-                      </th>
-                    ))}
-                    <th className="text-center px-4 py-3 text-[#6B7280] text-xs uppercase tracking-wider font-medium w-20">Jumlah</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((row, i) => {
-                    const jumlah = row.hadir + row.sakit + row.izin + row.tanpa_berita;
-                    return (
-                      <tr key={row.id_siswa} className="border-b border-[rgba(0,0,0,0.03)] hover:bg-[#F8F9FB] transition-colors">
-                        <td className="px-5 py-2.5 text-[#6B7280]">{i + 1}</td>
-                        <td className="px-5 py-2.5 font-medium text-[#1A1A2E]">{row.nama_siswa}</td>
-                        {ABSEN_COLS.map((col) => {
-                          const isEditing = editingCell?.idSiswa === row.id_siswa && editingCell?.field === col.key;
-                          const value = row[col.key as keyof RekapItem] as number;
-                          return (
-                            <td key={col.key} className={`px-4 py-2.5 text-center ${col.bg}`}>
-                              {isEditing ? (
-                                <input
-                                  type="number"
-                                  inputMode="numeric"
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  onKeyDown={(e) => handleKeyDown(e, row.id_siswa, col.key)}
-                                  onBlur={() => handleSave(row.id_siswa, col.key)}
-                                  onFocus={(e) => e.currentTarget.select()}
-                                  autoFocus
-                                  disabled={saving}
-                                  className="w-14 text-center text-sm font-semibold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1 py-0.5 outline-none focus:ring-2 focus:ring-red-500/20"
-                                />
-                              ) : (
-                                <button
-                                  type="button"
-                                  className={`inline-block w-14 cursor-pointer rounded text-center font-semibold transition-colors hover:bg-white/70 focus:outline-none focus:ring-2 focus:ring-red-500/20 ${col.color}`}
-                                  onClick={() => startEdit(row.id_siswa, col.key, value)}
-                                  title="Klik untuk edit"
-                                >
-                                  {value}
-                                </button>
-                              )}
-                            </td>
-                          );
-                        })}
-                        <td className="px-4 py-2.5 text-center font-bold text-[#1A1A2E]">
-                          {jumlah}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 border-[rgba(0,0,0,0.08)] bg-[#F8F9FB] font-semibold">
-                    <td colSpan={2} className="px-5 py-3 text-[#1A1A2E] text-right">Total</td>
-                    {ABSEN_COLS.map((col) => {
-                      const totals: Record<string, number> = {
-                        hadir: totalHadir,
-                        sakit: totalSakit,
-                        izin: totalIzin,
-                        tanpa_berita: totalTB,
-                      };
+            <>
+              <div className="flex flex-wrap items-center gap-2 border-b border-[rgba(0,0,0,0.04)] bg-white px-5 py-2.5">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#9CA3AF]">Ringkasan</span>
+                {ABSEN_COLS.map((col) => (
+                  <span
+                    key={col.key}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${col.chip}`}
+                  >
+                    <span className={`h-1.5 w-1.5 rounded-full ${col.dot}`} />
+                    {col.full}
+                    <span className="font-bold tabular-nums">{totalPerKolom[col.key]}</span>
+                  </span>
+                ))}
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[680px] text-sm">
+                  <thead className="sticky top-0 z-10 bg-[#F8F9FB]">
+                    <tr className="border-b border-[rgba(0,0,0,0.06)]">
+                      <th className="w-12 px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">No</th>
+                      <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">Nama Siswa</th>
+                      {ABSEN_COLS.map((col) => (
+                        <th
+                          key={col.key}
+                          title={col.full}
+                          className="w-16 px-2 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]"
+                        >
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className={`h-2 w-2 rounded-full ${col.dot}`} />
+                            {col.label}
+                          </span>
+                        </th>
+                      ))}
+                      <th className="w-20 px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">Jumlah</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((row, i) => {
+                      const jumlah = row.hadir + row.sakit + row.izin + row.tanpa_berita;
                       return (
-                        <td key={col.key} className={`px-4 py-3 text-center ${col.color}`}>
-                          {totals[col.key]}
-                        </td>
+                        <tr
+                          key={row.id_siswa}
+                          className="border-b border-[rgba(0,0,0,0.04)] transition-colors last:border-0 hover:bg-[#F8F9FB]/70"
+                        >
+                          <td className="px-4 py-1.5 text-xs tabular-nums text-[#9CA3AF]">{i + 1}</td>
+                          <td className="px-4 py-1.5 font-medium text-[#1A1A2E]">{row.nama_siswa}</td>
+                          {ABSEN_COLS.map((col) => {
+                            const isEditing = editingCell?.idSiswa === row.id_siswa && editingCell?.field === col.key;
+                            const value = Number(row[col.key as keyof RekapItem]) || 0;
+                            return (
+                              <td key={col.key} className="px-2 py-1.5 text-center">
+                                {isEditing ? (
+                                  <input
+                                    type="number"
+                                    inputMode="numeric"
+                                    value={editValue}
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onKeyDown={(e) => handleKeyDown(e, row.id_siswa, col.key)}
+                                    onBlur={() => handleSave(row.id_siswa, col.key)}
+                                    onFocus={(e) => e.currentTarget.select()}
+                                    autoFocus
+                                    disabled={saving}
+                                    className="h-8 w-14 rounded-lg border border-[rgba(0,0,0,0.12)] bg-white text-center text-sm font-semibold tabular-nums outline-none focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20"
+                                  />
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => startEdit(row.id_siswa, col.key, value)}
+                                    title={`Edit ${col.full}`}
+                                    className="inline-flex h-8 min-w-9 items-center justify-center rounded-lg px-2 transition-colors hover:bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-red-500/20"
+                                  >
+                                    {value === 0 ? (
+                                      <span className="text-sm text-[#D1D5DB]">–</span>
+                                    ) : (
+                                      <span className={`text-sm font-semibold tabular-nums ${col.text}`}>{value}</span>
+                                    )}
+                                  </button>
+                                )}
+                              </td>
+                            );
+                          })}
+                          <td className="px-3 py-1.5 text-center text-sm font-semibold tabular-nums text-[#1A1A2E]">
+                            {jumlah === 0 ? (
+                              <span className="font-normal text-[#D1D5DB]">–</span>
+                            ) : (
+                              jumlah
+                            )}
+                          </td>
+                        </tr>
                       );
                     })}
-                    <td className="px-4 py-3 text-center font-bold text-[#1A1A2E]">{totalAll}</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t border-[rgba(0,0,0,0.08)] bg-[#F8F9FB]">
+                      <td colSpan={2} className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">Total</td>
+                      {ABSEN_COLS.map((col) => {
+                        const total = totalPerKolom[col.key];
+                        return (
+                          <td key={col.key} className="px-2 py-2.5 text-center">
+                            {total === 0 ? (
+                              <span className="text-[#D1D5DB]">–</span>
+                            ) : (
+                              <span className={`text-sm font-bold tabular-nums ${col.text}`}>{total}</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                      <td className="px-3 py-2.5 text-center text-sm font-bold tabular-nums text-[#1A1A2E]">
+                        {totalAll === 0 ? (
+                          <span className="font-normal text-[#D1D5DB]">–</span>
+                        ) : (
+                          totalAll
+                        )}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </>
           )}
         </div>
 
         {/* Footer hint */}
         {showTable && (
           <div className="shrink-0 border-t border-[rgba(0,0,0,0.04)] px-5 py-2.5">
-            <p className="text-xs text-[#6B7280]">Klik angka di kolom H/S/I/TB untuk mengedit jumlah presensi.</p>
+            <p className="text-xs text-[#6B7280]">Klik angka pada kolom H/S/I/TB untuk mengedit. Enter menyimpan, Esc membatalkan. Tanda – berarti 0.</p>
           </div>
         )}
       </div>

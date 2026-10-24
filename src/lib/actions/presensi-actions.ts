@@ -174,7 +174,16 @@ export async function getRekapAbsensiBK(idKelas: number) {
        ORDER BY s.nama_siswa ASC`,
       [sekolah.tahun, sekolah.semester, sekolah.tahun, sekolah.semester, idKelas]
     );
-    return rows;
+    // SUM() MySQL mengembalikan string; ubah ke angka agar penjumlahan di UI
+    // tidak menjadi penyambungan teks ("0" + "0" = "00").
+    return rows.map((r: any) => ({
+      id_siswa: Number(r.id_siswa),
+      nama_siswa: String(r.nama_siswa ?? ''),
+      hadir: Number(r.hadir) || 0,
+      sakit: Number(r.sakit) || 0,
+      izin: Number(r.izin) || 0,
+      tanpa_berita: Number(r.tanpa_berita) || 0,
+    }));
   } catch (e) {
     console.error('presensi query error:', e);
     return [];
