@@ -64,7 +64,7 @@ export default function RekapAbsensiBKClient() {
     if (idKelas) loadData(idKelas);
   };
 
-  const handleDoubleClick = (idSiswa: number, field: string, value: number) => {
+  const startEdit = (idSiswa: number, field: string, value: number) => {
     setEditingCell({ idSiswa, field });
     setEditValue(String(value));
   };
@@ -88,7 +88,9 @@ export default function RekapAbsensiBKClient() {
       showToast(result.error || 'Gagal update', 'error');
     }
 
-    setEditingCell(null);
+    setEditingCell((prev) =>
+      prev?.idSiswa === idSiswa && prev?.field === field ? null : prev
+    );
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, idSiswa: number, field: string) => {
@@ -218,22 +220,25 @@ export default function RekapAbsensiBKClient() {
                               {isEditing ? (
                                 <input
                                   type="number"
+                                  inputMode="numeric"
                                   value={editValue}
                                   onChange={(e) => setEditValue(e.target.value)}
                                   onKeyDown={(e) => handleKeyDown(e, row.id_siswa, col.key)}
                                   onBlur={() => handleSave(row.id_siswa, col.key)}
+                                  onFocus={(e) => e.currentTarget.select()}
                                   autoFocus
                                   disabled={saving}
                                   className="w-14 text-center text-sm font-semibold bg-white border border-[rgba(0,0,0,0.12)] rounded px-1 py-0.5 outline-none focus:ring-2 focus:ring-red-500/20"
                                 />
                               ) : (
-                                <span
-                                  className={`inline-block w-14 text-center font-semibold cursor-pointer hover:opacity-70 ${col.color}`}
-                                  onDoubleClick={() => handleDoubleClick(row.id_siswa, col.key, value)}
-                                  title="Double-click untuk edit"
+                                <button
+                                  type="button"
+                                  className={`inline-block w-14 cursor-pointer rounded text-center font-semibold transition-colors hover:bg-white/70 focus:outline-none focus:ring-2 focus:ring-red-500/20 ${col.color}`}
+                                  onClick={() => startEdit(row.id_siswa, col.key, value)}
+                                  title="Klik untuk edit"
                                 >
                                   {value}
-                                </span>
+                                </button>
                               )}
                             </td>
                           );
@@ -272,7 +277,7 @@ export default function RekapAbsensiBKClient() {
         {/* Footer hint */}
         {showTable && (
           <div className="shrink-0 border-t border-[rgba(0,0,0,0.04)] px-5 py-2.5">
-            <p className="text-xs text-[#6B7280]">Double-click pada angka di kolom H/S/I/TB untuk mengedit jumlah presensi.</p>
+            <p className="text-xs text-[#6B7280]">Klik angka di kolom H/S/I/TB untuk mengedit jumlah presensi.</p>
           </div>
         )}
       </div>
