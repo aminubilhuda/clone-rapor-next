@@ -131,6 +131,64 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
     setSelected((prev) => ({ ...prev, [jenis]: new Set() }));
   };
 
+  const previewHtml = async (jenis: JenisRapor, idSiswa?: number) => {
+    const ids = idSiswa ? [idSiswa] : Array.from(selected[jenis]);
+    if (ids.length === 0) return;
+    const key = idSiswa ? `preview-${jenis}-${idSiswa}` : `batch-preview-${jenis}`;
+    const previewWindow = window.open('', '_blank');
+    setLoading(key);
+    try {
+      const res = await fetch('/api/tu/cetak-rapor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_siswa_list: ids, jenis, tahun, semester, format: 'html' }),
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null);
+        throw new Error(errJson?.error || 'Gagal memuat preview');
+      }
+      const html = await res.text();
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html; charset=utf-8' }));
+      if (previewWindow) {
+        previewWindow.location.href = url;
+      } else {
+        window.open(url, '_blank', 'noopener');
+      }
+    } catch (err: unknown) {
+      previewWindow?.close();
+      console.error(err);
+      alert(err instanceof Error ? err.message : 'Gagal memuat preview. Silakan coba lagi.');
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const previewButton = (jenis: JenisRapor, idSiswa?: number, label?: string) => {
+    const key = idSiswa ? `preview-${jenis}-${idSiswa}` : `batch-preview-${jenis}`;
+    return (
+      <button
+        type="button"
+        onClick={() => previewHtml(jenis, idSiswa)}
+        disabled={loading === key}
+        title="Preview Web"
+        aria-label={label ? `Preview ${label}` : 'Preview Web'}
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-800 disabled:opacity-50"
+      >
+        {loading === key ? (
+          <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        ) : (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        )}
+      </button>
+    );
+  };
+
   const hasAnyBatch = CHECKBOX_JENIS.some((j) => selected[j].size > 0);
 
   return (
@@ -175,24 +233,26 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
                 const count = selected[j].size;
                 if (count === 0) return null;
                 return (
-                  <button
-                    key={j}
-                    onClick={() => handleCetakBatch(j)}
-                    disabled={loading === `batch-${j}`}
-                    className={`inline-flex items-center gap-1.5 text-xs font-medium text-white ${cfg.color} ${cfg.hoverColor} rounded-lg px-3 py-1.5 transition-all disabled:opacity-50`}
-                  >
-                    {loading === `batch-${j}` ? (
-                      <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                      </svg>
-                    )}
-                    {cfg.label} ({count})
-                  </button>
+                  <div key={j} className="inline-flex items-center gap-1">
+                    {previewButton(j)}
+                    <button
+                      onClick={() => handleCetakBatch(j)}
+                      disabled={loading === `batch-${j}`}
+                      className={`inline-flex items-center gap-1.5 text-xs font-medium text-white ${cfg.color} ${cfg.hoverColor} rounded-lg px-3 py-1.5 transition-all disabled:opacity-50`}
+                    >
+                      {loading === `batch-${j}` ? (
+                        <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                      )}
+                      {cfg.label} ({count})
+                    </button>
+                  </div>
                 );
               })}
             </div>
@@ -269,19 +329,22 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
                       </div>
                     </td>
                     <td className="text-center px-3 py-2.5">
-                      <button
-                        onClick={() => handleCetakSingle('pelengkap', siswa.id_siswa)}
-                        disabled={loading === `pelengkap-${siswa.id_siswa}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
-                      >
-                        {loading === `pelengkap-${siswa.id_siswa}` ? (
-                          <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                        ) : null}
-                        Pelengkap Rapor
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        {previewButton('pelengkap', siswa.id_siswa, siswa.nama_siswa)}
+                        <button
+                          onClick={() => handleCetakSingle('pelengkap', siswa.id_siswa)}
+                          disabled={loading === `pelengkap-${siswa.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                        >
+                          {loading === `pelengkap-${siswa.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : null}
+                          Pelengkap Rapor
+                        </button>
+                      </div>
                     </td>
                     <td className="text-center px-3 py-2.5">
                       <div className="flex items-center justify-center gap-2">
@@ -291,6 +354,7 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
                           onChange={() => toggleOne('tengah_semester', siswa.id_siswa)}
                           className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer accent-amber-600"
                         />
+                        {previewButton('tengah_semester', siswa.id_siswa, siswa.nama_siswa)}
                         <button
                           onClick={() => handleCetakSingle('tengah_semester', siswa.id_siswa)}
                           disabled={loading === `tengah_semester-${siswa.id_siswa}`}
@@ -314,6 +378,7 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
                           onChange={() => toggleOne('semester', siswa.id_siswa)}
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
                         />
+                        {previewButton('semester', siswa.id_siswa, siswa.nama_siswa)}
                         <button
                           onClick={() => handleCetakSingle('semester', siswa.id_siswa)}
                           disabled={loading === `semester-${siswa.id_siswa}`}
@@ -337,6 +402,7 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
                           onChange={() => toggleOne('p5bk', siswa.id_siswa)}
                           className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer accent-red-600"
                         />
+                        {previewButton('p5bk', siswa.id_siswa, siswa.nama_siswa)}
                         <button
                           onClick={() => handleCetakSingle('p5bk', siswa.id_siswa)}
                           disabled={loading === `p5bk-${siswa.id_siswa}`}
@@ -353,19 +419,22 @@ export default function CetakRaporGuruClient({ data, kelasList, tahun, semester 
                       </div>
                     </td>
                     <td className="text-center px-3 py-2.5">
-                      <button
-                        onClick={() => handleCetakSingle('buku_induk', siswa.id_siswa)}
-                        disabled={loading === `buku_induk-${siswa.id_siswa}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
-                      >
-                        {loading === `buku_induk-${siswa.id_siswa}` ? (
-                          <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                        ) : null}
-                        Buku Induk
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        {previewButton('buku_induk', siswa.id_siswa, siswa.nama_siswa)}
+                        <button
+                          onClick={() => handleCetakSingle('buku_induk', siswa.id_siswa)}
+                          disabled={loading === `buku_induk-${siswa.id_siswa}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50 active:scale-[0.97]"
+                        >
+                          {loading === `buku_induk-${siswa.id_siswa}` ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          ) : null}
+                          Buku Induk
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
