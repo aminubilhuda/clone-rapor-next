@@ -112,6 +112,54 @@ export default function RekapAbsensiBKClient() {
     tanpa_berita: totalTB,
   };
 
+  const renderAbsenInput = (
+    row: RekapItem,
+    col: (typeof ABSEN_COLS)[number],
+    className = '',
+  ) => {
+    const key = selKey(row.id_siswa, col.key);
+    const value = Number(row[col.key as keyof RekapItem]) || 0;
+    const raw = draft[key] ?? (value === 0 ? '' : String(value));
+    return (
+      <input
+        type="text"
+        inputMode="numeric"
+        value={raw}
+        placeholder="–"
+        aria-label={`${col.full} ${row.nama_siswa}`}
+        onChange={(e) => {
+          const next = e.target.value.replace(/[^\d]/g, '');
+          setDraft((prev) => ({ ...prev, [key]: next }));
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.currentTarget.blur();
+          } else if (e.key === 'Escape') {
+            cancelRef.current = key;
+            setDraft((prev) => {
+              if (!(key in prev)) return prev;
+              const next = { ...prev };
+              delete next[key];
+              return next;
+            });
+            e.currentTarget.blur();
+          }
+        }}
+        onBlur={(e) => {
+          if (cancelRef.current === key) {
+            cancelRef.current = null;
+            return;
+          }
+          void commitValue(row.id_siswa, col.key, e.currentTarget.value, value);
+        }}
+        onFocus={(e) => e.currentTarget.select()}
+        className={`h-8 rounded-md border border-[rgba(0,0,0,0.06)] bg-white text-center text-sm font-semibold tabular-nums outline-none transition-colors placeholder:font-normal placeholder:text-[#D1D5DB] hover:border-[rgba(0,0,0,0.12)] focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20 ${className} ${
+          raw !== '' ? col.text : 'text-[#1A1A2E]'
+        }`}
+      />
+    );
+  };
+
   const showEmpty = !loadingKelas && !selectedKelas;
   const showTable = !loadingData && selectedKelas && rekapData.length > 0;
   const showNoData = !loadingData && selectedKelas && rekapData.length === 0;
@@ -207,7 +255,41 @@ export default function RekapAbsensiBKClient() {
                 ))}
               </div>
 
-              <div className="overflow-x-auto">
+              {/* Mobile: kartu per siswa */}
+              <div className="divide-y divide-[rgba(0,0,0,0.04)] md:hidden">
+                {filtered.map((row, i) => {
+                  const jumlah = row.hadir + row.sakit + row.izin + row.tanpa_berita;
+                  return (
+                    <div key={row.id_siswa} className="px-4 py-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium leading-snug text-[#1A1A2E]">{row.nama_siswa}</div>
+                          <div className="mt-0.5 text-[11px] text-[#9CA3AF]">No. {i + 1}</div>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <div className="text-[10px] uppercase tracking-wider text-[#9CA3AF]">Jumlah</div>
+                          <div className="text-sm font-bold tabular-nums text-[#1A1A2E]">
+                            {jumlah === 0 ? '–' : jumlah}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2 grid grid-cols-4 gap-2">
+                        {ABSEN_COLS.map((col) => (
+                          <label key={col.key} className="flex flex-col items-center gap-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#6B7280]">
+                              <span className={`h-1.5 w-1.5 rounded-full ${col.dot}`} />
+                              {col.label}
+                            </span>
+                            {renderAbsenInput(row, col, 'w-full')}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[680px] text-sm">
                   <thead className="sticky top-0 z-10 bg-[#F8F9FB]">
                     <tr className="border-b border-[rgba(0,0,0,0.06)]">
@@ -238,51 +320,11 @@ export default function RekapAbsensiBKClient() {
                         >
                           <td className="px-4 py-1.5 text-xs tabular-nums text-[#9CA3AF]">{i + 1}</td>
                           <td className="px-4 py-1.5 font-medium text-[#1A1A2E]">{row.nama_siswa}</td>
-                          {ABSEN_COLS.map((col) => {
-                            const key = selKey(row.id_siswa, col.key);
-                            const value = Number(row[col.key as keyof RekapItem]) || 0;
-                            const raw = draft[key] ?? (value === 0 ? '' : String(value));
-                            return (
-                              <td key={col.key} className="px-2 py-1.5 text-center">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={raw}
-                                  placeholder="–"
-                                  aria-label={`${col.full} ${row.nama_siswa}`}
-                                  onChange={(e) => {
-                                    const next = e.target.value.replace(/[^\d]/g, '');
-                                    setDraft((prev) => ({ ...prev, [key]: next }));
-                                  }}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.currentTarget.blur();
-                                    } else if (e.key === 'Escape') {
-                                      cancelRef.current = key;
-                                      setDraft((prev) => {
-                                        if (!(key in prev)) return prev;
-                                        const next = { ...prev };
-                                        delete next[key];
-                                        return next;
-                                      });
-                                      e.currentTarget.blur();
-                                    }
-                                  }}
-                                  onBlur={(e) => {
-                                    if (cancelRef.current === key) {
-                                      cancelRef.current = null;
-                                      return;
-                                    }
-                                    void commitValue(row.id_siswa, col.key, e.currentTarget.value, value);
-                                  }}
-                                  onFocus={(e) => e.currentTarget.select()}
-                                  className={`h-8 w-12 rounded-md border border-[rgba(0,0,0,0.06)] bg-white text-center text-sm font-semibold tabular-nums outline-none transition-colors placeholder:font-normal placeholder:text-[#D1D5DB] hover:border-[rgba(0,0,0,0.12)] focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20 ${
-                                    raw !== '' ? col.text : 'text-[#1A1A2E]'
-                                  }`}
-                                />
-                              </td>
-                            );
-                          })}
+                          {ABSEN_COLS.map((col) => (
+                            <td key={col.key} className="px-2 py-1.5 text-center">
+                              {renderAbsenInput(row, col, 'w-12')}
+                            </td>
+                          ))}
                           <td className="px-3 py-1.5 text-center text-sm font-semibold tabular-nums text-[#1A1A2E]">
                             {jumlah === 0 ? (
                               <span className="font-normal text-[#D1D5DB]">–</span>
