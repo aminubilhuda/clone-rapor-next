@@ -18,6 +18,7 @@ export async function getKelasList() {
             SELECT 1 FROM presensi p
             WHERE p.id_kelas = k.id_kelas AND p.tanggal = CURDATE()
               AND p.tahun = ? AND p.semester = ? AND p.deleted_at IS NULL
+              AND p.sumber = 'piket'
           ) AS sudah_absen
         FROM siswa_kelas sk
         JOIN kelas k ON sk.id_kelas = k.id_kelas
@@ -68,7 +69,7 @@ export async function cekAbsensiHariIni(idKelas: number) {
         JOIN siswa s ON p.id_siswa = s.id_siswa
         JOIN absen a ON p.id_absen = a.id_absen
         WHERE p.tanggal = CURDATE() AND p.id_kelas = ? AND p.tahun = ? AND p.semester = ?
-          AND p.deleted_at IS NULL
+          AND p.deleted_at IS NULL AND p.sumber = 'piket'
         ORDER BY s.nama_siswa ASC, a.sort ASC`,
       [idKelas, sekolah.tahun, sekolah.semester]
     );
@@ -104,16 +105,17 @@ export async function savePresensiHarian(
     const bulan = dateRow.bulan;
 
     await conn.query(
-      `DELETE FROM presensi WHERE tanggal = ? AND id_kelas = ? AND tahun = ? AND semester = ?`,
+      `DELETE FROM presensi WHERE tanggal = ? AND id_kelas = ? AND tahun = ? AND semester = ?
+         AND sumber = 'piket'`,
       [tanggal, idKelas, sekolah.tahun, sekolah.semester]
     );
 
     const values = absensi.map((a) => [
       sekolah.tahun, sekolah.semester, bulan, tanggal,
-      idKelas, a.id_siswa, a.id_absen, 1,
+      idKelas, a.id_siswa, a.id_absen, 1, 'piket',
     ]);
     await conn.query(
-      `INSERT INTO presensi (tahun, semester, bulan, tanggal, id_kelas, id_siswa, id_absen, jumlah)
+      `INSERT INTO presensi (tahun, semester, bulan, tanggal, id_kelas, id_siswa, id_absen, jumlah, sumber)
        VALUES ?`,
       [values]
     );
@@ -124,6 +126,72 @@ export async function savePresensiHarian(
   } catch {
     await conn.rollback();
     return { success: false, error: 'Gagal menyimpan absensi' } as const;
+  } finally {
+    conn.release();
+  }
+}
+
+/**
+ * Koreksi BK atas angka hasil piket. Disimpan sebagai baris `sumber='bk'`
+ * berisi selisih, sehingga piket + koreksi tetap benar walau piket berubah.
+ */
+export async function adjustPresensiBK(
+  idSiswa: number,
+  idKelas: number,
+  idAbsen: number,
+  delta: number,
+) {
+  const authResult = await requireGuruBK();
+  if (authResult.error) {
+    return { success: false, error: authResult.error } as const;
+  }
+  if (!Number.isInteger(delta) || delta === 0) {
+    return { success: true } as const;
+  }
+
+  const sekolah = await getSekolahWithFilter();
+  const conn = await pool.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    const [[existing]]: any = await conn.query(
+      `SELECT id_presensi, jumlah FROM presensi
+       WHERE id_siswa = ? AND id_kelas = ? AND id_absen = ?
+         AND tahun = ? AND semester = ? AND sumber = 'bk' AND deleted_at IS NULL
+       ORDER BY id_presensi DESC LIMIT 1`,
+      [idSiswa, idKelas, idAbsen, sekolah.tahun, sekolah.semester]
+    );
+
+    if (existing) {
+      const baru = Number(existing.jumlah) + delta;
+      if (baru === 0) {
+        await conn.query(
+          'UPDATE presensi SET deleted_at = NOW() WHERE id_presensi = ?',
+          [existing.id_presensi]
+        );
+      } else {
+        await conn.query(
+          'UPDATE presensi SET jumlah = ? WHERE id_presensi = ?',
+          [baru, existing.id_presensi]
+        );
+      }
+    } else {
+      const [[dateRow]]: any = await conn.query('SELECT DATE_FORMAT(CURDATE(), "%m") AS bulan');
+      await conn.query(
+        `INSERT INTO presensi (tahun, semester, bulan, tanggal, id_kelas, id_siswa, id_absen, jumlah, sumber)
+         VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?, 'bk')`,
+        [sekolah.tahun, sekolah.semester, dateRow.bulan, idKelas, idSiswa, idAbsen, delta]
+      );
+    }
+
+    await conn.commit();
+    revalidatePath('/guru/rekap-absensi-bk');
+    return { success: true } as const;
+  } catch (e) {
+    console.error('adjustPresensiBK error:', e);
+    await conn.rollback();
+    return { success: false, error: 'Gagal menyimpan koreksi' } as const;
   } finally {
     conn.release();
   }
