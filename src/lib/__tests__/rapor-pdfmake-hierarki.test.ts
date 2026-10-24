@@ -4,7 +4,6 @@ import { createSemesterRaporDefinition } from '../pdf-templates/semester-pdfmake
 import type { SiswaSemesterRapor } from '../pdf-templates/semester-template';
 import { createTengahSemesterRaporDefinition } from '../pdf-templates/tengah-semester-pdfmake';
 import type { SiswaMidRapor } from '../pdf-templates/tengah-semester-template';
-import { mm } from '../pdf-templates/pdfmake-runtime';
 
 const sekolah = {
   nama_sekolah: 'SMK Negeri 1 Contoh',
@@ -17,8 +16,10 @@ const sekolah = {
 interface TestCell {
   text?: string;
   bold?: boolean;
-  margin?: number[];
+  rowSpan?: number;
   colSpan?: number;
+  alignment?: string;
+  verticalAlignment?: string;
 }
 
 interface TestSubjectTable {
@@ -116,177 +117,60 @@ const semesterSiswa: SiswaSemesterRapor = {
   tahunPelajaran: '2026-2027',
 };
 
-const parentOnly = (): SiswaMidRapor => ({
-  ...midSiswa,
-  kelompok_mapels: [
-    {
-      huruf: 'B',
-      kelompok: 'Mata Pelajaran Kejuruan',
-      mapels: [
-        {
-          nama_mapel: 'Rekayasa Perangkat Lunak',
-          nilai: null,
-          kktp: 70,
-          children: [
-            { nama_mapel: 'Basis Data', nilai: 82, kktp: 70 },
-            { nama_mapel: 'Pemrograman Web', nilai: 88, kktp: 70 },
-          ],
-        },
-      ],
-    },
-  ],
-});
-
-const parentOnlySemester = (): SiswaSemesterRapor => ({
-  ...semesterSiswa,
-  kelompok_mapels: [
-    {
-      huruf: 'B',
-      kelompok: 'Mata Pelajaran Kejuruan',
-      mapels: [
-        mapelSemester('Rekayasa Perangkat Lunak', 0, {
-          children: [
-            mapelSemester('Basis Data', 82),
-            mapelSemester('Pemrograman Web', 88),
-          ],
-        }),
-      ],
-    },
-  ],
-});
+const waliKelas = { nama: 'Wali Kelas', nip: '19800101 200501 1 001' };
 
 describe('pdfmake rapor dengan sub-mapel', () => {
-  it('tengah semester menghitung induk satu nomor dan anak bernomor 1..n', () => {
+  it('semester: nomor induk menggabung blok, anak bernomor inline', () => {
     const table = subjectTable(
-      createTengahSemesterRaporDefinition(
-        [midSiswa],
-        sekolah,
-        '2026-2027',
-        'Ganjil',
-        { nama: 'Wali Kelas', nip: '19800101 200501 1 001' },
-      ),
+      createSemesterRaporDefinition([semesterSiswa], sekolah, '2026-2027', 'Ganjil', waliKelas),
     );
 
     const induk = rowWith(table, 'Rekayasa Perangkat Lunak');
-    expect(induk[0].text).toBe('2');
-    expect(induk[1].bold).toBe(true);
+    expect(induk[0]).toMatchObject({
+      text: '2',
+      rowSpan: 5,
+      alignment: 'center',
+      verticalAlignment: 'middle',
+    });
+    expect(induk[1]).toMatchObject({ text: 'Rekayasa Perangkat Lunak', bold: true });
     expect(induk[2].text).toBe('');
     expect(induk[3].text).toBe('');
-    expect(induk[0].colSpan).toBeUndefined();
 
-    const basis = rowWith(table, 'Basis Data');
-    expect(basis[0].text).toBe('1');
-    expect(basis[1].margin).toEqual([mm(5), 0, 0, 0]);
-    const web = rowWith(table, 'Pemrograman Web');
-    expect(web[0].text).toBe('2');
-    expect(web[1].margin).toEqual([mm(5), 0, 0, 0]);
+    const basis = rowWith(table, '1. Basis Data');
+    expect(basis[0].text).toBeUndefined();
+    expect(basis[1]).toMatchObject({ text: '1. Basis Data', rowSpan: 2 });
+    expect(rowWith(table, '2. Pemrograman Web')[1].text).toBe('2. Pemrograman Web');
     expect(rowWith(table, 'Desain Visual')[0].text).toBe('3');
   });
 
-  it('tengah semester memberi garis 2px sebelum dan sesudah blok induk', () => {
+  it('semester: semua garis tabel 0.75 tanpa separator tebal', () => {
     const table = subjectTable(
-      createTengahSemesterRaporDefinition(
-        [midSiswa],
-        sekolah,
-        '2026-2027',
-        'Ganjil',
-        { nama: 'Wali Kelas', nip: '19800101 200501 1 001' },
-      ),
-    );
-    const rows = table.table.body;
-    const parentIndex = rows.findIndex((row) =>
-      row.some((cell) => cell.text === 'Rekayasa Perangkat Lunak'),
-    );
-    const webIndex = rows.findIndex((row) =>
-      row.some((cell) => cell.text === 'Pemrograman Web'),
+      createSemesterRaporDefinition([semesterSiswa], sekolah, '2026-2027', 'Ganjil', waliKelas),
     );
 
-    expect(table.layout.hLineWidth(parentIndex)).toBe(2);
-    expect(table.layout.hLineWidth(webIndex + 1)).toBe(2);
-    expect(table.layout.hLineWidth(parentIndex + 1)).toBe(0.75);
-    expect(table.layout.hLineWidth(webIndex)).toBe(0.75);
-
-    const onlyParent = subjectTable(
-      createTengahSemesterRaporDefinition(
-        [parentOnly()],
-        sekolah,
-        '2026-2027',
-        'Ganjil',
-        { nama: 'Wali Kelas', nip: '19800101 200501 1 001' },
-      ),
-    );
-    const onlyRows = onlyParent.table.body;
-    const onlyParentIndex = onlyRows.findIndex((row) =>
-      row.some((cell) => cell.text === 'Rekayasa Perangkat Lunak'),
-    );
-    expect(onlyParent.layout.hLineWidth(onlyParentIndex)).toBe(0.75);
-    expect(onlyParent.layout.hLineWidth(onlyRows.length)).toBe(0.75);
+    for (let row = 0; row <= table.table.body.length; row += 1) {
+      expect(table.layout.hLineWidth(row)).toBe(0.75);
+    }
   });
 
-  it('semester menghitung induk satu nomor dan anak bernomor 1..n', () => {
+  it('tengah semester: nomor induk menggabung blok, anak bernomor inline', () => {
     const table = subjectTable(
-      createSemesterRaporDefinition(
-        [semesterSiswa],
-        sekolah,
-        '2026-2027',
-        'Ganjil',
-        { nama: 'Wali Kelas', nip: '19800101 200501 1 001' },
-      ),
+      createTengahSemesterRaporDefinition([midSiswa], sekolah, '2026-2027', 'Ganjil', waliKelas),
     );
 
     const induk = rowWith(table, 'Rekayasa Perangkat Lunak');
-    expect(induk[0].text).toBe('2');
-    expect(induk[1].bold).toBe(true);
-    expect(induk[2].text).toBe('');
-    expect(induk[3].text).toBe('');
-    expect(induk[0].colSpan).toBeUndefined();
+    expect(induk[0]).toMatchObject({
+      text: '2',
+      rowSpan: 3,
+      alignment: 'center',
+      verticalAlignment: 'middle',
+    });
+    expect(induk[1]).toMatchObject({ text: 'Rekayasa Perangkat Lunak', bold: true });
 
-    const basis = rowWith(table, 'Basis Data');
-    expect(basis[0].text).toBe('1');
-    expect(basis[1].margin).toEqual([mm(5), 0, 0, 0]);
-    const web = rowWith(table, 'Pemrograman Web');
-    expect(web[0].text).toBe('2');
-    expect(web[1].margin).toEqual([mm(5), 0, 0, 0]);
+    const basis = rowWith(table, '1. Basis Data');
+    expect(basis[0].text).toBeUndefined();
+    expect(basis[1].text).toBe('1. Basis Data');
+    expect(rowWith(table, '2. Pemrograman Web')[1].text).toBe('2. Pemrograman Web');
     expect(rowWith(table, 'Desain Visual')[0].text).toBe('3');
-  });
-
-  it('semester memberi garis 2px sebelum dan sesudah blok induk', () => {
-    const table = subjectTable(
-      createSemesterRaporDefinition(
-        [semesterSiswa],
-        sekolah,
-        '2026-2027',
-        'Ganjil',
-        { nama: 'Wali Kelas', nip: '19800101 200501 1 001' },
-      ),
-    );
-    const rows = table.table.body;
-    const parentIndex = rows.findIndex((row) =>
-      row.some((cell) => cell.text === 'Rekayasa Perangkat Lunak'),
-    );
-    const webIndex = rows.findIndex((row) =>
-      row.some((cell) => cell.text === 'Pemrograman Web'),
-    );
-
-    expect(table.layout.hLineWidth(parentIndex)).toBe(2);
-    expect(table.layout.hLineWidth(webIndex + 2)).toBe(2);
-    expect(table.layout.hLineWidth(parentIndex + 1)).toBe(0.75);
-    expect(table.layout.hLineWidth(webIndex + 1)).toBe(0.75);
-
-    const onlyParent = subjectTable(
-      createSemesterRaporDefinition(
-        [parentOnlySemester()],
-        sekolah,
-        '2026-2027',
-        'Ganjil',
-        { nama: 'Wali Kelas', nip: '19800101 200501 1 001' },
-      ),
-    );
-    const onlyRows = onlyParent.table.body;
-    const onlyParentIndex = onlyRows.findIndex((row) =>
-      row.some((cell) => cell.text === 'Rekayasa Perangkat Lunak'),
-    );
-    expect(onlyParent.layout.hLineWidth(onlyParentIndex)).toBe(0.75);
-    expect(onlyParent.layout.hLineWidth(onlyRows.length)).toBe(0.75);
   });
 });

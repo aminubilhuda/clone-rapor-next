@@ -44,10 +44,6 @@ function getNilaiStyle(nilai: number | null, kktp: number): string {
   return 'color:black;';
 }
 
-const CHILD_INDENT_STYLE = 'padding-left:20px;';
-const SEPARATOR_TOP_STYLE = 'border-top:2px solid #000;';
-const SEPARATOR_BOTTOM_STYLE = 'border-bottom:2px solid #000;';
-
 export function generateTengahSemesterRaporHTML(
   siswaList: SiswaMidRapor[],
   sekolah: SekolahInfo,
@@ -56,41 +52,29 @@ export function generateTengahSemesterRaporHTML(
   waliKelas: { nama: string; nip: string },
 ): string {
   const siswaPages = siswaList.map((siswa) => {
-    const renderMapelRow = (
-      m: MapelNilai,
-      nomor: number,
-      options: { child?: boolean; separatorBottom?: boolean } = {},
-    ) => {
+    const renderMapelRow = (m: MapelNilai, nomor: number) => {
       const nilai = m.nilai ?? 0;
-      const predikat = getPredikat(m.nilai, m.kktp);
-      const style = getNilaiStyle(m.nilai, m.kktp);
-      const indent = options.child ? CHILD_INDENT_STYLE : '';
-      const bottom = options.separatorBottom ? SEPARATOR_BOTTOM_STYLE : '';
-      return `<tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;${bottom}">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;${indent}${bottom}">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${style}${bottom}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;${bottom}">${predikat}</td></tr>`;
+      return `<tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(m.nilai, m.kktp)}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(m.nilai, m.kktp)}</td></tr>`;
     };
 
-    const renderParentRow = (m: MapelNilai, nomor: number, separatorTop: boolean) => {
-      const top = separatorTop ? SEPARATOR_TOP_STYLE : '';
-      return `<tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;${top}">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;font-weight:bold;${top}">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${top}"></td><td style="width:15%;text-align:center;border:1px solid #000;${top}"></td></tr>`;
+    const renderChildRow = (m: MapelNilai, nomorAnak: number) => {
+      const nilai = m.nilai ?? 0;
+      return `<tr><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">${nomorAnak}. ${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(m.nilai, m.kktp)}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(m.nilai, m.kktp)}</td></tr>`;
     };
+
+    const renderParentRow = (m: MapelNilai, nomor: number, rowspan: number) => `<tr><td style="width:5%;text-align:center;vertical-align:middle;padding:3px;border:1px solid #000;" rowspan="${rowspan}">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;font-weight:bold;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;"></td><td style="width:15%;text-align:center;border:1px solid #000;"></td></tr>`;
 
     const mapelRows = siswa.kelompok_mapels.flatMap((km) => {
       const kelompokHeader = `<tr style="background:#FFFEC5;"><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">${escapeHtml(km.huruf)}. ${escapeHtml(km.kelompok)}</td></tr>`;
 
       let nomor = 0;
-      const subjectRows = km.mapels.flatMap((m, index) => {
-        const isLastMapel = index === km.mapels.length - 1;
+      const subjectRows = km.mapels.flatMap((m) => {
         const children = m.children ?? [];
         if (children.length > 0) {
           nomor += 1;
           return [
-            renderParentRow(m, nomor, index > 0),
-            ...children.map((child, i) =>
-              renderMapelRow(child, i + 1, {
-                child: true,
-                separatorBottom: !isLastMapel && i === children.length - 1,
-              }),
-            ),
+            renderParentRow(m, nomor, 1 + children.length),
+            ...children.map((child, i) => renderChildRow(child, i + 1)),
           ];
         }
         nomor += 1;
@@ -98,7 +82,7 @@ export function generateTengahSemesterRaporHTML(
       });
 
       return kelompokHeader + subjectRows.join('');
-    });
+    }).join('');
 
     const presensiRows = siswa.presensi.map((p) => `
       <tr><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;">${escapeHtml(p.absen)}</td><td style="width:50%;text-align:left;padding:3px;border:1px solid #000;">${p.jumlah > 0 ? p.jumlah : '-'} Hari</td></tr>

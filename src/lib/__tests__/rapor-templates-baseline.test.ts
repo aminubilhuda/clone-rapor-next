@@ -116,12 +116,6 @@ function rowWith(html: string, text: string): string {
   return rowsOf(html).find((row) => row.includes(text)) ?? '';
 }
 
-function rowPairWith(html: string, text: string): string[] {
-  const rows = rowsOf(html);
-  const index = rows.findIndex((row) => row.includes(text));
-  return index === -1 ? [] : rows.slice(index, index + 2);
-}
-
 function midWithHierarchy(mapels: SiswaMidRapor['kelompok_mapels'][number]['mapels']) {
   return generateTengahSemesterRaporHTML(
     [
@@ -187,7 +181,7 @@ const semesterParent = (): SiswaSemesterRapor['kelompok_mapels'][number]['mapels
   });
 
 describe('rapor dengan sub-mapel', () => {
-  it('tengah semester menghitung induk satu nomor dan anak bernomor 1..n', () => {
+  it('tengah semester: nomor induk menggabung blok, anak bernomor inline', () => {
     const html = midWithHierarchy([
       { nama_mapel: 'Matematika', nilai: 80, kktp: 75 },
       midParent(),
@@ -195,37 +189,18 @@ describe('rapor dengan sub-mapel', () => {
     ]);
 
     const induk = rowWith(html, 'Rekayasa Perangkat Lunak');
-    expect(induk).not.toContain('colspan');
-    expect(induk).toMatch(/>2<\/td><td[^>]*font-weight:bold[^>]*>Rekayasa Perangkat Lunak/);
-    expect(induk).toMatch(/<td[^>]*><\/td><td[^>]*><\/td><\/tr>/);
-    expect(rowWith(html, 'Basis Data')).toMatch(/>1<\/td><td[^>]*padding-left:20px[^>]*>Basis Data/);
-    expect(rowWith(html, 'Pemrograman Web')).toMatch(
-      />2<\/td><td[^>]*padding-left:20px[^>]*>Pemrograman Web/
-    );
-    expect(rowWith(html, 'Desain Visual')).toMatch(/>3<\/td><td[^>]*>Desain Visual/);
+    expect(induk).toMatch(/<td style="[^"]*vertical-align:middle[^"]*" rowspan="3">2<\/td>/);
+    expect(induk).toMatch(/font-weight:bold[^>]*>Rekayasa Perangkat Lunak/);
+    expect(induk.match(/<td/g)).toHaveLength(4);
+
+    const basis = rowWith(html, 'Basis Data');
+    expect(basis).toContain('>1. Basis Data<');
+    expect(basis.match(/<td/g)).toHaveLength(3);
+    expect(rowWith(html, 'Pemrograman Web')).toContain('>2. Pemrograman Web<');
+    expect(rowWith(html, 'Desain Visual')).toMatch(/>3<\/td>/);
   });
 
-  it('tengah semester memberi garis 2px sebelum dan sesudah blok induk', () => {
-    const html = midWithHierarchy([
-      { nama_mapel: 'Matematika', nilai: 80, kktp: 75 },
-      midParent(),
-      { nama_mapel: 'Desain Visual', nilai: 85, kktp: 70 },
-    ]);
-
-    expect(rowWith(html, 'Rekayasa Perangkat Lunak')).toContain('border-top:2px solid #000');
-    expect(rowWith(html, 'Basis Data')).not.toContain('border-bottom:2px solid #000');
-    expect(rowWith(html, 'Pemrograman Web')).toContain('border-bottom:2px solid #000');
-    expect(rowWith(html, 'Desain Visual')).not.toContain('border-top:2px solid #000');
-  });
-
-  it('tengah semester tidak memberi garis bila blok induk di awal dan akhir kelompok', () => {
-    const html = midWithHierarchy([midParent()]);
-
-    expect(rowWith(html, 'Rekayasa Perangkat Lunak')).not.toContain('2px solid');
-    expect(rowWith(html, 'Pemrograman Web')).not.toContain('2px solid');
-  });
-
-  it('semester menghitung induk satu nomor dan anak bernomor 1..n', () => {
+  it('semester: nomor induk menggabung blok, anak bernomor inline', () => {
     const html = semesterWithHierarchy([
       mapelSemester('Matematika', 80),
       semesterParent(),
@@ -233,38 +208,31 @@ describe('rapor dengan sub-mapel', () => {
     ]);
 
     const induk = rowWith(html, 'Rekayasa Perangkat Lunak');
-    expect(induk).not.toContain('colspan');
-    expect(induk).toMatch(/>2<\/td>\s*<td[^>]*font-weight:bold[^>]*>Rekayasa Perangkat Lunak/);
-    expect(induk).toMatch(/<td[^>]*><\/td>\s*<td[^>]*><\/td>\s*<\/tr>/);
-    expect(rowWith(html, 'Basis Data')).toMatch(
-      />1<\/td>\s*<td[^>]*padding-left:20px[^>]*>Basis Data/
-    );
-    expect(rowWith(html, 'Pemrograman Web')).toMatch(
-      />2<\/td>\s*<td[^>]*padding-left:20px[^>]*>Pemrograman Web/
-    );
-    expect(rowWith(html, 'Desain Visual')).toMatch(/>3<\/td>\s*<td[^>]*>Desain Visual/);
+    expect(induk).toMatch(/<td style="[^"]*vertical-align:middle[^"]*" rowspan="5">2<\/td>/);
+    expect(induk).toMatch(/font-weight:bold[^>]*>Rekayasa Perangkat Lunak/);
+    expect(induk.match(/<td/g)).toHaveLength(4);
+
+    const basis = rowWith(html, 'Basis Data');
+    expect(basis).toContain('>1. Basis Data<');
+    expect(basis.match(/<td/g)).toHaveLength(3);
+    expect(rowWith(html, 'Pemrograman Web')).toContain('>2. Pemrograman Web<');
+    expect(rowWith(html, 'Desain Visual')).toMatch(/>3<\/td>/);
   });
 
-  it('semester memberi garis 2px sebelum dan sesudah blok induk', () => {
-    const html = semesterWithHierarchy([
-      mapelSemester('Matematika', 80),
-      semesterParent(),
-      mapelSemester('Desain Visual', 85),
-    ]);
+  it('tidak ada garis 2px atau koma nyasar antarkelompok', () => {
+    const hierarki = [
+      midWithHierarchy([{ nama_mapel: 'Matematika', nilai: 80, kktp: 75 }, midParent()]),
+      semesterWithHierarchy([mapelSemester('Matematika', 80), semesterParent()]),
+      generateTengahSemesterRaporHTML([midSiswa], sekolah, '2026-2027', 'Ganjil', {
+        nama: 'Wali Kelas',
+        nip: '19800101 200501 1 001',
+      }),
+    ];
 
-    expect(rowWith(html, 'Rekayasa Perangkat Lunak')).toContain('border-top:2px solid #000');
-    expect(rowPairWith(html, 'Basis Data')[0]).not.toContain('border-bottom:2px solid #000');
-    const pemrogramanRows = rowPairWith(html, 'Pemrograman Web');
-    expect(pemrogramanRows[0]).toContain('border-bottom:2px solid #000');
-    expect(pemrogramanRows[1]).toContain('border-bottom:2px solid #000');
-    expect(rowWith(html, 'Desain Visual')).not.toContain('border-top:2px solid #000');
-  });
-
-  it('semester tidak memberi garis bila blok induk di awal dan akhir kelompok', () => {
-    const html = semesterWithHierarchy([semesterParent()]);
-
-    expect(rowWith(html, 'Rekayasa Perangkat Lunak')).not.toContain('2px solid');
-    expect(rowPairWith(html, 'Pemrograman Web')[0]).not.toContain('2px solid');
+    for (const html of hierarki) {
+      expect(html).not.toContain('2px solid');
+      expect(html).not.toMatch(/<\/tr>,\s*<tr/);
+    }
   });
 });
 

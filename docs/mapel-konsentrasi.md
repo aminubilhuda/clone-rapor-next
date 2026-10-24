@@ -269,25 +269,29 @@ Baris tahun 1 dan 2 harus tetap ada dan jumlahnya tidak berubah.
 
 ```
 B. Kelompok Mata Pelajaran Kejuruan
-   Rekayasa Perangkat Lunak
-      1. Basis Data          82   Baik dalam ...
-      2. Pemrograman Web     88   Baik dalam ...
+No │ Mata Pelajaran                 │ Nilai │ Capaian Kompetensi
+ 2 │ Rekayasa Perangkat Lunak       │       │
+   │ 1. Basis Data                  │  82   │ Baik dalam ...
+   │ 2. Pemrograman Web             │  88   │ Baik dalam ...
 ```
 
-- Baris induk: tebal, `colspan` seluruh kolom, tanpa nilai/capaian.
-- Anak: nomor `1..n` di dalam induk.
+- Sel `No` induk **menggabung seluruh blok** (`rowspan` = 1 baris induk + 2 baris per anak), nomor ditampilkan di tengah.
+- Baris induk: tebal, tanpa nilai/capaian.
+- Anak: nomor inline `1.`, `2.`, ... di kolom Mata Pelajaran, tanpa sel `No` sendiri.
 - Nilai dari `nilai_mata_pelajaran`; capaian dari TP anak.
 
 ### Rapor Tengah Semester
 
 ```
 B. Kelompok Mata Pelajaran Kejuruan
-   Rekayasa Perangkat Lunak
-      1. Basis Data          82   B
-      2. Pemrograman Web     88   A
+No │ Mata Pelajaran                 │ Nilai │ Predikat
+ 2 │ Rekayasa Perangkat Lunak       │       │
+   │ 1. Basis Data                  │  82   │ B
+   │ 2. Pemrograman Web             │  88   │ A
 ```
 
-- Baris induk: tebal, `colspan` seluruh kolom, tanpa nilai/predikat.
+- Sel `No` induk **menggabung seluruh blok** (`rowspan` = 1 baris induk + jumlah anak).
+- Baris induk: tebal, tanpa nilai/predikat.
 - Nilai dari `nilai_sumatif_ts`; predikat dari KKTP anak.
 
 ## 11. Rollback
@@ -316,6 +320,6 @@ B. Kelompok Mata Pelajaran Kejuruan
 - [ ] Setiap sub-mapel punya `mapel_kelas`, guru, dan siswa.
 - [ ] Setiap sub-mapel punya TP.
 - [ ] Induk tidak punya `mapel_kelas`/`mapel_siswa` di periode aktif.
-- [ ] Rapor Semester & Tengah Semester menampilkan induk sebagai judul.
+- [ ] Rapor Semester & Tengah Semester menampilkan induk satu nomor yang menggabung blok sub-mapel.
 - [ ] Rapor 2024-2025 dan 2025-2026 tidak berubah.
 - [ ] Tabel backup tersimpan sampai rapor periode aktif diverifikasi.

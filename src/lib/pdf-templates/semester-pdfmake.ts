@@ -147,8 +147,42 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
     { text: 'Nilai', bold: true, alignment: 'center', fillColor: headerColor },
     { text: 'Capaian Kompetensi', bold: true, alignment: 'center', fillColor: headerColor },
   ]];
-  const separatorLines = new Set<number>();
-  const childIndent: [number, number, number, number] = [mm(5), 0, 0, 0];
+  const pushMapel = (mapel: MapelSemester, nomor: number, options: { child?: boolean } = {}) => {
+    const nilai = Math.round(Number(mapel.nilai) || 0);
+    const nilaiColor = nilai === 0 || nilai < 75 ? '#ff0000' : '#000000';
+    const labelMapel = options.child
+      ? `${nomor}. ${value(mapel.nama_mapel)}`
+      : value(mapel.nama_mapel);
+    body.push([
+      options.child
+        ? {}
+        : { text: String(nomor), rowSpan: 2, alignment: 'center', verticalAlignment: 'middle' },
+      {
+        text: labelMapel,
+        rowSpan: 2,
+        alignment: 'left',
+        verticalAlignment: 'middle',
+      },
+      {
+        text: String(nilai),
+        rowSpan: 2,
+        alignment: 'center',
+        color: nilaiColor,
+        verticalAlignment: 'middle',
+      },
+      {
+        text: competenceText(mapel.deskripsi_max, mapel.tujuan_max),
+      },
+    ]);
+    body.push([
+      {},
+      {},
+      {},
+      {
+        text: competenceText(mapel.deskripsi_min, mapel.tujuan_min),
+      },
+    ]);
+  };
 
   for (const kelompok of siswa.kelompok_mapels) {
     body.push([
@@ -162,53 +196,19 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
       {},
     ]);
 
-    const pushMapel = (
-      mapel: MapelSemester,
-      nomor: number,
-      options: { child?: boolean } = {},
-    ) => {
-      const nilai = Math.round(Number(mapel.nilai) || 0);
-      const nilaiColor = nilai === 0 || nilai < 75 ? '#ff0000' : '#000000';
-      body.push([
-        { text: String(nomor), rowSpan: 2, alignment: 'center', margin: [0, mm(4), 0, 0] },
-        {
-          text: value(mapel.nama_mapel),
-          rowSpan: 2,
-          alignment: 'left',
-          verticalAlignment: 'middle',
-          ...(options.child ? { margin: childIndent } : {}),
-        },
-        {
-          text: String(nilai),
-          rowSpan: 2,
-          alignment: 'center',
-          color: nilaiColor,
-          margin: [0, mm(4), 0, 0],
-        },
-        {
-          text: competenceText(mapel.deskripsi_max, mapel.tujuan_max),
-        },
-      ]);
-      body.push([
-        {},
-        {},
-        {},
-        {
-          text: competenceText(mapel.deskripsi_min, mapel.tujuan_min),
-        },
-      ]);
-    };
-
     let nomor = 0;
-    kelompok.mapels.forEach((mapel, index) => {
-      const isLastMapel = index === kelompok.mapels.length - 1;
+    for (const mapel of kelompok.mapels) {
       const children = mapel.children ?? [];
 
       if (children.length > 0) {
         nomor += 1;
-        if (index > 0) separatorLines.add(body.length);
         body.push([
-          { text: String(nomor), alignment: 'center' },
+          {
+            text: String(nomor),
+            rowSpan: 1 + children.length * 2,
+            alignment: 'center',
+            verticalAlignment: 'middle',
+          },
           {
             text: value(mapel.nama_mapel),
             bold: true,
@@ -222,14 +222,12 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
         children.forEach((child, childIndex) => {
           pushMapel(child, childIndex + 1, { child: true });
         });
-
-        if (!isLastMapel) separatorLines.add(body.length);
-        return;
+        continue;
       }
 
       nomor += 1;
       pushMapel(mapel, nomor);
-    });
+    }
   }
 
   return {
@@ -239,10 +237,7 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
       body,
       dontBreakRows: true,
     },
-    layout: {
-      ...borderedLayout,
-      hLineWidth: (rowIndex: number) => (separatorLines.has(rowIndex) ? 2 : 0.75),
-    },
+    layout: borderedLayout,
     fontSize: 9,
   };
 }
