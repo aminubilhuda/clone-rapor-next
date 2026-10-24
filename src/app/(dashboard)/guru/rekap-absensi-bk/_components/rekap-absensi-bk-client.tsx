@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useToast } from '@/components/ui/toast-provider';
+import { useState, useEffect, useCallback } from 'react';
 import {
   getKelasListForBK,
   getRekapAbsensiBK,
-  updatePresensiInline,
 } from '@/lib/actions/presensi-actions';
 
 interface KelasItem {
@@ -30,18 +28,18 @@ const ABSEN_COLS = [
   { key: 'tanpa_berita', label: 'TB', full: 'Tanpa Berita', text: 'text-rose-600', dot: 'bg-rose-500', chip: 'bg-rose-50 text-rose-700' },
 ] as const;
 
-const selKey = (idSiswa: number, field: string) => `${idSiswa}-${field}`;
+function Nilai({ value, className }: { value: number; className: string }) {
+  if (value === 0) return <span className="text-sm text-[#D1D5DB]">–</span>;
+  return <span className={`text-sm font-semibold tabular-nums ${className}`}>{value}</span>;
+}
 
 export default function RekapAbsensiBKClient() {
-  const { showToast } = useToast();
   const [kelasList, setKelasList] = useState<KelasItem[]>([]);
   const [selectedKelas, setSelectedKelas] = useState<number | null>(null);
   const [rekapData, setRekapData] = useState<RekapItem[]>([]);
   const [loadingKelas, setLoadingKelas] = useState(true);
   const [loadingData, setLoadingData] = useState(false);
   const [search, setSearch] = useState('');
-  const [draft, setDraft] = useState<Record<string, string>>({});
-  const cancelRef = useRef<string | null>(null);
 
   useEffect(() => {
     getKelasListForBK().then((data) => {
@@ -61,39 +59,7 @@ export default function RekapAbsensiBKClient() {
   const handleKelasChange = (idKelas: number) => {
     setSelectedKelas(idKelas);
     setSearch('');
-    setDraft({});
     if (idKelas) loadData(idKelas);
-  };
-
-  const commitValue = async (idSiswa: number, field: string, raw: string, original: number) => {
-    const key = selKey(idSiswa, field);
-    const jumlah = Math.max(0, parseInt(raw || '0', 10) || 0);
-    const clearDraft = () =>
-      setDraft((prev) => {
-        if (!(key in prev)) return prev;
-        const next = { ...prev };
-        delete next[key];
-        return next;
-      });
-
-    if (jumlah === original) {
-      clearDraft();
-      return;
-    }
-
-    const idAbsen = field === 'hadir' ? 1 : field === 'sakit' ? 2 : field === 'izin' ? 3 : 4;
-    const result = await updatePresensiInline(idSiswa, selectedKelas!, idAbsen, jumlah);
-
-    if (result.success) {
-      setRekapData((prev) =>
-        prev.map((r) => (r.id_siswa === idSiswa ? { ...r, [field]: jumlah } : r))
-      );
-      showToast('Berhasil diupdate', 'success');
-    } else {
-      showToast(result.error || 'Gagal update', 'error');
-    }
-
-    clearDraft();
   };
 
   const filtered = rekapData.filter((r) =>
@@ -112,61 +78,17 @@ export default function RekapAbsensiBKClient() {
     tanpa_berita: totalTB,
   };
 
-  const renderAbsenInput = (
-    row: RekapItem,
-    col: (typeof ABSEN_COLS)[number],
-    className = '',
-  ) => {
-    const key = selKey(row.id_siswa, col.key);
-    const value = Number(row[col.key as keyof RekapItem]) || 0;
-    const raw = draft[key] ?? (value === 0 ? '' : String(value));
-    return (
-      <input
-        type="text"
-        inputMode="numeric"
-        value={raw}
-        placeholder="–"
-        aria-label={`${col.full} ${row.nama_siswa}`}
-        onChange={(e) => {
-          const next = e.target.value.replace(/[^\d]/g, '');
-          setDraft((prev) => ({ ...prev, [key]: next }));
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.currentTarget.blur();
-          } else if (e.key === 'Escape') {
-            cancelRef.current = key;
-            setDraft((prev) => {
-              if (!(key in prev)) return prev;
-              const next = { ...prev };
-              delete next[key];
-              return next;
-            });
-            e.currentTarget.blur();
-          }
-        }}
-        onBlur={(e) => {
-          if (cancelRef.current === key) {
-            cancelRef.current = null;
-            return;
-          }
-          void commitValue(row.id_siswa, col.key, e.currentTarget.value, value);
-        }}
-        onFocus={(e) => e.currentTarget.select()}
-        className={`h-8 rounded-md border border-[rgba(0,0,0,0.06)] bg-white text-center text-sm font-semibold tabular-nums outline-none transition-colors placeholder:font-normal placeholder:text-[#D1D5DB] hover:border-[rgba(0,0,0,0.12)] focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20 ${className} ${
-          raw !== '' ? col.text : 'text-[#1A1A2E]'
-        }`}
-      />
-    );
-  };
-
   const showEmpty = !loadingKelas && !selectedKelas;
   const showTable = !loadingData && selectedKelas && rekapData.length > 0;
   const showNoData = !loadingData && selectedKelas && rekapData.length === 0;
 
   return (
     <div className="h-full flex flex-col">
-      <h4 className="text-xl font-semibold mb-4 shrink-0">Rekap Absensi — Guru BK</h4>
+      <h4 className="text-xl font-semibold mb-1 shrink-0">Rekap Absensi — Guru BK</h4>
+      <p className="text-xs text-[#6B7280] mb-4 shrink-0">
+        Angka diambil otomatis dari absensi piket harian. Untuk mengoreksi, buka halaman
+        Absensi Piket pada hari yang bersangkutan.
+      </p>
 
       <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)] flex-1 flex flex-col min-h-0">
         {/* Toolbar */}
@@ -210,7 +132,6 @@ export default function RekapAbsensiBKClient() {
 
         {/* Content */}
         <div className="flex-1 min-h-0 overflow-y-auto">
-          {/* Empty */}
           {showEmpty && (
             <div className="h-full flex flex-col items-center justify-center p-8">
               <div className="w-14 h-14 mb-3 rounded-full bg-[#F8F9FB] flex items-center justify-center">
@@ -223,7 +144,6 @@ export default function RekapAbsensiBKClient() {
             </div>
           )}
 
-          {/* Loading */}
           {loadingData && (
             <div className="h-full flex flex-col items-center justify-center p-8">
               <div className="w-7 h-7 border-2 border-[#DC2626]/20 border-t-[#DC2626] rounded-full animate-spin mb-3" />
@@ -231,14 +151,12 @@ export default function RekapAbsensiBKClient() {
             </div>
           )}
 
-          {/* No Data */}
           {showNoData && (
             <div className="h-full flex flex-col items-center justify-center p-8">
               <p className="text-sm text-[#6B7280]">Belum ada data presensi untuk kelas ini.</p>
             </div>
           )}
 
-          {/* Table */}
           {showTable && (
             <>
               <div className="flex flex-wrap items-center gap-2 border-b border-[rgba(0,0,0,0.04)] bg-white px-5 py-2.5">
@@ -275,13 +193,15 @@ export default function RekapAbsensiBKClient() {
                       </div>
                       <div className="mt-2 grid grid-cols-4 gap-2">
                         {ABSEN_COLS.map((col) => (
-                          <label key={col.key} className="flex flex-col items-center gap-1">
+                          <div key={col.key} className="flex flex-col items-center gap-1">
                             <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#6B7280]">
                               <span className={`h-1.5 w-1.5 rounded-full ${col.dot}`} />
                               {col.label}
                             </span>
-                            {renderAbsenInput(row, col, 'w-full')}
-                          </label>
+                            <div className="flex h-8 w-full items-center justify-center rounded-md border border-[rgba(0,0,0,0.06)] bg-white">
+                              <Nilai value={row[col.key as keyof RekapItem] as number} className={col.text} />
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -322,7 +242,7 @@ export default function RekapAbsensiBKClient() {
                           <td className="px-4 py-1.5 font-medium text-[#1A1A2E]">{row.nama_siswa}</td>
                           {ABSEN_COLS.map((col) => (
                             <td key={col.key} className="px-2 py-1.5 text-center">
-                              {renderAbsenInput(row, col, 'w-12')}
+                              <Nilai value={row[col.key as keyof RekapItem] as number} className={col.text} />
                             </td>
                           ))}
                           <td className="px-3 py-1.5 text-center text-sm font-semibold tabular-nums text-[#1A1A2E]">
@@ -366,10 +286,11 @@ export default function RekapAbsensiBKClient() {
           )}
         </div>
 
-        {/* Footer hint */}
         {showTable && (
           <div className="shrink-0 border-t border-[rgba(0,0,0,0.04)] px-5 py-2.5">
-            <p className="text-xs text-[#6B7280]">Ketik langsung pada kolom H/S/I/TB. Enter menyimpan, Esc membatalkan, kosong berarti 0.</p>
+            <p className="text-xs text-[#6B7280]">
+              Data otomatis dari absensi piket harian. Tanda – berarti 0.
+            </p>
           </div>
         )}
       </div>

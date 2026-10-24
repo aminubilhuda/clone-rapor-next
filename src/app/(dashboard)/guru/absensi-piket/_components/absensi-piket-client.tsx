@@ -105,6 +105,17 @@ export default function AbsensiPiketClient() {
     }
   };
 
+  const handleUbah = () => {
+    if (!selectedKelas) return;
+    setAbsensi(
+      rekapAbsen.map((r: any) => ({
+        id_siswa: Number(r.id_siswa),
+        id_absen: Number(r.id_absen) || 1,
+      })),
+    );
+    setSudahAbsen(false);
+  };
+
   const rekapHariIni = () => {
     const counts = { hadir: 0, sakit: 0, izin: 0, tanpaBerita: 0 };
     const totalSiswa = siswaList.length;
@@ -266,6 +277,16 @@ export default function AbsensiPiketClient() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm font-medium text-[#1A1A2E]">Sudah Absen — {selectedNama}</span>
+                <button
+                  type="button"
+                  onClick={handleUbah}
+                  className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-[rgba(220,38,38,0.2)] bg-white px-3 py-1.5 text-xs font-medium text-[#DC2626] transition-colors hover:bg-[#FEF2F2]"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Ubah Absensi
+                </button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-[#F0FDF4] rounded-xl p-5 text-center">

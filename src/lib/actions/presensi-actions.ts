@@ -63,7 +63,7 @@ export async function cekAbsensiHariIni(idKelas: number) {
   try {
     const sekolah = await getSekolahWithFilter();
     const [rows]: any = await pool.query(
-      `SELECT p.id_siswa, s.nama_siswa, a.absen, a.sort
+      `SELECT p.id_siswa, p.id_absen, s.nama_siswa, a.absen, a.sort
         FROM presensi p
         JOIN siswa s ON p.id_siswa = s.id_siswa
         JOIN absen a ON p.id_absen = a.id_absen
@@ -190,59 +190,4 @@ export async function getRekapAbsensiBK(idKelas: number) {
   }
 }
 
-export async function updatePresensiInline(
-  idSiswa: number,
-  idKelas: number,
-  idAbsen: number,
-  jumlah: number
-) {
-  const authResult = await requireGuruBK();
-  if (authResult.error) {
-    return { success: false, error: authResult.error } as const;
-  }
 
-  const sekolah = await getSekolahWithFilter();
-  const conn = await pool.getConnection();
-
-  try {
-    await conn.beginTransaction();
-
-    const [[existing]]: any = await conn.query(
-      `SELECT id_presensi, jumlah FROM presensi
-       WHERE id_siswa = ? AND id_kelas = ? AND id_absen = ?
-         AND tahun = ? AND semester = ? AND deleted_at IS NULL`,
-      [idSiswa, idKelas, idAbsen, sekolah.tahun, sekolah.semester]
-    );
-
-    if (jumlah <= 0) {
-      if (existing) {
-        await conn.query(
-          `UPDATE presensi SET deleted_at = NOW() WHERE id_presensi = ?`,
-          [existing.id_presensi]
-        );
-      }
-    } else if (existing) {
-      await conn.query(
-        `UPDATE presensi SET jumlah = ? WHERE id_presensi = ?`,
-        [jumlah, existing.id_presensi]
-      );
-    } else {
-      const [[dateRow]]: any = await conn.query('SELECT DATE_FORMAT(CURDATE(), "%m") AS bulan');
-      await conn.query(
-        `INSERT INTO presensi (tahun, semester, bulan, tanggal, id_kelas, id_siswa, id_absen, jumlah)
-         VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?)`,
-        [sekolah.tahun, sekolah.semester, dateRow.bulan, idKelas, idSiswa, idAbsen, jumlah]
-      );
-    }
-
-    await conn.commit();
-    revalidatePath('/guru/rekap-absensi-bk');
-    return { success: true } as const;
-  } catch (e) {
-    console.error('updatePresensi error:', e);
-    await conn.rollback();
-    return { success: false, error: 'Gagal update presensi' } as const;
-  } finally {
-    conn.release();
-  }
-}
