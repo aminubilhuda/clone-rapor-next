@@ -155,6 +155,8 @@ function subjectTable(siswa: SiswaMidRapor): Content {
     { text: 'Nilai', bold: true, alignment: 'center', fillColor: '#FFFEC5' },
     { text: 'Predikat', bold: true, alignment: 'center', fillColor: '#FFFEC5' },
   ]];
+  const separatorLines = new Set<number>();
+  const childIndent: [number, number, number, number] = [mm(5), 0, 0, 0];
 
   for (const kelompok of siswa.kelompok_mapels) {
     body.push([
@@ -170,23 +172,25 @@ function subjectTable(siswa: SiswaMidRapor): Content {
     ]);
 
     let nomor = 0;
-    for (const mapel of kelompok.mapels) {
-      if (mapel.children?.length) {
+    kelompok.mapels.forEach((mapel, index) => {
+      const isLastMapel = index === kelompok.mapels.length - 1;
+      const children = mapel.children ?? [];
+
+      if (children.length > 0) {
+        nomor += 1;
+        if (index > 0) separatorLines.add(body.length);
         body.push([
-          {
-            text: displayValue(mapel.nama_mapel),
-            colSpan: 4,
-            bold: true,
-          },
-          {},
-          {},
-          {},
+          { text: String(nomor), alignment: 'center' },
+          { text: displayValue(mapel.nama_mapel), bold: true },
+          { text: '', alignment: 'center' },
+          { text: '', alignment: 'center' },
         ]);
-        mapel.children.forEach((child, index) => {
+
+        children.forEach((child, childIndex) => {
           const nilai = child.nilai ?? 0;
           body.push([
-            { text: String(index + 1), alignment: 'center' },
-            { text: displayValue(child.nama_mapel) },
+            { text: String(childIndex + 1), alignment: 'center' },
+            { text: displayValue(child.nama_mapel), margin: childIndent },
             {
               text: String(nilai || 0),
               alignment: 'center',
@@ -198,7 +202,9 @@ function subjectTable(siswa: SiswaMidRapor): Content {
             },
           ]);
         });
-        continue;
+
+        if (!isLastMapel) separatorLines.add(body.length);
+        return;
       }
 
       nomor += 1;
@@ -216,7 +222,7 @@ function subjectTable(siswa: SiswaMidRapor): Content {
           alignment: 'center',
         },
       ]);
-    }
+    });
   }
 
   return {
@@ -226,7 +232,10 @@ function subjectTable(siswa: SiswaMidRapor): Content {
       body,
       dontBreakRows: true,
     },
-    layout: borderedLayout,
+    layout: {
+      ...borderedLayout,
+      hLineWidth: (rowIndex: number) => (separatorLines.has(rowIndex) ? 2 : 0.75),
+    },
     fontSize: 9,
   };
 }

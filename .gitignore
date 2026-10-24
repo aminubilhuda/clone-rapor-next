@@ -50,6 +50,7 @@ public/fallback-*.js
 .freebuff/
 .codex/
 .claude/
+.playwright-mcp/
 
 # graphify artifacts
 graphify-out/

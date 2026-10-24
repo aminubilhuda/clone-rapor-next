@@ -60,27 +60,57 @@ export function generateSemesterRaporHTML(
   semesterLabel: string,
   waliKelas: { nama: string; nip: string },
 ): string {
+  const CHILD_INDENT_STYLE = 'padding-left:20px;';
+  const SEPARATOR_TOP_STYLE = 'border-top:2px solid #000;';
+  const SEPARATOR_BOTTOM_STYLE = 'border-bottom:2px solid #000;';
+
   const siswaPages = siswaList.map((siswa) => {
-    const renderMapelRows = (m: MapelSemester, nomor: number) => {
+    const renderMapelRows = (
+      m: MapelSemester,
+      nomor: number,
+      options: { child?: boolean; separatorBottom?: boolean } = {},
+    ) => {
       const nilaiDisplay = m.nilai === 0 ? "0" : String(r(m.nilai));
       const nilaiStyle = m.nilai === 0 || m.nilai < 75 ? 'color:red;' : 'color:black;';
+      const indent = options.child ? CHILD_INDENT_STYLE : '';
+      const bottom = options.separatorBottom ? SEPARATOR_BOTTOM_STYLE : '';
       return `<tr>
-          <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;" rowspan="2">${nomor}</td>
-          <td style="width:25%;text-align:left;height:48px;padding:3px;vertical-align:middle;border:1px solid #000;" rowspan="2">${escapeHtml(m.nama_mapel)}</td>
-          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}" rowspan="2">${nilaiDisplay}</td>
-          <td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td>
+          <td style="width:5%;text-align:center;vertical-align:middle;border:1px solid #000;${bottom}" rowspan="2">${nomor}</td>
+          <td style="width:25%;text-align:left;height:48px;padding:3px;vertical-align:middle;border:1px solid #000;${indent}${bottom}" rowspan="2">${escapeHtml(m.nama_mapel)}</td>
+          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${nilaiStyle}${bottom}" rowspan="2">${nilaiDisplay}</td>
+          <td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;${bottom}">${escapeHtml(m.deskripsi_max)} ${escapeHtml(m.tujuan_max)}</td>
         </tr>
-        <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
+        <tr><td style="width:60%;text-align:left;height:24px;padding:3px;vertical-align:middle;border:1px solid #000;border-left:none;${bottom}">${escapeHtml(m.deskripsi_min)} ${escapeHtml(m.tujuan_min)}</td></tr>`;
+    };
+
+    const renderParentRow = (m: MapelSemester, nomor: number, separatorTop: boolean) => {
+      const top = separatorTop ? SEPARATOR_TOP_STYLE : '';
+      return `<tr>
+          <td style="width:5%;text-align:center;vertical-align:middle;height:24px;padding:3px;border:1px solid #000;${top}">${nomor}</td>
+          <td style="width:25%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;font-weight:bold;${top}">${escapeHtml(m.nama_mapel)}</td>
+          <td style="width:10%;text-align:center;vertical-align:middle;border:1px solid #000;${top}"></td>
+          <td style="width:60%;text-align:left;padding:3px;vertical-align:middle;border:1px solid #000;${top}"></td>
+        </tr>`;
     };
 
     const mapelRows = siswa.kelompok_mapels.flatMap((km) => {
       const kelompokHeader = `<tr><td colspan="4" style="padding:5px;height:10px;font-weight:bold;border:1px solid #000;">${escapeHtml(km.huruf)}. ${escapeHtml(km.kelompok)}</td></tr>`;
 
       let nomor = 0;
-      const subjectRows = km.mapels.flatMap((m) => {
-        if (m.children?.length) {
-          const indukRow = `<tr><td colspan="4" style="padding:5px;font-weight:bold;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td></tr>`;
-          return [indukRow, ...m.children.map((child, i) => renderMapelRows(child, i + 1))];
+      const subjectRows = km.mapels.flatMap((m, index) => {
+        const isLastMapel = index === km.mapels.length - 1;
+        const children = m.children ?? [];
+        if (children.length > 0) {
+          nomor += 1;
+          return [
+            renderParentRow(m, nomor, index > 0),
+            ...children.map((child, i) =>
+              renderMapelRows(child, i + 1, {
+                child: true,
+                separatorBottom: !isLastMapel && i === children.length - 1,
+              }),
+            ),
+          ];
         }
         nomor += 1;
         return [renderMapelRows(m, nomor)];

@@ -147,6 +147,8 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
     { text: 'Nilai', bold: true, alignment: 'center', fillColor: headerColor },
     { text: 'Capaian Kompetensi', bold: true, alignment: 'center', fillColor: headerColor },
   ]];
+  const separatorLines = new Set<number>();
+  const childIndent: [number, number, number, number] = [mm(5), 0, 0, 0];
 
   for (const kelompok of siswa.kelompok_mapels) {
     body.push([
@@ -160,7 +162,11 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
       {},
     ]);
 
-    const pushMapel = (mapel: MapelSemester, nomor: number) => {
+    const pushMapel = (
+      mapel: MapelSemester,
+      nomor: number,
+      options: { child?: boolean } = {},
+    ) => {
       const nilai = Math.round(Number(mapel.nilai) || 0);
       const nilaiColor = nilai === 0 || nilai < 75 ? '#ff0000' : '#000000';
       body.push([
@@ -170,6 +176,7 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
           rowSpan: 2,
           alignment: 'left',
           verticalAlignment: 'middle',
+          ...(options.child ? { margin: childIndent } : {}),
         },
         {
           text: String(nilai),
@@ -193,20 +200,36 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
     };
 
     let nomor = 0;
-    for (const mapel of kelompok.mapels) {
-      if (mapel.children?.length) {
+    kelompok.mapels.forEach((mapel, index) => {
+      const isLastMapel = index === kelompok.mapels.length - 1;
+      const children = mapel.children ?? [];
+
+      if (children.length > 0) {
+        nomor += 1;
+        if (index > 0) separatorLines.add(body.length);
         body.push([
-          { text: value(mapel.nama_mapel), colSpan: 4, bold: true },
-          {},
-          {},
-          {},
+          { text: String(nomor), alignment: 'center' },
+          {
+            text: value(mapel.nama_mapel),
+            bold: true,
+            alignment: 'left',
+            verticalAlignment: 'middle',
+          },
+          { text: '', alignment: 'center' },
+          { text: '' },
         ]);
-        mapel.children.forEach((child, index) => pushMapel(child, index + 1));
-        continue;
+
+        children.forEach((child, childIndex) => {
+          pushMapel(child, childIndex + 1, { child: true });
+        });
+
+        if (!isLastMapel) separatorLines.add(body.length);
+        return;
       }
+
       nomor += 1;
       pushMapel(mapel, nomor);
-    }
+    });
   }
 
   return {
@@ -216,7 +239,10 @@ function subjectTable(siswa: SiswaSemesterRapor): Content {
       body,
       dontBreakRows: true,
     },
-    layout: borderedLayout,
+    layout: {
+      ...borderedLayout,
+      hLineWidth: (rowIndex: number) => (separatorLines.has(rowIndex) ? 2 : 0.75),
+    },
     fontSize: 9,
   };
 }

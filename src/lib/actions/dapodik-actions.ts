@@ -60,18 +60,42 @@ async function getConnection(): Promise<DapodikConnection> {
   return { url: cfg.url, token: cfg.token, npsn: cfg.npsn }
 }
 
-async function setSyncStatus(syncing: boolean, progress: string | null = null) {
+const STALE_SYNC_MINUTES = 30
+
+/** Klaim lock sinkronisasi secara atomik; gagal jika sync lain masih berjalan. */
+async function claimSync(progress: string): Promise<boolean> {
   try {
-    if (syncing) {
-      await pool.query(
-        'UPDATE dapodik_config SET syncing = 1, sync_started_at = NOW(), sync_progress = ? WHERE id = 1',
-        [progress]
-      )
-    } else {
-      await pool.query('UPDATE dapodik_config SET syncing = 0, sync_progress = NULL WHERE id = 1')
-    }
+    const [res]: any = await pool.query(
+      `UPDATE dapodik_config
+       SET syncing = 1, sync_started_at = NOW(), sync_progress = ?
+       WHERE id = 1
+         AND (syncing = 0 OR sync_started_at IS NULL
+              OR sync_started_at < NOW() - INTERVAL ${STALE_SYNC_MINUTES} MINUTE)`,
+      [progress]
+    )
+    return res.affectedRows === 1
   } catch (e) {
-    console.error('setSyncStatus error:', e)
+    console.error('claimSync error:', e)
+    return false
+  }
+}
+
+async function updateSyncProgress(progress: string) {
+  try {
+    await pool.query(
+      'UPDATE dapodik_config SET sync_progress = ? WHERE id = 1 AND syncing = 1',
+      [progress]
+    )
+  } catch (e) {
+    console.error('updateSyncProgress error:', e)
+  }
+}
+
+async function releaseSync() {
+  try {
+    await pool.query('UPDATE dapodik_config SET syncing = 0, sync_progress = NULL WHERE id = 1')
+  } catch (e) {
+    console.error('releaseSync error:', e)
   }
 }
 
@@ -242,14 +266,35 @@ export async function syncDapodik(formData: FormData) {
   const summary: SyncEntityResult[] = []
   const runId = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`
 
+  let conn: DapodikConnection
   try {
-    const conn = await getConnection()
-    await setSyncStatus(true, 'Langkah 0/11: Mengambil data dari server DAPODIK...')
+    conn = await getConnection()
+  } catch (e: any) {
+    return {
+      success: false,
+      error: e?.message || 'Konfigurasi DAPODIK belum lengkap',
+      summary: [],
+      runId: null,
+      periode: null,
+    } as const
+  }
 
-    const sekolahRaw = await fetchDapodikSingle<any>(conn, 'getSekolah')
-    const gtks = await fetchDapodik<any>(conn, 'getGtk')
+  const claimed = await claimSync('Langkah 0/11: Mengambil data dari server DAPODIK...')
+  if (!claimed) {
+    return {
+      success: false,
+      error: 'Sinkronisasi lain sedang berjalan. Tunggu hingga selesai lalu coba lagi.',
+      summary: [],
+      runId: null,
+      periode: null,
+    } as const
+  }
+
+  try {
+    const sekolahRaw = want('ent_sekolah') ? await fetchDapodikSingle<any>(conn, 'getSekolah') : null
+    const gtks = want('ent_guru') ? await fetchDapodik<any>(conn, 'getGtk') : []
     const rombels = await fetchDapodik<any>(conn, 'getRombonganBelajar')
-    const pds = await fetchDapodik<any>(conn, 'getPesertaDidik')
+    const pds = want('ent_siswa') ? await fetchDapodik<any>(conn, 'getPesertaDidik') : []
     let penggunas: any[] = []
     if (want('ent_guru') || want('ent_siswa')) {
       try {
@@ -276,6 +321,33 @@ export async function syncDapodik(formData: FormData) {
        WHERE tahun_pelajaran LIKE ? AND deleted_at IS NULL LIMIT 1`,
       [`${parsed.tahun}-%`]
     )
+
+    /* Periode aktif lama (sebelum sync) untuk guard & laporan */
+    const [sekolahAwalRows]: any = await pool.query(
+      'SELECT tahun, semester FROM sekolah WHERE id_sekolah = ?',
+      [SEKOLAH_ID]
+    )
+    const [tpAktifRows]: any = await pool.query(
+      `SELECT tahun_pelajaran FROM tahun_pelajaran
+       WHERE id_tahun_pelajaran = ? AND deleted_at IS NULL LIMIT 1`,
+      [sekolahAwalRows[0]?.tahun ?? 0]
+    )
+    const periodeAktif = {
+      label: tpAktifRows[0]?.tahun_pelajaran || '-',
+      semester: Number(sekolahAwalRows[0]?.semester) === 2 ? 'Genap' : 'Ganjil',
+    }
+
+    /* Tanpa entitas Sekolah, periode aktif tidak ikut berpindah — tolak jika periode DAPODIK berbeda */
+    const periodeSama =
+      Boolean(tpRows[0]?.id_tahun_pelajaran) &&
+      Number(tpRows[0].id_tahun_pelajaran) === Number(sekolahAwalRows[0]?.tahun) &&
+      Number(parsed.semester) === Number(sekolahAwalRows[0]?.semester)
+    if (!want('ent_sekolah') && !periodeSama) {
+      throw new Error(
+        `Periode DAPODIK (${periodeLabel} · ${parsed.semester === 2 ? 'Genap' : 'Ganjil'}) berbeda dari periode aktif sekolah (${periodeAktif.label} · ${periodeAktif.semester}). Centang "Sekolah & Periode Aktif" agar periode aktif ikut diperbarui saat sinkronisasi.`
+      )
+    }
+
     if (tpRows[0]?.id_tahun_pelajaran) {
       periode = { idTahun: tpRows[0].id_tahun_pelajaran, semester: parsed.semester }
     } else {
@@ -299,21 +371,6 @@ export async function syncDapodik(formData: FormData) {
         }
         periode = { idTahun: tpAgain[0].id_tahun_pelajaran, semester: parsed.semester }
       }
-    }
-
-    /* Periode aktif lama (sebelum sync) untuk laporan */
-    const [sekolahAwalRows]: any = await pool.query(
-      'SELECT tahun, semester FROM sekolah WHERE id_sekolah = ?',
-      [SEKOLAH_ID]
-    )
-    const [tpAktifRows]: any = await pool.query(
-      `SELECT tahun_pelajaran FROM tahun_pelajaran
-       WHERE id_tahun_pelajaran = ? AND deleted_at IS NULL LIMIT 1`,
-      [sekolahAwalRows[0]?.tahun ?? 0]
-    )
-    const periodeAktif = {
-      label: tpAktifRows[0]?.tahun_pelajaran || '-',
-      semester: Number(sekolahAwalRows[0]?.semester) === 2 ? 'Genap' : 'Ganjil',
     }
 
     const ctx: SyncContext = {
@@ -414,7 +471,7 @@ export async function syncDapodik(formData: FormData) {
     for (const a of agamaRows) agamaMap.set(norm(a.agama), a.id_agama)
 
     /* ===== 1. Sekolah + periode aktif ===== */
-    await setSyncStatus(true, 'Langkah 1/11: Sekolah & periode aktif...')
+    await updateSyncProgress('Langkah 1/11: Sekolah & periode aktif...')
     if (want('ent_sekolah') && sekolahRaw) {
       const entry: SyncEntityResult = { entity: 'Sekolah', endpoint: 'getSekolah', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -457,7 +514,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 2. Kompetensi Keahlian (jurusan) ===== */
-    await setSyncStatus(true, 'Langkah 2/11: Kompetensi keahlian...')
+    await updateSyncProgress('Langkah 2/11: Kompetensi keahlian...')
     if (want('ent_jurusan')) {
       const entry: SyncEntityResult = { entity: 'Kompetensi Keahlian', endpoint: 'getRombonganBelajar', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -496,7 +553,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 3. Kelas ===== */
-    await setSyncStatus(true, 'Langkah 3/11: Kelas...')
+    await updateSyncProgress('Langkah 3/11: Kelas...')
     if (want('ent_kelas')) {
       const entry: SyncEntityResult = { entity: 'Kelas', endpoint: 'getRombonganBelajar', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -564,7 +621,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 4. Mata Pelajaran ===== */
-    await setSyncStatus(true, 'Langkah 4/11: Mata pelajaran...')
+    await updateSyncProgress('Langkah 4/11: Mata pelajaran...')
     if (want('ent_mapel')) {
       const entry: SyncEntityResult = { entity: 'Mata Pelajaran', endpoint: 'getRombonganBelajar', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -606,7 +663,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 5. Guru / PTK ===== */
-    await setSyncStatus(true, 'Langkah 5/11: Guru/PTK...')
+    await updateSyncProgress('Langkah 5/11: Guru/PTK...')
     if (want('ent_guru')) {
       const entry: SyncEntityResult = { entity: 'Guru/PTK', endpoint: 'getGtk', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -627,11 +684,11 @@ export async function syncDapodik(formData: FormData) {
             const nuptkBaru = existing.nuptk && String(existing.nuptk).trim() ? existing.nuptk : g.nuptk
             await pool.query(
               `UPDATE users SET nama = ?, kelamin = ?, agama = ?, nip = ?, nuptk = ?,
-                 id_kepegawaian = ?, ijazah = ?, id_tugas_tambahan = ?,
+                 id_kepegawaian = ?, ijazah = ?,
                  ptk_id_dapodik = ?, nik = ?, tanggal_lahir = ?
                WHERE id_user = ?`,
               [existing.nama || g.nama, g.kelamin, agamaId ?? existing.agama, g.nip || existing.nip || '', nuptkBaru || '',
-                g.kepegawaian, g.ijazah, g.jabatan, g.ptkId || null,
+                g.kepegawaian, g.ijazah, g.ptkId || null,
                 g.nik || existing.nik || null, g.tanggalLahir || existing.tanggal_lahir || null, existing.id_user]
             )
             ctx.userMap.set(norm(g.nama), existing.id_user)
@@ -645,7 +702,7 @@ export async function syncDapodik(formData: FormData) {
             const [res]: any = await pool.query(
               `INSERT INTO users (jabatan, nama, kelamin, agama, nip, nuptk, kontak, id_kepegawaian, ijazah, id_tugas_tambahan, username, pass, password, foto, moto, ptk_id_dapodik, nik, tanggal_lahir)
                VALUES (?, ?, ?, ?, ?, ?, '', ?, ?, ?, ?, ?, ?, '', 0, ?, ?, ?)`,
-              [g.jabatan, g.nama, g.kelamin, agamaId ?? 1, g.nip || '', g.nuptk || '', g.kepegawaian, g.ijazah, g.jabatan, username, username, password,
+              [g.jabatan, g.nama, g.kelamin, agamaId ?? 1, g.nip || '', g.nuptk || '', g.kepegawaian, g.ijazah, 5, username, username, password,
                 g.ptkId || null, g.nik || null, g.tanggalLahir || null]
             )
             userByName.set(norm(g.nama), { id_user: res.insertId, nama: g.nama, nuptk: g.nuptk })
@@ -669,7 +726,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 6. Siswa ===== */
-    await setSyncStatus(true, 'Langkah 6/11: Siswa...')
+    await updateSyncProgress('Langkah 6/11: Siswa...')
     if (want('ent_siswa')) {
       const entry: SyncEntityResult = { entity: 'Siswa', endpoint: 'getPesertaDidik', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -780,7 +837,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 7. Siswa Kelas (keanggotaan rombel) ===== */
-    await setSyncStatus(true, 'Langkah 7/11: Siswa kelas...')
+    await updateSyncProgress('Langkah 7/11: Siswa kelas...')
     if (want('ent_siswa')) {
       const entry: SyncEntityResult = { entity: 'Siswa Kelas', endpoint: 'getPesertaDidik', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -863,7 +920,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 8. Wali Kelas ===== */
-    await setSyncStatus(true, 'Langkah 8/11: Wali kelas...')
+    await updateSyncProgress('Langkah 8/11: Wali kelas...')
     if (want('ent_kelas')) {
       const entry: SyncEntityResult = { entity: 'Wali Kelas', endpoint: 'getRombonganBelajar', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -884,18 +941,26 @@ export async function syncDapodik(formData: FormData) {
             continue
           }
           const [existing]: any = await pool.query(
-            `SELECT id_kelas_wali FROM kelas_wali
+            `SELECT id_kelas_wali, id_user, ptk_id_dapodik FROM kelas_wali
              WHERE id_kelas = ? AND tahun = ? AND semester = ? LIMIT 1`,
             [idKelas, periode.idTahun, periode.semester]
           )
           if (existing.length > 0) {
             if (idUserFinal) {
-              await pool.query(
-                'UPDATE kelas_wali SET id_user = ?, ptk_id_dapodik = ? WHERE id_kelas_wali = ?',
-                [idUserFinal, kw.ptkWaliId || null, existing[0].id_kelas_wali]
-              )
-              entry.updated++
-              addDetail(detail, 'updated', label, 'wali kelas diperbarui')
+              const berubah =
+                Number(existing[0].id_user) !== Number(idUserFinal) ||
+                String(existing[0].ptk_id_dapodik || '') !== String(kw.ptkWaliId || '')
+              if (berubah) {
+                await pool.query(
+                  'UPDATE kelas_wali SET id_user = ?, ptk_id_dapodik = ? WHERE id_kelas_wali = ?',
+                  [idUserFinal, kw.ptkWaliId || null, existing[0].id_kelas_wali]
+                )
+                entry.updated++
+                addDetail(detail, 'updated', label, 'wali kelas diperbarui')
+              } else {
+                entry.skipped++
+                addDetail(detail, 'skipped', label, 'sudah sesuai')
+              }
             } else {
               entry.skipped++
               addDetail(detail, 'skipped', label, 'wali tidak ditemukan di data DAPODIK')
@@ -925,13 +990,15 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 9. Mapel Kelas (pembelajaran) ===== */
-    await setSyncStatus(true, 'Langkah 9/11: Mapel kelas...')
+    await updateSyncProgress('Langkah 9/11: Mapel kelas...')
     if (want('ent_mapel')) {
       const entry: SyncEntityResult = { entity: 'Mapel Kelas', endpoint: 'getRombonganBelajar', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
       try {
         const [mkRows]: any = await pool.query(
-          `SELECT id_mapel_kelas, id_kelas, id_mapel, pembelajaran_id_dapodik FROM mapel_kelas
+          `SELECT id_mapel_kelas, id_kelas, id_mapel, id_user, pembelajaran_id_dapodik,
+                  rombongan_belajar_id_dapodik, jam_mengajar_per_minggu, status_di_kurikulum, deleted_at
+           FROM mapel_kelas
            WHERE deleted_at IS NULL AND pembelajaran_id_dapodik IS NOT NULL`
         )
         const mkByPembelajaran = new Map<string, any>()
@@ -952,7 +1019,9 @@ export async function syncDapodik(formData: FormData) {
           let existing = mk.pembelajaranId ? mkByPembelajaran.get(mk.pembelajaranId) : undefined
           if (!existing) {
             const [rows]: any = await pool.query(
-              `SELECT id_mapel_kelas FROM mapel_kelas
+              `SELECT id_mapel_kelas, id_user, pembelajaran_id_dapodik, rombongan_belajar_id_dapodik,
+                      jam_mengajar_per_minggu, status_di_kurikulum, deleted_at
+               FROM mapel_kelas
                WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? LIMIT 1`,
               [periode.idTahun, periode.semester, idKelas, idMapel]
             )
@@ -962,14 +1031,26 @@ export async function syncDapodik(formData: FormData) {
           const idUser = guru?.id_user ?? (typeof guru === 'number' ? guru : null)
           if (existing) {
             if (idUser || !existing.id_user) {
-              await pool.query(
-                `UPDATE mapel_kelas SET id_user = ?, pembelajaran_id_dapodik = ?, rombongan_belajar_id_dapodik = ?,
-                   jam_mengajar_per_minggu = ?, status_di_kurikulum = ?
-                 WHERE id_mapel_kelas = ?`,
-                [idUser, mk.pembelajaranId || null, mk.rombelId || null, mk.jamMengajar, mk.statusDiKurikulum || null, existing.id_mapel_kelas]
-              )
-              entry.updated++
-              addDetail(detail, 'updated', label, 'pembelajaran diperbarui')
+              const berubah =
+                Number(existing.id_user ?? 0) !== Number(idUser ?? 0) ||
+                String(existing.pembelajaran_id_dapodik || '') !== String(mk.pembelajaranId || '') ||
+                String(existing.rombongan_belajar_id_dapodik || '') !== String(mk.rombelId || '') ||
+                Number(existing.jam_mengajar_per_minggu ?? 0) !== Number(mk.jamMengajar || 0) ||
+                String(existing.status_di_kurikulum || '') !== String(mk.statusDiKurikulum || '') ||
+                existing.deleted_at != null
+              if (berubah) {
+                await pool.query(
+                  `UPDATE mapel_kelas SET id_user = ?, pembelajaran_id_dapodik = ?, rombongan_belajar_id_dapodik = ?,
+                     jam_mengajar_per_minggu = ?, status_di_kurikulum = ?, deleted_at = NULL
+                   WHERE id_mapel_kelas = ?`,
+                  [idUser, mk.pembelajaranId || null, mk.rombelId || null, mk.jamMengajar, mk.statusDiKurikulum || null, existing.id_mapel_kelas]
+                )
+                entry.updated++
+                addDetail(detail, 'updated', label, 'pembelajaran diperbarui')
+              } else {
+                entry.skipped++
+                addDetail(detail, 'skipped', label, 'sudah sesuai')
+              }
             } else {
               entry.skipped++
               addDetail(detail, 'skipped', label, 'guru tidak ditemukan di data DAPODIK — pertahankan guru lama')
@@ -997,7 +1078,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 10. Riwayat Pendidikan Formal (guru) ===== */
-    await setSyncStatus(true, 'Langkah 10/11: Riwayat pendidikan guru...')
+    await updateSyncProgress('Langkah 10/11: Riwayat pendidikan guru...')
     if (want('ent_guru')) {
       const entry: SyncEntityResult = { entity: 'Riwayat Pendidikan', endpoint: 'getGtk', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -1051,7 +1132,7 @@ export async function syncDapodik(formData: FormData) {
     }
 
     /* ===== 11. Akun Pengguna (getPengguna) ===== */
-    await setSyncStatus(true, 'Langkah 11/11: Akun pengguna...')
+    await updateSyncProgress('Langkah 11/11: Akun pengguna...')
     if (penggunas.length > 0) {
       const entry: SyncEntityResult = { entity: 'Akun Pengguna', endpoint: 'getPengguna', inserted: 0, updated: 0, skipped: 0, error_msg: null }
       const detail: DetailRow[] = []
@@ -1106,10 +1187,16 @@ export async function syncDapodik(formData: FormData) {
         periodeAktif,
       },
     } as const
-  } catch {
-    return { success: false, error: 'Sinkronisasi gagal', summary, runId, periode: null } as const
+  } catch (e: any) {
+    return {
+      success: false,
+      error: e?.message ? `Sinkronisasi gagal: ${e.message}` : 'Sinkronisasi gagal',
+      summary,
+      runId,
+      periode: null,
+    } as const
   } finally {
-    await setSyncStatus(false)
+    await releaseSync()
   }
 }
 

@@ -48,6 +48,10 @@ Manajer proses dipilih lewat variabel `DEPLOY_MANAGER` di `.env.local`:
 Catatan: server yang memakai aaPanel Node Manager sebaiknya tidak menjalankan proses PM2
 untuk aplikasi yang sama agar tidak terjadi rebutan port.
 
+Jika server sudah menyediakan Chrome sendiri (mis. lewat `CHROME_PATH` di `.env`), ekspor
+`PUPPETEER_SKIP_DOWNLOAD=true` sebelum `npm ci` untuk menghemat ~500 MB. Pastikan Chrome
+tersebut benar-benar ada — tanpa itu mesin cetak PDF fallback (Puppeteer) tidak bisa jalan.
+
 Uploads (logo sekolah, foto profil) disimpan di `storage/uploads` — di luar `public` — dan
 hanya disajikan lewat `/api/uploads` (logo sekolah publik, lainnya wajib login).
 `deploy.sh` menjalankan `scripts/migrate-uploads.sh` sekali untuk memindahkan file lama
