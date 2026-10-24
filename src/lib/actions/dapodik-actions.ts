@@ -447,7 +447,7 @@ export async function syncDapodik(formData: FormData) {
     for (const u of userRows) ctx.userMap.set(norm(u.nama), u.id_user)
 
     const [siswaRows]: any = await pool.query(
-      'SELECT id_siswa, nisn, nis, nama_siswa, peserta_didik_id_dapodik FROM siswa WHERE deleted_at IS NULL'
+      'SELECT * FROM siswa WHERE deleted_at IS NULL'
     )
     const siswaByNisn = new Map<string, any>()
     const siswaByNis = new Map<string, any>()
@@ -765,14 +765,14 @@ export async function syncDapodik(formData: FormData) {
                  peserta_didik_id_dapodik = ?, registrasi_id_dapodik = ?, nik = ?,
                  tinggi_badan = ?, berat_badan = ?, email = ?, kebutuhan_khusus = ?
                WHERE id_siswa = ?`,
-              [s.nama || existing.nama_siswa, s.nik || existing.nik_pd, s.nis || existing.nis, s.nisn || existing.nisn,
-                s.tempatLahir || existing.tempat_lahir, s.tanggalLahir || existing.tanggal_lahir, s.kelamin, agamaId ?? existing.agama,
-                s.kontak || existing.kontak_siswa, s.anakKe || existing.anak_ke,
-                s.namaAyah || existing.nama_ayah, s.pekerjaanAyah || existing.pekerjaan_ayah,
-                s.namaIbu || existing.nama_ibu, s.pekerjaanIbu || existing.pekerjaan_ibu,
-                s.namaWali || existing.nama_wali, s.pekerjaanWali || existing.pekerjaan_wali,
-                s.sekolahAsal || existing.sekolah_asal, s.terimaTanggal || existing.terima_tanggal,
-                s.tingkatId ?? existing.terima_tingkat, s.namaRombel || existing.terima_kelas,
+              [s.nama || existing.nama_siswa || '', s.nik || existing.nik_pd || '', s.nis || existing.nis || '', s.nisn || existing.nisn || '',
+                s.tempatLahir || existing.tempat_lahir || '', s.tanggalLahir || existing.tanggal_lahir, s.kelamin, agamaId ?? existing.agama,
+                s.kontak || existing.kontak_siswa || '', s.anakKe || existing.anak_ke,
+                s.namaAyah || existing.nama_ayah || '', s.pekerjaanAyah || existing.pekerjaan_ayah || '',
+                s.namaIbu || existing.nama_ibu || '', s.pekerjaanIbu || existing.pekerjaan_ibu || '',
+                s.namaWali || existing.nama_wali || '', s.pekerjaanWali || existing.pekerjaan_wali || '',
+                s.sekolahAsal || existing.sekolah_asal || '', s.terimaTanggal || existing.terima_tanggal,
+                s.tingkatId ?? existing.terima_tingkat, s.namaRombel || existing.terima_kelas || '',
                 kkId ?? existing.jurusan,
                 s.pesertaDidikId || existing.peserta_didik_id_dapodik || null,
                 s.registrasiId || existing.registrasi_id_dapodik || null,

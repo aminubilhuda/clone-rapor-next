@@ -146,7 +146,7 @@ export async function updateSiswa(formData: FormData) {
   const kontakIbu = normalizePhone(formData.get('kontak_ibu') as string) || null;
   const alamat = (formData.get('alamat') as string)?.trim() || null;
   const alamatOrtu = (formData.get('alamat_orang_tua') as string)?.trim() || null;
-  const namaWali = (formData.get('nama_wali') as string)?.trim() || null;
+  const namaWali = (formData.get('nama_wali') as string)?.trim() || '';
   const alamatWali = (formData.get('alamat_wali') as string)?.trim() || null;
   const pekerjaanWali = (formData.get('pekerjaan_wali') as string)?.trim() || null;
   const kontakWali = normalizePhone(formData.get('kontak_wali') as string) || null;
