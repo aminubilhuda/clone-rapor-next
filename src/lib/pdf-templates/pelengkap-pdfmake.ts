@@ -22,6 +22,7 @@ const PAGE_MARGINS: [number, number, number, number] = [
   mm(14),
 ];
 const UPLOAD_DIRECTORY = join(process.cwd(), 'storage', 'uploads', 'sekolah');
+const PUBLIC_DIRECTORY = join(process.cwd(), 'public');
 const FALLBACK_PROVINCE_LOGO = 'logo-provinsi-jawa-timur.png';
 
 const borderlessLayout: CustomTableLayout = {
@@ -75,12 +76,7 @@ function formatTanggal(input: string | Date | null): string {
   return displayValue(formatTanggalIndo(input));
 }
 
-function imageDataUri(fileName: string | null): string | null {
-  if (!fileName) return null;
-  const safeName = basename(fileName);
-  if (!safeName || safeName !== fileName) return null;
-
-  const filePath = join(UPLOAD_DIRECTORY, safeName);
+function readImageDataUri(filePath: string): string | null {
   if (!existsSync(filePath)) return null;
 
   const data = readFileSync(filePath);
@@ -97,13 +93,31 @@ function imageDataUri(fileName: string | null): string | null {
   return mimeType ? `data:${mimeType};base64,${data.toString('base64')}` : null;
 }
 
-function provinceLogo(sekolah: PelengkapSekolahInfo): string {
-  const configured = imageDataUri(sekolah.logo_prov);
-  const fallback = imageDataUri(FALLBACK_PROVINCE_LOGO);
-  if (!configured && !fallback) {
-    throw new Error('Logo Provinsi Jawa Timur tidak tersedia');
-  }
-  return configured || fallback as string;
+/** Cari gambar di uploads sekolah, lalu di public/ (aset bawaan deploy). */
+function imageDataUri(fileName: string | null): string | null {
+  if (!fileName) return null;
+  const safeName = basename(fileName);
+  if (!safeName || safeName !== fileName) return null;
+
+  return (
+    readImageDataUri(join(UPLOAD_DIRECTORY, safeName))
+    ?? readImageDataUri(join(PUBLIC_DIRECTORY, safeName))
+  );
+}
+
+function provinceLogo(sekolah: PelengkapSekolahInfo): string | null {
+  return imageDataUri(sekolah.logo_prov) ?? imageDataUri(FALLBACK_PROVINCE_LOGO);
+}
+
+function imagePlaceholder(heightMm: number): Content {
+  return {
+    table: {
+      widths: ['*'],
+      heights: [mm(heightMm)],
+      body: [[{ text: '' }]],
+    },
+    layout: borderlessLayout,
+  };
 }
 
 function fixedImage(
@@ -225,13 +239,13 @@ function approvalBlock(
 
 function buildCover(
   siswa: PelengkapSiswaInfo,
-  logoProvinsi: string,
+  logoProvinsi: string | null,
   logoSekolah: string | null,
   pageBreak: boolean,
 ): Content {
   return {
     stack: [
-      fixedImage(logoProvinsi, 36, 51),
+      logoProvinsi ? fixedImage(logoProvinsi, 36, 51) : imagePlaceholder(51),
       {
         stack: [
           { text: 'RAPOR', bold: true },

@@ -77,7 +77,7 @@ export function generatePelengkapRaporHTML(
     sekolah.logo_prov || 'logo-provinsi-jawa-timur.png',
   )}`;
   const fallbackProvinceLogoUrl =
-    `${baseUrl}/api/uploads/sekolah/logo-provinsi-jawa-timur.png`;
+    `${baseUrl}/logo-provinsi-jawa-timur.png`;
   const schoolLogoUrl = sekolah.logo
     ? `${baseUrl}/api/uploads/sekolah/${encodeURIComponent(sekolah.logo)}`
     : '';
