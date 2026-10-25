@@ -13,7 +13,6 @@ import {
   getJenisConfig,
   isJenisLayananBK,
 } from '@/lib/bk';
-import BKPrintButton from './_components/bk-print-button';
 
 export default async function BKInfoSiswaPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -47,7 +46,17 @@ export default async function BKInfoSiswaPage({ params }: { params: Promise<{ id
             {siswa.nama_kelas} · {siswa.nis ?? '—'} · {formatKelamin(siswa.kelamin)}
           </p>
         </div>
-        <BKPrintButton />
+        <Link
+          href={`/cetak/bk/siswa/${idSiswa}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#DC2626] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#B91C1C]"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          Cetak Info Siswa
+        </Link>
       </div>
 
       <div className="rounded-xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
