@@ -85,7 +85,7 @@ const CSS = `
   * { box-sizing: border-box; }
   body { margin: 0; background: #eef0f3; }
   .sheet {
-    width: 210mm; min-height: 297mm; margin: 16px auto; padding: 10mm 12mm;
+    width: 210mm; max-width: 100%; min-height: 297mm; margin: 16px auto; padding: 10mm 12mm;
     background: #fff; box-shadow: 0 4px 18px rgba(0,0,0,.12);
     font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; color: #000;
   }
