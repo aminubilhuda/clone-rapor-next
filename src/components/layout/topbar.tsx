@@ -28,6 +28,11 @@ const pageTitles: Record<string, string> = {
   '/tu/singkron-dapodik': 'Singkron DAPODIK',
   '/guru/absensi-piket': 'Absensi Piket',
   '/guru/rekap-absensi-bk': 'Rekap Absensi BK',
+  '/guru/bk': 'Bimbingan Konseling',
+  '/guru/bk/layanan': 'Layanan BK',
+  '/guru/bk/rekap': 'Rekap BK',
+  '/guru/bk/siswa': 'Data Siswa BK',
+  '/tu/bk-rekap': 'Rekap BK',
   '/guru/catatan-wali': 'Catatan Wali',
   '/guru/catatan-rapor': 'Daftar Rapor',
   '/siswa': 'Dashboard Siswa',
@@ -41,7 +46,10 @@ export default function Topbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const userName = session?.user?.name || 'User';
-  const pageTitle = pageTitles[pathname] || 'Dashboard';
+  const nestedTitle = Object.entries(pageTitles)
+    .filter(([key]) => pathname.startsWith(`${key}/`))
+    .sort((a, b) => b[0].length - a[0].length)[0]?.[1];
+  const pageTitle = pageTitles[pathname] || nestedTitle || 'Dashboard';
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
