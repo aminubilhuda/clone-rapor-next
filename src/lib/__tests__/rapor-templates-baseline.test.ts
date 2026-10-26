@@ -261,3 +261,40 @@ describe('baseline rapor tanpa hierarki', () => {
     ).toMatchSnapshot();
   });
 });
+
+describe('pembulatan nilai rapor', () => {
+  it('tengah semester menampilkan nilai bulat dan predikat mengikuti nilai bulat', () => {
+    const html = generateTengahSemesterRaporHTML(
+      [
+        {
+          ...midSiswa,
+          kelompok_mapels: [
+            {
+              huruf: 'A',
+              kelompok: 'Mata Pelajaran Umum',
+              mapels: [
+                { nama_mapel: 'Nilai Atas', nilai: 85.6, kktp: 75 },
+                { nama_mapel: 'Nilai Bawah', nilai: 84.4, kktp: 75 },
+              ],
+            },
+          ],
+        },
+      ],
+      sekolah,
+      '2026-2027',
+      'Ganjil',
+      { nama: 'Wali Kelas', nip: '19800101 200501 1 001' }
+    );
+
+    const atas = rowWith(html, 'Nilai Atas');
+    expect(atas).toContain('>86<');
+    expect(atas).toContain('>A<');
+
+    const bawah = rowWith(html, 'Nilai Bawah');
+    expect(bawah).toContain('>84<');
+    expect(bawah).toContain('>B<');
+
+    expect(html).not.toContain('85.6');
+    expect(html).not.toContain('84.4');
+  });
+});

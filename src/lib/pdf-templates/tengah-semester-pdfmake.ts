@@ -49,6 +49,11 @@ function displayValue(value: unknown): string {
   return String(value);
 }
 
+function roundNilai(value: number | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
+  return Math.round(Number(value) || 0);
+}
+
 function getPredikat(nilai: number | null, kktp: number): string {
   if (nilai === null || nilai === 0) return '-';
   if (nilai < 60) return 'D';
@@ -193,7 +198,8 @@ function subjectTable(siswa: SiswaMidRapor): Content {
         ]);
 
         children.forEach((child, childIndex) => {
-          const nilai = child.nilai ?? 0;
+          const nilai = roundNilai(child.nilai);
+          const tampil = nilai ?? 0;
           body.push([
             {},
             {
@@ -201,12 +207,12 @@ function subjectTable(siswa: SiswaMidRapor): Content {
               margin: [mm(4), 0, 0, 0],
             },
             {
-              text: String(nilai || 0),
+              text: String(tampil),
               alignment: 'center',
-              color: child.nilai === null || nilai < child.kktp ? '#ff0000' : '#000000',
+              color: nilai === null || tampil < child.kktp ? '#ff0000' : '#000000',
             },
             {
-              text: getPredikat(child.nilai, child.kktp),
+              text: getPredikat(nilai, child.kktp),
               alignment: 'center',
             },
           ]);
@@ -215,17 +221,18 @@ function subjectTable(siswa: SiswaMidRapor): Content {
       }
 
       nomor += 1;
-      const nilai = mapel.nilai ?? 0;
+      const nilai = roundNilai(mapel.nilai);
+      const tampil = nilai ?? 0;
       body.push([
         { text: String(nomor), alignment: 'center' },
         { text: displayValue(mapel.nama_mapel) },
         {
-          text: String(nilai || 0),
+          text: String(tampil),
           alignment: 'center',
-          color: mapel.nilai === null || nilai < mapel.kktp ? '#ff0000' : '#000000',
+          color: nilai === null || tampil < mapel.kktp ? '#ff0000' : '#000000',
         },
         {
-          text: getPredikat(mapel.nilai, mapel.kktp),
+          text: getPredikat(nilai, mapel.kktp),
           alignment: 'center',
         },
       ]);

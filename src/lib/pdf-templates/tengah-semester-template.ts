@@ -44,6 +44,11 @@ function getNilaiStyle(nilai: number | null, kktp: number): string {
   return 'color:black;';
 }
 
+function roundNilai(value: number | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
+  return Math.round(Number(value) || 0);
+}
+
 export function generateTengahSemesterRaporHTML(
   siswaList: SiswaMidRapor[],
   sekolah: SekolahInfo,
@@ -53,13 +58,15 @@ export function generateTengahSemesterRaporHTML(
 ): string {
   const siswaPages = siswaList.map((siswa) => {
     const renderMapelRow = (m: MapelNilai, nomor: number) => {
-      const nilai = m.nilai ?? 0;
-      return `<tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(m.nilai, m.kktp)}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(m.nilai, m.kktp)}</td></tr>`;
+      const nilai = roundNilai(m.nilai);
+      const tampil = nilai ?? 0;
+      return `<tr><td style="width:5%;text-align:center;padding:3px;border:1px solid #000;">${nomor}</td><td style="width:50%;text-align:left;padding:4px;border:1px solid #000;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(nilai, m.kktp)}">${tampil}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(nilai, m.kktp)}</td></tr>`;
     };
 
     const renderChildRow = (m: MapelNilai, nomorAnak: number) => {
-      const nilai = m.nilai ?? 0;
-      return `<tr><td style="width:50%;text-align:left;padding:4px 4px 4px 16px;border:1px solid #000;">${nomorAnak}. ${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(m.nilai, m.kktp)}">${nilai || '0'}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(m.nilai, m.kktp)}</td></tr>`;
+      const nilai = roundNilai(m.nilai);
+      const tampil = nilai ?? 0;
+      return `<tr><td style="width:50%;text-align:left;padding:4px 4px 4px 16px;border:1px solid #000;">${nomorAnak}. ${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;${getNilaiStyle(nilai, m.kktp)}">${tampil}</td><td style="width:15%;text-align:center;border:1px solid #000;">${getPredikat(nilai, m.kktp)}</td></tr>`;
     };
 
     const renderParentRow = (m: MapelNilai, nomor: number, rowspan: number) => `<tr><td style="width:5%;text-align:center;vertical-align:top;padding:6px 3px 3px;border:1px solid #000;" rowspan="${rowspan}">${nomor}</td><td style="width:50%;text-align:left;height:32px;padding:4px;border:1px solid #000;font-weight:bold;background:#F3F4F6;">${escapeHtml(m.nama_mapel)}</td><td style="width:15%;text-align:center;border:1px solid #000;background:#F3F4F6;color:#6B7280;">&mdash;</td><td style="width:15%;text-align:center;border:1px solid #000;background:#F3F4F6;"></td></tr>`;
