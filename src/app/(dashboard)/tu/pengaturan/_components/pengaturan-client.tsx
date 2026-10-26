@@ -114,7 +114,15 @@ export default function PengaturanClient({ sekolah, semester, tahunPel, pembagia
             const d = JSON.parse(dataLine.slice(6))
             if (d.done) {
               finished = true
-              setUpdateLog((l) => [...l, '✅ Update selesai. Silakan muat ulang halaman (F5).'])
+              const code = Number(d.code ?? 0)
+              if (code !== 0) {
+                setUpdateLog((l) => [
+                  ...l,
+                  `❌ Update gagal (exit code ${code}). Periksa log di atas.`,
+                ])
+              } else {
+                setUpdateLog((l) => [...l, '✅ Update selesai. Silakan muat ulang halaman (F5).'])
+              }
             } else if (d.line) {
               setUpdateLog((l) => [...l, d.line])
             }

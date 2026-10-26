@@ -17,7 +17,7 @@ DEPLOY_MANAGER="${DEPLOY_MANAGER:-$(read_env DEPLOY_MANAGER)}"
 DEPLOY_MANAGER="${DEPLOY_MANAGER:-pm2}"
 
 echo "==> [1/5] Pull latest code"
-git pull --ff-only
+git -c safe.directory="$APP_DIR" pull --ff-only
 
 echo "==> [2/5] Install dependencies (clean)"
 npm ci
