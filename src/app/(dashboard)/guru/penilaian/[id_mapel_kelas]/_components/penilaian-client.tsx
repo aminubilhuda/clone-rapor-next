@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/toast-provider';
 
@@ -340,9 +341,10 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
 
       <div className={`flex flex-wrap gap-1.5 px-6 py-3.5 border-b ${theme.subHeaderBg}`}>
         {Object.entries(TAB_INFO).map(([key, info]) => (
-          <a
+          <Link
             key={key}
             href={`/guru/penilaian/${idMapelKelas}?detail=${key}`}
+            scroll={false}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
               activeDetail === key
                 ? info.activeBg
@@ -350,7 +352,7 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
             }`}
           >
             {info.label}
-          </a>
+          </Link>
         ))}
       </div>
 
