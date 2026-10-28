@@ -140,6 +140,11 @@ export default function SidebarGuru() {
   };
 
   const isActive = (href: string) => {
+    // Halaman detail penilaian masih bagian dari menu Penilaian Angka.
+    if (href === '/guru/kelas-ku' && pathname.startsWith('/guru/penilaian')) {
+      return true;
+    }
+
     const [hrefPath, hrefQuery] = href.split('?');
     if (hrefQuery) {
       const hp = new URLSearchParams(hrefQuery);

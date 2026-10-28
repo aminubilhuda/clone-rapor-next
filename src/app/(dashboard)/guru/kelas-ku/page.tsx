@@ -1,4 +1,5 @@
 import { pool } from '@/lib/db';
+import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
 import { redirect } from 'next/navigation';
@@ -74,7 +75,7 @@ export default async function KelasKuPage() {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <a
+                        <Link
                           href={`/guru/penilaian/${mk.id_mapel_kelas}`}
                           className="inline-flex items-center gap-1 bg-[#F8F9FB] text-[#1A1A2E] px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-[#F8F9FB]/80 border border-[rgba(0,0,0,0.08)] transition-all active:scale-[0.98]"
                         >
@@ -82,7 +83,7 @@ export default async function KelasKuPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                           Nilai
-                        </a>
+                        </Link>
                       </td>
                     </tr>
                   ))

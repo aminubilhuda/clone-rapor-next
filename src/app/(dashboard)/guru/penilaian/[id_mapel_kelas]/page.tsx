@@ -1,4 +1,5 @@
 import { pool } from '@/lib/db';
+import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getSekolahWithFilter } from '@/lib/sekolah-helper';
@@ -125,9 +126,9 @@ export default async function PenilaianPage({ params, searchParams }: PageProps)
   return (
     <div>
       <div className="mb-4">
-        <a href="/guru/kelas-ku" className="inline-flex items-center gap-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+        <Link href="/guru/kelas-ku" className="inline-flex items-center gap-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
           ← Kembali
-        </a>
+        </Link>
       </div>
       <PenilaianClient data={data} idMapelKelas={id_mapel_kelas} />
     </div>

@@ -596,9 +596,9 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
                 Belum ada Tujuan Pembelajaran untuk mapel ini, sehingga kolom nilai{' '}
                 {activeDetail === 'formatif' ? 'Formatif' : 'Sumatif Harian'} belum tersedia.{' '}
-                <a href="/guru/tujuan-pembelajaran" className="font-semibold underline decoration-amber-400 underline-offset-2">
+                <Link href="/guru/tujuan-pembelajaran" className="font-semibold underline decoration-amber-400 underline-offset-2">
                   Atur Tujuan Pembelajaran
-                </a>
+                </Link>
               </div>
             </div>
           )}
