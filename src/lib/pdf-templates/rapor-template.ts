@@ -84,7 +84,7 @@ export function generateRaporHTML(
 
       <div class="info-box">
         <table class="info-table">
-          <tr><td class="info-label">Nama Siswa</td><td class="info-colon">:</td><td class="info-value">${escapeHtml(siswa.nama_siswa)}</td></tr>
+          <tr><td class="info-label">Nama Siswa</td><td class="info-colon">:</td><td class="info-value">${escapeHtml((siswa.nama_siswa || '').toUpperCase())}</td></tr>
           <tr><td class="info-label">NIS</td><td class="info-colon">:</td><td class="info-value">${siswa.nis ? escapeHtml(siswa.nis) : '-'}</td></tr>
           <tr><td class="info-label">NISN</td><td class="info-colon">:</td><td class="info-value">${siswa.nisn ? escapeHtml(siswa.nisn) : '-'}</td></tr>
           <tr><td class="info-label">Kelas</td><td class="info-colon">:</td><td class="info-value">${escapeHtml(siswa.nama_kelas)}</td></tr>

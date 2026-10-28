@@ -350,7 +350,7 @@ function buildStudentPage(
     stack: [
       pageHeading('KETERANGAN TENTANG DIRI PESERTA DIDIK'),
       informationTable([
-        informationRow('1.', 'Nama Peserta Didik (Lengkap)', siswa.nama_siswa),
+        informationRow('1.', 'Nama Peserta Didik (Lengkap)', displayValue(siswa.nama_siswa).toUpperCase()),
         informationRow('2.', 'Nomor Induk / NISN', `${siswa.nis || '-'} / ${siswa.nisn || '-'}`),
         informationRow('3.', 'NIK', siswa.nik_pd),
         informationRow('4.', 'Nomor Kartu Keluarga', siswa.nkk),
@@ -382,13 +382,13 @@ function buildStudentPage(
             width: mm(55),
             stack: [{
               table: {
-                widths: [mm(30)],
-                heights: [mm(40)],
+                widths: [mm(27)],
+                heights: [mm(36)],
                 body: [[{
                   text: 'Pas Foto\n3 x 4',
                   alignment: 'center',
                   color: '#555555',
-                  margin: [0, mm(13), 0, 0],
+                  margin: [0, mm(11), 0, 0],
                 }]],
               },
               layout: identityBoxLayout,

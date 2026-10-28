@@ -102,7 +102,7 @@ function studentInformation(
       {
         width: '*',
         stack: [informationSide([
-          ['Nama', siswa.nama_siswa],
+          ['Nama', displayValue(siswa.nama_siswa).toUpperCase()],
           ['NIS / NISN', `${siswa.nis || '-'} / ${siswa.nisn || '-'}`],
           ['Nama Sekolah', sekolah.nama_sekolah],
           ['Alamat', sekolah.alamat],
@@ -359,7 +359,7 @@ function signatureArea(
 }
 
 function studentFooter(siswa: SiswaMidRapor): DynamicContent {
-  const identity = `${displayValue(siswa.nama_kelas)} | ${displayValue(siswa.nama_siswa)} | ${displayValue(siswa.nis)}${siswa.nisn ? `/${siswa.nisn}` : ''}`;
+  const identity = `${displayValue(siswa.nama_kelas)} | ${displayValue(siswa.nama_siswa).toUpperCase()} | ${displayValue(siswa.nis)}${siswa.nisn ? `/${siswa.nisn}` : ''}`;
   return (currentPage, pageCount) => ({
     stack: [
       {
