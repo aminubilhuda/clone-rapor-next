@@ -40,8 +40,8 @@ const ICONS: Record<string, React.ReactNode> = {
 function Info({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div className="border-b border-[rgba(0,0,0,0.04)] py-2 last:border-0">
-      <dt className="text-[10px] uppercase tracking-wider text-[#9CA3AF]">{label}</dt>
-      <dd className="mt-0.5 text-sm font-medium text-[#1A1A2E]">{value || '—'}</dd>
+      <dt className="text-[10px] uppercase tracking-wider text-[#94A3B8]">{label}</dt>
+      <dd className="mt-0.5 text-sm font-medium text-[#1E293B]">{value || '—'}</dd>
     </div>
   );
 }
@@ -81,12 +81,13 @@ export default async function SiswaDashboardPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
-      <section className="relative overflow-hidden rounded-3xl bg-[#151526] p-6 text-white premium-shadow-lg sm:p-8">
-        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-red-500/20 blur-3xl" />
+    <div className="neu-page -m-3 min-h-full p-3 sm:-m-6 sm:p-6">
+      <div className="mx-auto max-w-6xl space-y-5">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] p-6 text-white shadow-[0_20px_50px_rgba(37,99,235,0.25)] sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/20 blur-3xl" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-red-300">Portal Siswa</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-200">Portal Siswa</p>
             <h1 className="mt-1.5 text-2xl font-bold tracking-tight sm:text-3xl">{siswa.nama_siswa}</h1>
             <p className="mt-1 text-sm text-white/55">
               {siswa.nama_kelas} · NIS {siswa.nis || '—'} · {periode.nama_semester} {periode.tahun_pelajaran}
@@ -94,7 +95,7 @@ export default async function SiswaDashboardPage() {
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
                 href="/siswa/profile"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#B91C1C]"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1D4ED8]"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -123,55 +124,55 @@ export default async function SiswaDashboardPage() {
       </section>
 
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-4 premium-shadow">
+        <div className="neu-card p-4">
           <div className="flex items-center justify-between">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">{ICONS.nilai}</span>
-            <span className="text-[10px] text-[#9CA3AF]">Nilai</span>
+            <span className="text-[10px] text-[#94A3B8]">Nilai</span>
           </div>
-          <p className="mt-3 text-2xl font-bold tabular-nums text-[#1A1A2E]">{rataRata ?? '—'}</p>
-          <p className="text-xs text-[#6B7280]">Rata-rata</p>
+          <p className="mt-3 text-2xl font-bold tabular-nums text-[#1E293B]">{rataRata ?? '—'}</p>
+          <p className="text-xs text-[#64748B]">Rata-rata</p>
         </div>
-        <div className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-4 premium-shadow">
+        <div className="neu-card p-4">
           <div className="flex items-center justify-between">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600">{ICONS.nilai}</span>
-            <span className="text-[10px] text-[#9CA3AF]">Mapel</span>
+            <span className="text-[10px] text-[#94A3B8]">Mapel</span>
           </div>
-          <p className="mt-3 text-2xl font-bold tabular-nums text-[#1A1A2E]">{nilaiList.length}</p>
-          <p className="text-xs text-[#6B7280]">Mata pelajaran</p>
+          <p className="mt-3 text-2xl font-bold tabular-nums text-[#1E293B]">{nilaiList.length}</p>
+          <p className="text-xs text-[#64748B]">Mata pelajaran</p>
         </div>
-        <div className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-4 premium-shadow">
+        <div className="neu-card p-4">
           <div className="flex items-center justify-between">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">{ICONS.presensi}</span>
-            <span className="text-[10px] text-[#9CA3AF]">Hadir</span>
+            <span className="text-[10px] text-[#94A3B8]">Hadir</span>
           </div>
-          <p className="mt-3 text-2xl font-bold tabular-nums text-[#1A1A2E]">{persenHadir}%</p>
-          <p className="text-xs text-[#6B7280]">Kehadiran</p>
+          <p className="mt-3 text-2xl font-bold tabular-nums text-[#1E293B]">{persenHadir}%</p>
+          <p className="text-xs text-[#64748B]">Kehadiran</p>
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow lg:col-span-2">
+        <section className="neu-card p-5 lg:col-span-2">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-[#1A1A2E]">Nilai Saya</h2>
-              <p className="mt-0.5 text-xs text-[#6B7280]">
+              <h2 className="text-sm font-semibold text-[#1E293B]">Nilai Saya</h2>
+              <p className="mt-0.5 text-xs text-[#64748B]">
                 {nilaiTerisi.length} dari {nilaiList.length} mapel sudah dinilai.
               </p>
             </div>
-            <Link href="/siswa/nilai" className="text-[11px] font-medium text-[#DC2626] hover:underline">
+            <Link href="/siswa/nilai" className="text-[11px] font-medium text-[#2563EB] hover:underline">
               Lihat semua
             </Link>
           </div>
 
           {topNilai.length === 0 ? (
-            <p className="py-10 text-center text-xs text-[#9CA3AF]">Belum ada nilai pada periode ini.</p>
+            <p className="py-10 text-center text-xs text-[#94A3B8]">Belum ada nilai pada periode ini.</p>
           ) : (
             <div className="mt-4 space-y-3">
               {topNilai.map((item) => (
                 <div key={item.nama_mapel}>
                   <div className="mb-1 flex items-center justify-between gap-3 text-xs">
-                    <span className="truncate text-[#1A1A2E]">{item.nama_mapel}</span>
-                    <span className="shrink-0 font-semibold tabular-nums text-[#1A1A2E]">
+                    <span className="truncate text-[#1E293B]">{item.nama_mapel}</span>
+                    <span className="shrink-0 font-semibold tabular-nums text-[#1E293B]">
                       {item.nilai ?? '—'}
                     </span>
                   </div>
@@ -188,13 +189,13 @@ export default async function SiswaDashboardPage() {
         </section>
 
         <div className="space-y-4">
-          <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
+          <section className="neu-card p-5">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h2 className="text-sm font-semibold text-[#1A1A2E]">Presensi</h2>
-                <p className="mt-0.5 text-xs text-[#6B7280]">Rekap kehadiran periode ini.</p>
+                <h2 className="text-sm font-semibold text-[#1E293B]">Presensi</h2>
+                <p className="mt-0.5 text-xs text-[#64748B]">Rekap kehadiran periode ini.</p>
               </div>
-              <span className="text-2xl font-bold tabular-nums text-[#1A1A2E]">{persenHadir}%</span>
+              <span className="text-2xl font-bold tabular-nums text-[#1E293B]">{persenHadir}%</span>
             </div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#F1F2F5]">
               <div className="h-full rounded-full bg-emerald-500" style={{ width: `${persenHadir}%` }} />
@@ -206,29 +207,29 @@ export default async function SiswaDashboardPage() {
                 { label: 'Izin', value: izin, color: 'text-sky-600' },
                 { label: 'Tanpa Berita', value: tanpaBerita, color: 'text-rose-600' },
               ].map((item) => (
-                <div key={item.label} className="rounded-xl bg-[#F8F9FB] px-3 py-2">
-                  <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF]">{item.label}</p>
+                <div key={item.label} className="neu-inset rounded-xl px-3 py-2">
+                  <p className="text-[10px] uppercase tracking-wider text-[#94A3B8]">{item.label}</p>
                   <p className={`mt-0.5 text-sm font-semibold tabular-nums ${item.value === 0 ? 'text-[#D1D5DB]' : item.color}`}>
                     {item.value === 0 ? '—' : item.value}
                   </p>
                 </div>
               ))}
             </div>
-            <Link href="/siswa/presensi" className="mt-3 inline-block text-[11px] font-medium text-[#DC2626] hover:underline">
+            <Link href="/siswa/presensi" className="mt-3 inline-block text-[11px] font-medium text-[#2563EB] hover:underline">
               Lihat detail presensi
             </Link>
           </section>
 
-          <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
-            <h2 className="text-sm font-semibold text-[#1A1A2E]">Aksi Cepat</h2>
+          <section className="neu-card p-5">
+            <h2 className="text-sm font-semibold text-[#1E293B]">Aksi Cepat</h2>
             <div className="mt-3 grid grid-cols-2 gap-2">
               {quickActions.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex flex-col gap-1.5 rounded-xl border border-[rgba(0,0,0,0.05)] px-3 py-2.5 text-xs font-medium text-[#1A1A2E] transition-colors hover:border-[rgba(220,38,38,0.3)] hover:bg-[#FEF2F2]"
+                  className="flex flex-col gap-1.5 rounded-xl border border-[rgba(0,0,0,0.05)] px-3 py-2.5 text-xs font-medium text-[#1E293B] transition-colors hover:border-[rgba(37,99,235,0.3)] hover:bg-[#EFF6FF]"
                 >
-                  <span className="text-[#9CA3AF]">{ICONS[item.icon]}</span>
+                  <span className="text-[#94A3B8]">{ICONS[item.icon]}</span>
                   {item.label}
                 </Link>
               ))}
@@ -237,13 +238,13 @@ export default async function SiswaDashboardPage() {
         </div>
       </div>
 
-      <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow sm:p-6">
+      <section className="neu-card p-5 sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold text-[#1A1A2E]">Identitas & Kontak</h2>
-            <p className="mt-0.5 text-xs text-[#6B7280]">Pastikan data diri sudah benar.</p>
+            <h2 className="text-sm font-semibold text-[#1E293B]">Identitas & Kontak</h2>
+            <p className="mt-0.5 text-xs text-[#64748B]">Pastikan data diri sudah benar.</p>
           </div>
-          <Link href="/siswa/profile" className="text-[11px] font-medium text-[#DC2626] hover:underline">
+          <Link href="/siswa/profile" className="text-[11px] font-medium text-[#2563EB] hover:underline">
             Edit Profil
           </Link>
         </div>
@@ -258,6 +259,7 @@ export default async function SiswaDashboardPage() {
           <Info label="Alamat" value={siswa.alamat} />
         </dl>
       </section>
+      </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children, sidebar, bottomNav }: DashboardLayoutProps) {
   return (
-    <div className="flex h-screen overflow-hidden print:block print:h-auto print:overflow-visible">
+    <div data-dashboard className="flex h-screen overflow-hidden print:block print:h-auto print:overflow-visible">
       {/* Sidebar */}
       <div className="contents print:hidden">{sidebar}</div>
 

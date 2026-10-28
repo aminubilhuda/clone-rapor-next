@@ -56,13 +56,13 @@ export default function SidebarSiswa() {
       />
 
       <aside
-        className={`fixed left-0 top-0 z-30 flex h-full w-64 flex-col bg-[#0F0F1A] text-white transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0 ${
+        className={`fixed left-0 top-0 z-30 flex h-full w-64 flex-col bg-[#EEF2F7] text-[#1E293B] shadow-[6px_0_18px_rgba(163,177,198,0.25)] transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex h-16 items-center border-b border-white/[0.06] px-6">
+        <div className="flex h-16 items-center border-b border-[#DCE3EE] px-6">
           <Link href="/siswa" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-white/10">
+            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-[#E6ECF5] shadow-[4px_4px_10px_rgba(163,177,198,0.35),-4px_-4px_10px_rgba(255,255,255,0.9)]">
               {logo ? (
                 // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
@@ -72,20 +72,20 @@ export default function SidebarSiswa() {
                   onError={() => setLogo(null)}
                 />
               ) : (
-                <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.1 12.1 0 0121 17.5c-2.88 1.64-5.98 2.5-9 2.5s-6.12-.86-9-2.5a12.1 12.1 0 012.84-6.922L12 14z" />
                 </svg>
               )}
             </div>
             <div>
               <h1 className="text-sm font-semibold tracking-tight">Portal Siswa</h1>
-              <p className="text-[11px] text-white/40">E-Rapor SMK</p>
+              <p className="text-[11px] text-[#64748B]">E-Rapor SMK</p>
             </div>
           </Link>
         </div>
 
-        <nav className="flex-1 space-y-1 px-3 py-4">
-          <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-white/30">
+        <nav className="sidebar-scroll flex-1 space-y-1 overflow-y-auto px-3 py-4">
+          <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-[#64748B]">
             Menu Siswa
           </p>
           {menus.map((menu) => {
@@ -97,8 +97,8 @@ export default function SidebarSiswa() {
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all ${
                   active
-                    ? 'bg-red-500/10 text-red-400 shadow-[inset_3px_0_0_rgba(239,68,68,0.6)]'
-                    : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                    ? 'neu-inset-blue'
+                    : 'text-[#64748B] hover:bg-white/60 hover:text-[#1E293B]'
                 }`}
               >
                 <svg className="h-4 w-4 shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,8 +110,8 @@ export default function SidebarSiswa() {
           })}
         </nav>
 
-        <div className="border-t border-white/[0.06] px-6 py-4">
-          <p className="text-xs leading-relaxed text-white/35">
+        <div className="border-t border-[#DCE3EE] px-6 py-4">
+          <p className="text-xs leading-relaxed text-[#64748B]">
             Informasi yang ditampilkan mengikuti periode akademik aktif.
           </p>
         </div>
@@ -120,7 +120,7 @@ export default function SidebarSiswa() {
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="fixed left-4 top-4 z-40 rounded-lg bg-[#0F0F1A] p-2 text-white premium-shadow lg:hidden"
+        className="fixed left-4 top-4 z-40 rounded-lg bg-[#EEF2F7] p-2 text-[#1E293B] neu-btn lg:hidden"
         aria-label={open ? 'Tutup menu' : 'Buka menu'}
       >
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

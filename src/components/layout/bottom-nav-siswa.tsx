@@ -54,7 +54,7 @@ export default function BottomNavSiswa() {
   return (
     <nav
       aria-label="Navigasi Utama Siswa"
-      className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-lg border-t border-[rgba(0,0,0,0.06)] px-3 pt-2 pb-safe lg:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.04)]"
+      className="fixed bottom-0 inset-x-0 z-40 bg-[#EEF2F7]/95 backdrop-blur-lg border-t border-[#DCE3EE] px-3 pt-2 pb-safe lg:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.04)]"
     >
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {navItems.map((item) => {
@@ -70,13 +70,13 @@ export default function BottomNavSiswa() {
               href={item.href}
               className={`flex flex-col items-center justify-center gap-1 py-1 px-3 rounded-2xl transition-all duration-200 active:scale-90 ${
                 isActive
-                  ? 'text-[#DC2626] font-bold'
-                  : 'text-[#6B7280] hover:text-[#1A1A2E] font-medium'
+                  ? 'text-[#2563EB] font-bold'
+                  : 'text-[#64748B] hover:text-[#1E293B] font-medium'
               }`}
             >
               <div
                 className={`p-1.5 rounded-xl transition-all duration-200 ${
-                  isActive ? 'bg-red-50 text-[#DC2626]' : 'text-inherit'
+                  isActive ? 'bg-blue-50 text-[#2563EB]' : 'text-inherit'
                 }`}
               >
                 {item.icon(isActive)}

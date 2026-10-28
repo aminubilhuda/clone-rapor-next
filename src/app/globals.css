@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @keyframes slide-in {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -44,4 +46,222 @@
 /* Disable tap highlight on mobile for clean native feel */
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Neumorphism — hanya untuk dashboard & sidebar */
+.neu-page {
+  background-color: #eef2f7;
+}
+
+.neu-card {
+  background-color: #f4f7fb;
+  border-radius: 1.5rem;
+  box-shadow:
+    7px 7px 16px rgba(163, 177, 198, 0.38),
+    -7px -7px 16px rgba(255, 255, 255, 0.95);
+}
+
+.neu-inset {
+  background-color: #e9eef5;
+  box-shadow:
+    inset 4px 4px 8px rgba(163, 177, 198, 0.4),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.9);
+}
+
+.neu-btn {
+  background-color: #eef2f7;
+  box-shadow:
+    4px 4px 10px rgba(163, 177, 198, 0.38),
+    -4px -4px 10px rgba(255, 255, 255, 0.95);
+}
+
+.neu-btn:active {
+  box-shadow:
+    inset 3px 3px 7px rgba(163, 177, 198, 0.45),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.9);
+}
+
+.neu-inset-blue {
+  background-color: #dbe7fb;
+  color: #1d4ed8;
+  font-weight: 600;
+  box-shadow:
+    inset 3px 3px 7px rgba(147, 165, 195, 0.5),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.95),
+    inset 3px 0 0 #2563eb;
+}
+
+
+/* Sidebar tanpa scrollbar terlihat */
+.sidebar-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+
+/* ===== Dark mode: dashboard & menu ===== */
+html.dark body {
+  background-color: #070d19;
+  color: #e2e8f0;
+}
+
+.dark [data-dashboard] {
+  background-color: #070d19;
+}
+
+.dark [data-dashboard] .bg-white,
+.dark [data-dashboard] [class~="bg-[#F4F7FB]"] {
+  background-color: #141c2e !important;
+}
+
+.dark [data-dashboard] [class*="bg-[#F8F9FB]"],
+.dark [data-dashboard] [class*="bg-[#EEF2F7]"],
+.dark [data-dashboard] [class*="bg-[#E6ECF5]"] {
+  background-color: #0b1220 !important;
+}
+
+.dark [data-dashboard] [class*="bg-[#F1F2F5]"],
+.dark [data-dashboard] [class*="bg-[#E9EEF5]"] {
+  background-color: #1e293b !important;
+}
+
+.dark [data-dashboard] [class*="text-[#1A1A2E]"],
+.dark [data-dashboard] [class*="text-[#1E293B]"] {
+  color: #e2e8f0 !important;
+}
+
+.dark [data-dashboard] [class*="text-[#6B7280]"],
+.dark [data-dashboard] [class*="text-[#64748B]"],
+.dark [data-dashboard] [class*="text-[#94A3B8]"] {
+  color: #94a3b8 !important;
+}
+
+.dark [data-dashboard] [class*="text-[#9CA3AF]"] {
+  color: #64748b !important;
+}
+
+.dark [data-dashboard] [class*="border-[#DCE3EE]"],
+.dark [data-dashboard] [class*="border-[rgba(0,0,0"] {
+  border-color: #1e2b45 !important;
+}
+
+.dark [data-dashboard] .neu-page {
+  background-color: #0b1220;
+}
+
+.dark [data-dashboard] .neu-card {
+  background-color: #141c2e;
+  box-shadow:
+    7px 7px 16px rgba(3, 7, 18, 0.8),
+    -7px -7px 16px rgba(30, 41, 59, 0.55);
+}
+
+.dark [data-dashboard] .neu-inset {
+  background-color: #0f172a;
+  box-shadow:
+    inset 4px 4px 8px rgba(3, 7, 18, 0.85),
+    inset -4px -4px 8px rgba(30, 41, 59, 0.55);
+}
+
+.dark [data-dashboard] .neu-btn {
+  background-color: #0f172a;
+  box-shadow:
+    4px 4px 10px rgba(3, 7, 18, 0.8),
+    -4px -4px 10px rgba(30, 41, 59, 0.55);
+}
+
+.dark [data-dashboard] .neu-inset-blue {
+  background-color: #172554;
+  color: #93c5fd;
+  box-shadow:
+    inset 3px 3px 7px rgba(3, 7, 18, 0.7),
+    inset -3px -3px 7px rgba(30, 64, 175, 0.35),
+    inset 3px 0 0 #3b82f6;
+}
+
+.dark [data-dashboard] [class*="bg-blue-50"],
+.dark [data-dashboard] [class*="bg-sky-50"],
+.dark [data-dashboard] [class*="bg-indigo-50"] {
+  background-color: #172554 !important;
+}
+
+.dark [data-dashboard] [class*="bg-emerald-50"] {
+  background-color: #052e2b !important;
+}
+
+.dark [data-dashboard] [class*="bg-amber-50"] {
+  background-color: #3b2a12 !important;
+}
+
+.dark [data-dashboard] [class*="bg-red-50"] {
+  background-color: #2a1215 !important;
+}
+
+.dark [data-dashboard] [class*="text-blue-600"],
+.dark [data-dashboard] [class*="text-sky-600"] {
+  color: #93c5fd !important;
+}
+
+.dark [data-dashboard] [class*="text-emerald-600"] {
+  color: #6ee7b7 !important;
+}
+
+.dark [data-dashboard] [class*="text-amber-600"] {
+  color: #fcd34d !important;
+}
+
+
+html.dark {
+  color-scheme: dark;
+}
+
+.dark [data-dashboard] [class~="bg-white/70"],
+.dark [data-dashboard] [class~="bg-white/60"],
+.dark [data-dashboard] [class~="bg-white/95"] {
+  background-color: #1e293b !important;
+}
+
+.dark [data-dashboard] [class~="hover:bg-white/60"]:hover,
+.dark [data-dashboard] [class~="hover:bg-white/70"]:hover {
+  background-color: #1e293b !important;
+}
+
+.dark .piket-dropdown {
+  background-color: #141c2e !important;
+  border-color: #1e2b45 !important;
+  color: #e2e8f0;
+  box-shadow:
+    7px 7px 16px rgba(3, 7, 18, 0.8),
+    -7px -7px 16px rgba(30, 41, 59, 0.55);
+}
+
+.dark .piket-dropdown [class*="bg-[#F8F9FB]"] {
+  background-color: #0f172a !important;
+}
+
+.dark .piket-dropdown [class*="text-[#1A1A2E]"],
+.dark .piket-dropdown [class*="text-[#1E293B]"] {
+  color: #e2e8f0 !important;
+}
+
+.dark .piket-dropdown [class*="text-[#9CA3AF]"],
+.dark .piket-dropdown [class*="text-[#64748B]"] {
+  color: #94a3b8 !important;
+}
+
+.dark .piket-dropdown [class*="border-[rgba(0,0,0"] {
+  border-color: #1e2b45 !important;
+}
+
+.dark .piket-dropdown input {
+  color: #e2e8f0;
+}
+
+.dark .piket-dropdown input::placeholder {
+  color: #64748b;
 }

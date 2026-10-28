@@ -137,12 +137,12 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-30 h-full w-64 bg-[#0F0F1A] text-white flex flex-col transform transition-transform duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto ${collapsed ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed top-0 left-0 z-30 h-full w-64 bg-[#EEF2F7] text-[#1E293B] flex flex-col shadow-[6px_0_18px_rgba(163,177,198,0.25)] transform transition-transform duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto ${collapsed ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-white/[0.06]">
+        <div className="h-16 flex items-center px-6 border-b border-[#DCE3EE]">
           <Link href="/tu" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10 overflow-hidden">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#E6ECF5] shadow-[4px_4px_10px_rgba(163,177,198,0.35),-4px_-4px_10px_rgba(255,255,255,0.9)] overflow-hidden">
               {logo ? (
                 // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
@@ -152,32 +152,32 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
                   onError={() => setLogo(null)}
                 />
               ) : (
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               )}
             </div>
             <div>
               <h1 className="text-sm font-semibold tracking-tight">Tata Usaha</h1>
-              <p className="text-[11px] text-white/40">E-Rapor SMK</p>
+              <p className="text-[11px] text-[#64748B]">E-Rapor SMK</p>
             </div>
           </Link>
         </div>
 
         {/* Year/Semester Filter */}
         {options.length > 0 && (
-          <div className="px-4 py-3 border-b border-white/[0.06]">
-            <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-2">
+          <div className="px-4 py-3 border-b border-[#DCE3EE]">
+            <p className="text-[10px] font-semibold text-[#64748B] uppercase tracking-widest mb-2">
               Filter Periode
             </p>
             <select
               value={currentValue}
               onChange={(e) => handleChange(e.target.value)}
-              className="w-full text-xs bg-white/5 text-white/80 border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500/40 transition"
+              className="w-full text-xs bg-white/70 text-[#1E293B] border border-[#DCE3EE] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition"
             >
-              <option value="" className="bg-[#0F0F1A]">Data Aktif ({activeLabel})</option>
+              <option value="" className="bg-white">Data Aktif ({activeLabel})</option>
               {options.map((o) => (
-                <option key={o.value} value={o.value} className="bg-[#0F0F1A]">
+                <option key={o.value} value={o.value} className="bg-white">
                   {o.label}
                 </option>
               ))}
@@ -186,12 +186,12 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
         )}
 
         {/* Menu */}
-        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
+        <nav className="sidebar-scroll flex-1 overflow-y-auto py-3 px-3 space-y-1">
           {menuItems.map((group) => (
             <div key={group.section}>
               <button
                 onClick={() => toggleSection(group.section)}
-                className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-semibold text-white/30 uppercase tracking-widest hover:text-white/60 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-semibold text-[#64748B] uppercase tracking-widest hover:text-[#475569] transition-colors"
               >
                 {group.section}
                 <svg
@@ -213,8 +213,8 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
                             onClick={() => setExpandedParents((prev) => ({ ...prev, [item.label]: !prev[item.label] }))}
                             className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                               anyActive
-                                ? 'bg-red-500/10 text-red-400'
-                                : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                                ? 'neu-inset-blue'
+                                : 'text-[#64748B] hover:bg-white/60 hover:text-[#1E293B]'
                             }`}
                           >
                             <svg className="w-4 h-4 flex-shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,15 +229,15 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
                             </svg>
                           </button>
                           {isOpen && (
-                            <div className="ml-4 border-l border-white/[0.06] pl-2 mt-0.5 space-y-0.5">
+                            <div className="ml-4 border-l border-[#DCE3EE] pl-2 mt-0.5 space-y-0.5">
                               {item.children.map((child) => (
                                 <Link
                                   key={child.href}
                                   href={child.href}
                                   className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                                     isActive(child.href)
-                                      ? 'bg-red-500/10 text-red-400'
-                                      : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                                      ? 'neu-inset-blue'
+                                      : 'text-[#64748B] hover:bg-white/60 hover:text-[#1E293B]'
                                   }`}
                                 >
                                   <span className="text-sm">{child.label}</span>
@@ -254,8 +254,8 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
                         href={item.href}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                           isActive(item.href)
-                            ? 'bg-red-500/10 text-red-400 shadow-[inset_3px_0_0_rgba(239,68,68,0.6)]'
-                            : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                            ? 'neu-inset-blue'
+                            : 'text-[#64748B] hover:bg-white/60 hover:text-[#1E293B]'
                         }`}
                       >
                         <svg className="w-4 h-4 flex-shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@ export default function SidebarTU({ data }: { data?: SidebarData }) {
       {/* Mobile toggle button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="fixed top-4 left-4 z-40 lg:hidden bg-[#0F0F1A] text-white p-2 rounded-lg premium-shadow"
+        className="fixed top-4 left-4 z-40 lg:hidden bg-[#EEF2F7] text-[#1E293B] p-2 rounded-lg premium-shadow"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={collapsed ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />

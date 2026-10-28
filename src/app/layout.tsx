@@ -63,8 +63,13 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="id" className="h-full antialiased" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`,
+          }}
+        />
         <link rel="icon" href="/api/favicon" />
         <link rel="shortcut icon" href="/api/favicon" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

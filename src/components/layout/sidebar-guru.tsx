@@ -164,12 +164,12 @@ export default function SidebarGuru() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-30 h-full w-64 bg-[#0F0F1A] text-white flex flex-col transform transition-transform duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto ${collapsed ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed top-0 left-0 z-30 h-full w-64 bg-[#EEF2F7] text-[#1E293B] flex flex-col shadow-[6px_0_18px_rgba(163,177,198,0.25)] transform transition-transform duration-300 ease-out lg:translate-x-0 lg:static lg:z-auto ${collapsed ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-white/[0.06]">
+        <div className="h-16 flex items-center px-6 border-b border-[#DCE3EE]">
           <Link href="/guru" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10 overflow-hidden">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#E6ECF5] shadow-[4px_4px_10px_rgba(163,177,198,0.35),-4px_-4px_10px_rgba(255,255,255,0.9)] overflow-hidden">
               {logo ? (
                 // eslint-disable-next-line @next/next/no-img-element -- gambar dinamis dari /api/uploads, tidak lewat optimizer
                 <img
@@ -179,30 +179,30 @@ export default function SidebarGuru() {
                   onError={() => setLogo(null)}
                 />
               ) : (
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                 </svg>
               )}
             </div>
             <div>
               <h1 className="text-sm font-semibold tracking-tight">Guru/Wali</h1>
-              <p className="text-[11px] text-white/40">E-Rapor SMK</p>
+              <p className="text-[11px] text-[#64748B]">E-Rapor SMK</p>
             </div>
           </Link>
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
+        <nav className="sidebar-scroll flex-1 overflow-y-auto py-3 px-3 space-y-1">
           {tugas === null && (
             <div className="flex items-center justify-center py-10">
-              <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-[#CBD5E1] border-t-[#2563EB] rounded-full animate-spin" />
             </div>
           )}
           {tugas !== null && visibleSections.map((group) => (
             <div key={group.section}>
               <button
                 onClick={() => toggleSection(group.section)}
-                className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-semibold text-white/30 uppercase tracking-widest hover:text-white/60 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-semibold text-[#64748B] uppercase tracking-widest hover:text-[#475569] transition-colors"
               >
                 {group.section}
                 <svg
@@ -220,8 +220,8 @@ export default function SidebarGuru() {
                       href={item.href}
                       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                         isActive(item.href)
-                          ? 'bg-red-500/10 text-red-400 shadow-[inset_3px_0_0_rgba(239,68,68,0.6)]'
-                          : 'text-white/60 hover:bg-white/[0.04] hover:text-white/80'
+                          ? 'neu-inset-blue'
+                          : 'text-[#64748B] hover:bg-white/60 hover:text-[#1E293B]'
                       }`}
                     >
                       <svg className="w-4 h-4 flex-shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,7 +229,7 @@ export default function SidebarGuru() {
                       </svg>
                       <span className="text-sm">{item.label}</span>
                       {item.badge && (
-                        <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500/20 px-1.5 text-[10px] font-semibold text-amber-300">
+                        <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1.5 text-[10px] font-semibold text-amber-700">
                           {item.badge}
                         </span>
                       )}
@@ -245,7 +245,7 @@ export default function SidebarGuru() {
       {/* Mobile toggle button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="fixed top-4 left-4 z-40 lg:hidden bg-[#0F0F1A] text-white p-2 rounded-lg premium-shadow"
+        className="fixed top-4 left-4 z-40 lg:hidden bg-[#EEF2F7] text-[#1E293B] p-2 rounded-lg premium-shadow"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={collapsed ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />

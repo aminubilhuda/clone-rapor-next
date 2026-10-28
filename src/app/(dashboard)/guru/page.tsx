@@ -163,15 +163,15 @@ function StatCard({
 }) {
   const color = TONES[tone];
   return (
-    <div className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-4 premium-shadow">
+    <div className="neu-card p-4">
       <div className="flex items-start justify-between gap-2">
         <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${color.bg} ${color.text}`}>
           {ICONS[icon]}
         </div>
-        <span className="text-[10px] text-[#9CA3AF]">{hint}</span>
+        <span className="text-[10px] text-[#94A3B8]">{hint}</span>
       </div>
-      <div className="mt-3 text-2xl font-bold tabular-nums tracking-tight text-[#1A1A2E]">{value}</div>
-      <div className="text-xs text-[#6B7280]">{label}</div>
+      <div className="mt-3 text-2xl font-bold tabular-nums tracking-tight text-[#1E293B]">{value}</div>
+      <div className="text-xs text-[#64748B]">{label}</div>
     </div>
   );
 }
@@ -208,9 +208,9 @@ export default async function GuruDashboardPage() {
   ];
 
   return (
-    <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-2xl bg-[#1A1A2E] px-6 py-5 text-white">
-        <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-[#DC2626]/25 blur-3xl" />
+    <div className="neu-page -m-3 space-y-5 p-3 sm:-m-6 sm:p-6">
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] px-6 py-5 text-white shadow-[0_18px_40px_rgba(37,99,235,0.22)]">
+        <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-xl font-bold">
@@ -226,7 +226,7 @@ export default async function GuruDashboardPage() {
           </div>
           <Link
             href="/guru/tujuan-pembelajaran"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#1A1A2E] transition-colors hover:bg-white/90"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#1E293B] transition-colors hover:bg-white/90"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -256,11 +256,11 @@ export default async function GuruDashboardPage() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
+          <section className="neu-card p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-sm font-semibold text-[#1A1A2E]">Tugas Saya</h2>
-                <p className="mt-0.5 text-xs text-[#6B7280]">
+                <h2 className="text-sm font-semibold text-[#1E293B]">Tugas Saya</h2>
+                <p className="mt-0.5 text-xs text-[#64748B]">
                   Kelengkapan administrasi ekstrakurikuler dan organisasi.
                 </p>
               </div>
@@ -295,7 +295,7 @@ export default async function GuruDashboardPage() {
                     className="flex items-center justify-between gap-3 rounded-xl border border-amber-100 bg-amber-50/50 px-3 py-2.5"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-[#1A1A2E]">{item.nama}</p>
+                      <p className="truncate text-sm font-medium text-[#1E293B]">{item.nama}</p>
                       <p className="text-[11px] text-amber-700">
                         {item.jenis === 'eskul' ? 'Ekstrakurikuler' : 'Organisasi'} · {labelKelengkapan(item)}
                       </p>
@@ -312,28 +312,28 @@ export default async function GuruDashboardPage() {
             )}
           </section>
 
-          <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
+          <section className="neu-card p-5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-semibold text-[#1A1A2E]">Kelas yang Diampu</h2>
-                <p className="mt-0.5 text-xs text-[#6B7280]">Kelas tempat Anda mengajar mapel.</p>
+                <h2 className="text-sm font-semibold text-[#1E293B]">Kelas yang Diampu</h2>
+                <p className="mt-0.5 text-xs text-[#64748B]">Kelas tempat Anda mengajar mapel.</p>
               </div>
-              <Link href="/guru/kelas-ku" className="text-[11px] font-medium text-[#DC2626] hover:underline">
+              <Link href="/guru/kelas-ku" className="text-[11px] font-medium text-[#2563EB] hover:underline">
                 Buka penilaian
               </Link>
             </div>
             {stats.kelasAmpuh.length === 0 ? (
-              <p className="py-6 text-center text-xs text-[#9CA3AF]">Belum ada kelas yang diampu.</p>
+              <p className="py-6 text-center text-xs text-[#94A3B8]">Belum ada kelas yang diampu.</p>
             ) : (
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {stats.kelasAmpuh.map((kelas) => (
                   <Link
                     key={kelas.id_kelas}
                     href="/guru/kelas-ku"
-                    className="flex items-center justify-between gap-2 rounded-xl border border-[rgba(0,0,0,0.05)] px-3 py-2.5 transition-colors hover:border-[rgba(220,38,38,0.3)] hover:bg-[#FEF2F2]"
+                    className="flex items-center justify-between gap-2 rounded-xl border border-[#DCE3EE] bg-[#EEF2F7] px-3 py-2.5 transition-colors hover:border-[rgba(37,99,235,0.3)] hover:bg-[#EFF6FF]"
                   >
-                    <span className="text-sm font-medium text-[#1A1A2E]">{kelas.nama_kelas}</span>
-                    <span className="rounded-full bg-[#F8F9FB] px-2 py-0.5 text-[10px] font-medium text-[#6B7280]">
+                    <span className="text-sm font-medium text-[#1E293B]">{kelas.nama_kelas}</span>
+                    <span className="rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-medium text-[#64748B]">
                       {kelas.jumlah_mapel} mapel
                     </span>
                   </Link>
@@ -343,22 +343,22 @@ export default async function GuruDashboardPage() {
           </section>
         </div>
 
-        <section className="self-start rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
-          <h2 className="text-sm font-semibold text-[#1A1A2E]">Aksi Cepat</h2>
+        <section className="self-start neu-card p-5">
+          <h2 className="text-sm font-semibold text-[#1E293B]">Aksi Cepat</h2>
           <div className="mt-3 grid grid-cols-1 gap-2">
             {quickActions.map((item) => (
               <Link
                 key={`${item.href}-${item.label}`}
                 href={item.href}
-                className="flex items-center gap-3 rounded-xl border border-[rgba(0,0,0,0.05)] px-3 py-2.5 text-sm font-medium text-[#1A1A2E] transition-colors hover:border-[rgba(220,38,38,0.3)] hover:bg-[#FEF2F2]"
+                className="flex items-center gap-3 rounded-xl border border-[#DCE3EE] bg-[#EEF2F7] px-3 py-2.5 text-sm font-medium text-[#1E293B] transition-colors hover:border-[rgba(37,99,235,0.3)] hover:bg-[#EFF6FF]"
               >
-                <span className="text-[#9CA3AF]">{ICONS[item.icon]}</span>
+                <span className="text-[#94A3B8]">{ICONS[item.icon]}</span>
                 {item.label}
               </Link>
             ))}
           </div>
           {!isWali && (
-            <p className="mt-4 rounded-lg bg-[#F8F9FB] px-3 py-2 text-[11px] text-[#6B7280]">
+            <p className="mt-4 neu-inset rounded-lg px-3 py-2 text-[11px] text-[#64748B]">
               Anda bukan wali kelas pada periode ini.
             </p>
           )}

@@ -169,7 +169,7 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 const TONES: Record<string, { bg: string; text: string }> = {
-  red: { bg: 'bg-red-50', text: 'text-[#DC2626]' },
+  blueDark: { bg: 'bg-blue-50', text: 'text-blue-600' },
   blue: { bg: 'bg-sky-50', text: 'text-sky-600' },
   emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600' },
   amber: { bg: 'bg-amber-50', text: 'text-amber-600' },
@@ -190,15 +190,15 @@ function StatCard({
 }) {
   const color = TONES[tone];
   return (
-    <div className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-4 premium-shadow">
+    <div className="neu-card p-4">
       <div className="flex items-start justify-between gap-2">
         <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${color.bg} ${color.text}`}>
           {ICONS[icon]}
         </div>
-        <span className="text-[10px] text-[#9CA3AF]">{hint}</span>
+        <span className="text-[10px] text-[#94A3B8]">{hint}</span>
       </div>
-      <div className="mt-3 text-2xl font-bold tabular-nums tracking-tight text-[#1A1A2E]">{value}</div>
-      <div className="text-xs text-[#6B7280]">{label}</div>
+      <div className="mt-3 text-2xl font-bold tabular-nums tracking-tight text-[#1E293B]">{value}</div>
+      <div className="text-xs text-[#64748B]">{label}</div>
     </div>
   );
 }
@@ -247,22 +247,22 @@ export default async function TUDashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="neu-page -m-3 space-y-6 p-3 sm:-m-6 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-medium uppercase tracking-wider text-[#94A3B8]">
             <span>Tata Usaha</span>
             <span className="text-[#D1D5DB]">•</span>
             <span>NPSN {stats.npsn}</span>
           </div>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#1A1A2E]">Ringkasan Sekolah</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#1E293B]">Ringkasan Sekolah</h1>
+          <p className="mt-1 text-sm text-[#64748B]">
             Tahun Pelajaran {tahunPelajaran} · Semester {stats.semester}
           </p>
         </div>
         <Link
           href="/tu/laporan-pendidikan/daftar-rapor"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#B91C1C]"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1D4ED8]"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -275,34 +275,34 @@ export default async function TUDashboardPage() {
         <StatCard icon="siswa" label="Peserta Didik" value={stats.jmlSiswa} hint="Aktif" tone="blue" />
         <StatCard icon="guru" label="Tenaga Pendidik" value={stats.jmlGuru} hint="Guru" tone="emerald" />
         <StatCard icon="kelas" label="Kelas / Rombel" value={stats.jmlKelas} hint="Rombel" tone="amber" />
-        <StatCard icon="mapel" label="Mata Pelajaran" value={stats.jmlMapel} hint="Mapel" tone="red" />
+        <StatCard icon="mapel" label="Mata Pelajaran" value={stats.jmlMapel} hint="Mapel" tone="blueDark" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow lg:col-span-2">
+        <section className="neu-card p-5 lg:col-span-2">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h2 className="text-sm font-semibold text-[#1A1A2E]">Kesiapan Rapor</h2>
-              <p className="mt-0.5 text-xs text-[#6B7280]">Progres penilaian siswa pada periode ini.</p>
+              <h2 className="text-sm font-semibold text-[#1E293B]">Kesiapan Rapor</h2>
+              <p className="mt-0.5 text-xs text-[#64748B]">Progres penilaian siswa pada periode ini.</p>
             </div>
-            <span className="rounded-full bg-[#F8F9FB] px-2.5 py-1 text-[11px] font-medium text-[#6B7280]">
+            <span className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-medium text-[#64748B]">
               {stats.semester} {tahunPelajaran}
             </span>
           </div>
 
           <div className="mt-5 flex flex-wrap items-end gap-x-4 gap-y-1">
-            <span className={`text-4xl font-bold tabular-nums tracking-tight ${sudahPenuh ? 'text-emerald-600' : 'text-[#1A1A2E]'}`}>
+            <span className={`text-4xl font-bold tabular-nums tracking-tight ${sudahPenuh ? 'text-emerald-600' : 'text-[#1E293B]'}`}>
               {stats.persenDinilai}%
             </span>
-            <p className="pb-1 text-xs text-[#6B7280]">
-              <span className="font-semibold text-[#1A1A2E]">{stats.sudahDinilai}</span> dari{' '}
+            <p className="pb-1 text-xs text-[#64748B]">
+              <span className="font-semibold text-[#1E293B]">{stats.sudahDinilai}</span> dari{' '}
               {stats.jmlSiswa} siswa sudah dinilai
             </p>
           </div>
 
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#F1F2F5]">
             <div
-              className={`h-full rounded-full transition-all ${sudahPenuh ? 'bg-emerald-500' : 'bg-[#DC2626]'}`}
+              className={`h-full rounded-full transition-all ${sudahPenuh ? 'bg-emerald-500' : 'bg-[#2563EB]'}`}
               style={{ width: `${Math.min(100, stats.persenDinilai)}%` }}
             />
           </div>
@@ -314,33 +314,33 @@ export default async function TUDashboardPage() {
               { label: 'Belum Dinilai', value: stats.belumDinilai },
               { label: 'Sudah Dinilai', value: stats.sudahDinilai },
             ].map((item) => (
-              <div key={item.label} className="rounded-xl bg-[#F8F9FB] px-3 py-2.5">
-                <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF]">{item.label}</p>
-                <p className="mt-0.5 text-sm font-semibold tabular-nums text-[#1A1A2E]">{item.value}</p>
+              <div key={item.label} className="neu-inset rounded-xl px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-wider text-[#94A3B8]">{item.label}</p>
+                <p className="mt-0.5 text-sm font-semibold tabular-nums text-[#1E293B]">{item.value}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-[rgba(0,0,0,0.04)] pt-3 text-xs text-[#6B7280]">
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-[rgba(0,0,0,0.04)] pt-3 text-xs text-[#64748B]">
             <span>
-              Pembagian rapor: <strong className="font-medium text-[#1A1A2E]">{formatDate(stats.tanggalRapor)}</strong>
+              Pembagian rapor: <strong className="font-medium text-[#1E293B]">{formatDate(stats.tanggalRapor)}</strong>
             </span>
             <span>
-              Rapor tengah: <strong className="font-medium text-[#1A1A2E]">{formatDate(stats.tanggalMid)}</strong>
+              Rapor tengah: <strong className="font-medium text-[#1E293B]">{formatDate(stats.tanggalMid)}</strong>
             </span>
           </div>
         </section>
 
-        <section className="self-start rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
-          <h2 className="text-sm font-semibold text-[#1A1A2E]">Aksi Cepat</h2>
+        <section className="self-start neu-card p-5">
+          <h2 className="text-sm font-semibold text-[#1E293B]">Aksi Cepat</h2>
           <div className="mt-3 grid grid-cols-2 gap-2">
             {QUICK_ACTIONS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-2 rounded-xl border border-[rgba(0,0,0,0.05)] bg-white px-2.5 py-2.5 text-xs font-medium text-[#1A1A2E] transition-colors hover:border-[rgba(220,38,38,0.3)] hover:bg-[#FEF2F2]"
+                className="neu-btn flex items-center gap-2 rounded-xl px-2.5 py-2.5 text-xs font-medium text-[#1E293B] transition-colors hover:text-[#2563EB]"
               >
-                <span className="text-[#9CA3AF]">{ICONS[item.icon]}</span>
+                <span className="text-[#94A3B8]">{ICONS[item.icon]}</span>
                 <span className="leading-tight">{item.label}</span>
               </Link>
             ))}
@@ -349,30 +349,30 @@ export default async function TUDashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <section className="rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
+        <section className="neu-card p-5">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-[#1A1A2E]">Sebaran Siswa</h2>
-              <p className="mt-0.5 text-xs text-[#6B7280]">Kelas dengan siswa terbanyak.</p>
+              <h2 className="text-sm font-semibold text-[#1E293B]">Sebaran Siswa</h2>
+              <p className="mt-0.5 text-xs text-[#64748B]">Kelas dengan siswa terbanyak.</p>
             </div>
-            <Link href="/tu/rombel" className="text-[11px] font-medium text-[#DC2626] hover:underline">
+            <Link href="/tu/rombel" className="text-[11px] font-medium text-[#2563EB] hover:underline">
               Lihat semua
             </Link>
           </div>
           <div className="mt-4 space-y-2.5">
             {sebaran.length === 0 ? (
-              <p className="py-6 text-center text-xs text-[#9CA3AF]">Belum ada data siswa.</p>
+              <p className="py-6 text-center text-xs text-[#94A3B8]">Belum ada data siswa.</p>
             ) : (
               sebaran.map((row) => (
                 <div key={row.nama_kelas} className="flex items-center gap-3">
-                  <span className="w-20 shrink-0 truncate text-xs font-medium text-[#1A1A2E]">{row.nama_kelas}</span>
+                  <span className="w-20 shrink-0 truncate text-xs font-medium text-[#1E293B]">{row.nama_kelas}</span>
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#F1F2F5]">
                     <div
-                      className="h-full rounded-full bg-[#DC2626]"
+                      className="h-full rounded-full bg-[#2563EB]"
                       style={{ width: `${(row.jumlah / maxSebaran) * 100}%` }}
                     />
                   </div>
-                  <span className="w-7 shrink-0 text-right text-xs font-semibold tabular-nums text-[#1A1A2E]">
+                  <span className="w-7 shrink-0 text-right text-xs font-semibold tabular-nums text-[#1E293B]">
                     {row.jumlah}
                   </span>
                 </div>
@@ -381,19 +381,19 @@ export default async function TUDashboardPage() {
           </div>
         </section>
 
-        <section className="self-start rounded-2xl border border-[rgba(0,0,0,0.04)] bg-white p-5 premium-shadow">
+        <section className="self-start neu-card p-5">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-[#1A1A2E]">Data Pendukung</h2>
-              <p className="mt-0.5 text-xs text-[#6B7280]">Ringkasan data lain di periode ini.</p>
+              <h2 className="text-sm font-semibold text-[#1E293B]">Data Pendukung</h2>
+              <p className="mt-0.5 text-xs text-[#64748B]">Ringkasan data lain di periode ini.</p>
             </div>
-            <span className="text-[#9CA3AF]">{ICONS.check}</span>
+            <span className="text-[#94A3B8]">{ICONS.check}</span>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2">
             {pendukung.map((item) => (
-              <div key={item.label} className="flex items-center justify-between gap-2 rounded-xl bg-[#F8F9FB] px-3 py-2">
-                <span className="text-[11px] text-[#6B7280]">{item.label}</span>
-                <span className={`text-sm font-semibold tabular-nums ${item.value === 0 ? 'text-[#D1D5DB]' : 'text-[#1A1A2E]'}`}>
+              <div key={item.label} className="flex items-center justify-between gap-2 neu-inset rounded-xl px-3 py-2">
+                <span className="text-[11px] text-[#64748B]">{item.label}</span>
+                <span className={`text-sm font-semibold tabular-nums ${item.value === 0 ? 'text-[#D1D5DB]' : 'text-[#1E293B]'}`}>
                   {item.value === 0 ? '—' : item.value}
                 </span>
               </div>
