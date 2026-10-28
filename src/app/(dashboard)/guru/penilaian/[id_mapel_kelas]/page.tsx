@@ -10,7 +10,7 @@ interface PageProps {
   searchParams: Promise<{ detail?: string }>;
 }
 
-async function getPenilaianData(id_mapel_kelas: string, detail: string | undefined) {
+async function getPenilaianData(id_mapel_kelas: string, detail: string | undefined, idUser: number) {
   const sekolah = await getSekolahWithFilter();
 
   const [mapelKelasRows]: any = await pool.query(`
@@ -26,9 +26,9 @@ async function getPenilaianData(id_mapel_kelas: string, detail: string | undefin
 
   const [tujuanRows]: any = await pool.query(`
     SELECT * FROM tujuan_pembelajaran
-    WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ?
+    WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? AND id_user = ?
     ORDER BY urut ASC
-  `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel]);
+  `, [sekolah.tahun, sekolah.semester, mapelKelas.id_kelas, mapelKelas.id_mapel, idUser]);
 
   const [siswaRows]: any = await pool.query(`
     SELECT sk.*, s.nama_siswa, s.nis
@@ -119,7 +119,7 @@ export default async function PenilaianPage({ params, searchParams }: PageProps)
 
   const { id_mapel_kelas } = await params;
   const { detail } = await searchParams;
-  const data = await getPenilaianData(id_mapel_kelas, detail);
+  const data = await getPenilaianData(id_mapel_kelas, detail, Number(session.user.id_user));
 
   if (!data) return <div className="text-red-500">Data tidak ditemukan.</div>;
 

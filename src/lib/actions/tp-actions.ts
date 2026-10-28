@@ -119,6 +119,8 @@ export async function addTujuanMulti(formData: FormData) {
     }
 
     revalidatePath('/guru/tujuan-pembelajaran');
+    revalidatePath('/guru/kelas-ku');
+    revalidatePath('/guru/penilaian/[id_mapel_kelas]', 'page');
     return { success: true } as const;
   } catch {
     return { success: false, error: 'Gagal menambah TP' } as const;
@@ -150,6 +152,8 @@ export async function updateTujuanMulti(formData: FormData) {
     );
 
     revalidatePath('/guru/tujuan-pembelajaran');
+    revalidatePath('/guru/kelas-ku');
+    revalidatePath('/guru/penilaian/[id_mapel_kelas]', 'page');
     return { success: true } as const;
   } catch {
     return { success: false, error: 'Gagal mengupdate TP' } as const;
@@ -165,11 +169,16 @@ export async function deleteTujuanByKode(kode: string, idMapel: number) {
 
   try {
     const sekolah = await getSekolahWithFilter();
-    await pool.query(
+    const [result]: any = await pool.query(
       `DELETE FROM tujuan_pembelajaran WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ? AND urut = ?`,
       [sekolah.tahun, sekolah.semester, idMapel, user.id_user, kode]
     );
+    if (result.affectedRows === 0) {
+      return { success: false, error: 'TP tidak ditemukan atau sudah dihapus' } as const;
+    }
     revalidatePath('/guru/tujuan-pembelajaran');
+    revalidatePath('/guru/kelas-ku');
+    revalidatePath('/guru/penilaian/[id_mapel_kelas]', 'page');
     return { success: true } as const;
   } catch {
     return { success: false, error: 'Gagal menghapus TP' } as const;
@@ -297,6 +306,8 @@ export async function copyTujuan(formData: FormData) {
     }
 
     revalidatePath('/guru/tujuan-pembelajaran');
+    revalidatePath('/guru/kelas-ku');
+    revalidatePath('/guru/penilaian/[id_mapel_kelas]', 'page');
     return { success: true } as const;
   } catch {
     return { success: false, error: 'Gagal copy TP' } as const;
