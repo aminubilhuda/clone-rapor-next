@@ -64,7 +64,11 @@ export default function PiketHarianClient({ data, refUser }: PiketHarianClientPr
 
   useEffect(() => {
     if (!activeDropdown) return;
-    const onScroll = () => closeDropdown();
+    const onScroll = (event: Event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest('.piket-dropdown')) return;
+      closeDropdown();
+    };
     window.addEventListener('scroll', onScroll, true);
     window.addEventListener('resize', onScroll);
     return () => {
