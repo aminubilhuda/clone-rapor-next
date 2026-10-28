@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { confirmAlert } from '@/lib/swal';
 import { useToast } from '@/components/ui/toast-provider';
 import { addPiketHarian, deletePiketHarianByHariUser } from '@/lib/actions/piket-harian-actions';
@@ -26,12 +27,51 @@ export default function PiketHarianClient({ data, refUser }: PiketHarianClientPr
   const [activeDropdown, setActiveDropdown] = useState<{ dayId: number; row: number } | null>(null);
   const [userSearch, setUserSearch] = useState('');
   const [saving, setSaving] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
 
   const dayMap: Record<number, any[]> = {};
   for (const d of DAYS) dayMap[d.id] = [];
   for (const row of data) {
     if (dayMap[row.id_harian]) dayMap[row.id_harian].push(row);
   }
+
+  const closeDropdown = () => {
+    setActiveDropdown(null);
+    setDropdownPos(null);
+  };
+
+  const openDropdown = (event: React.MouseEvent<HTMLButtonElement>, dayId: number, row: number) => {
+    const same = activeDropdown?.dayId === dayId && activeDropdown?.row === row;
+    if (same) {
+      closeDropdown();
+      return;
+    }
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const width = 256;
+    const height = 300;
+    let left = Math.min(rect.left, window.innerWidth - width - 8);
+    left = Math.max(8, left);
+    let top = rect.bottom + 4;
+    if (top + height > window.innerHeight) {
+      top = Math.max(8, rect.top - height - 4);
+    }
+
+    setDropdownPos({ top, left });
+    setActiveDropdown({ dayId, row });
+    setUserSearch('');
+  };
+
+  useEffect(() => {
+    if (!activeDropdown) return;
+    const onScroll = () => closeDropdown();
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [activeDropdown]);
 
   const getUsersForDay = (dayId: number) => {
     const assignedIds = new Set(dayMap[dayId].map((r: any) => r.id_user));
@@ -103,11 +143,7 @@ export default function PiketHarianClient({ data, refUser }: PiketHarianClientPr
                         ) : (
                           <div className="relative">
                             <button
-                              onClick={() => {
-                                const same = activeDropdown?.dayId === day.id && activeDropdown?.row === i;
-                                setActiveDropdown(same ? null : { dayId: day.id, row: i });
-                                setUserSearch('');
-                              }}
+                              onClick={(event) => openDropdown(event, day.id, i)}
                               disabled={saving || available.length === 0}
                               className="inline-flex items-center justify-center w-7 h-7 rounded-lg border border-dashed border-[rgba(0,0,0,0.15)] text-[#6B7280] hover:border-[#DC2626] hover:text-[#DC2626] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                             >
@@ -116,51 +152,6 @@ export default function PiketHarianClient({ data, refUser }: PiketHarianClientPr
                               </svg>
                             </button>
 
-                            {activeDropdown?.dayId === day.id && activeDropdown?.row === i && (
-                              <>
-                                <div className="fixed inset-0 z-40" onClick={() => setActiveDropdown(null)} />
-                                <div className="absolute left-0 top-full z-50 mt-1 w-64 overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white premium-shadow">
-                                  <div className="border-b border-[rgba(0,0,0,0.06)] p-2">
-                                    <div className="relative">
-                                      <svg className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                      </svg>
-                                      <input
-                                        type="text"
-                                        autoFocus
-                                        value={userSearch}
-                                        onChange={(e) => setUserSearch(e.target.value)}
-                                        placeholder="Cari guru..."
-                                        className="w-full rounded-lg border border-[rgba(0,0,0,0.08)] bg-[#F8F9FB] py-1.5 pl-8 pr-2 text-xs outline-none focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="max-h-[200px] overflow-y-auto">
-                                    {available.filter((u: any) =>
-                                      u.nama.toLowerCase().includes(userSearch.toLowerCase().trim()),
-                                    ).length === 0 ? (
-                                      <div className="px-3 py-3 text-center text-xs text-[#9CA3AF]">
-                                        Tidak ada guru yang cocok
-                                      </div>
-                                    ) : (
-                                      available
-                                        .filter((u: any) =>
-                                          u.nama.toLowerCase().includes(userSearch.toLowerCase().trim()),
-                                        )
-                                        .map((u: any) => (
-                                          <button
-                                            key={u.id_user}
-                                            onClick={() => handleAdd(day.id, u.id_user)}
-                                            className="block w-full px-3 py-2 text-left text-sm text-[#1A1A2E] transition-colors hover:bg-[#F8F9FB]"
-                                          >
-                                            {u.nama}
-                                          </button>
-                                        ))
-                                    )}
-                                  </div>
-                                </div>
-                              </>
-                            )}
                           </div>
                         )}
                       </td>
@@ -172,6 +163,54 @@ export default function PiketHarianClient({ data, refUser }: PiketHarianClientPr
           </table>
         </div>
       </div>
+      {activeDropdown && dropdownPos && typeof document !== 'undefined' &&
+        createPortal(
+          <div className="fixed inset-0 z-[60]" onClick={closeDropdown}>
+            <div
+              className="piket-dropdown fixed z-[61] w-64 overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white premium-shadow"
+              style={{ top: dropdownPos.top, left: dropdownPos.left }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="border-b border-[rgba(0,0,0,0.06)] p-2">
+                <div className="relative">
+                  <svg className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    placeholder="Cari guru..."
+                    className="w-full rounded-lg border border-[rgba(0,0,0,0.08)] bg-[#F8F9FB] py-1.5 pl-8 pr-2 text-xs outline-none focus:border-[#DC2626] focus:ring-2 focus:ring-red-500/20"
+                  />
+                </div>
+              </div>
+              <div className="max-h-[220px] overflow-y-auto sidebar-scroll">
+                {getUsersForDay(activeDropdown.dayId)
+                  .filter((u: any) => u.nama.toLowerCase().includes(userSearch.toLowerCase().trim()))
+                  .map((u: any) => (
+                    <button
+                      key={u.id_user}
+                      onClick={() => handleAdd(activeDropdown.dayId, u.id_user)}
+                      className="block w-full px-3 py-2 text-left text-sm text-[#1A1A2E] transition-colors hover:bg-[#F8F9FB]"
+                    >
+                      {u.nama}
+                    </button>
+                  ))}
+                {getUsersForDay(activeDropdown.dayId).filter((u: any) =>
+                  u.nama.toLowerCase().includes(userSearch.toLowerCase().trim()),
+                ).length === 0 && (
+                  <div className="px-3 py-3 text-center text-xs text-[#9CA3AF]">
+                    Tidak ada guru yang cocok
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+
     </div>
   );
 }
