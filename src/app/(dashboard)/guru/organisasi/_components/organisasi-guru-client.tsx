@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import ModalAnggotaOrganisasi from '@/app/(dashboard)/tu/organisasi/_components/modal-anggota-organisasi';
 
 interface Organisasi {
   id_organisasi: number;
@@ -18,14 +20,25 @@ interface Anggota {
   nama_kelas: string;
 }
 
+interface Siswa {
+  id_siswa: number;
+  nisn: string | null;
+  nama_siswa: string;
+}
+
 interface OrganisasiGuruClientProps {
   organisasi: Organisasi[];
   anggota: Anggota[];
+  siswa: Siswa[];
+  tahun: number;
+  semester: number;
 }
 
-export default function OrganisasiGuruClient({ organisasi, anggota }: OrganisasiGuruClientProps) {
+export default function OrganisasiGuruClient({ organisasi, anggota, siswa, tahun, semester }: OrganisasiGuruClientProps) {
+  const router = useRouter();
   const [selectedOrg, setSelectedOrg] = useState<number | null>(organisasi[0]?.id_organisasi || null);
   const [search, setSearch] = useState('');
+  const [modalAnggota, setModalAnggota] = useState(false);
 
   const filteredAnggota = anggota.filter((a) => {
     const matchOrg = selectedOrg ? a.id_organisasi === selectedOrg : true;
@@ -34,11 +47,23 @@ export default function OrganisasiGuruClient({ organisasi, anggota }: Organisasi
   });
 
   const selectedNama = organisasi.find((o) => o.id_organisasi === selectedOrg)?.nama_organisasi || '';
+  const selectedOrgData = organisasi.find((o) => o.id_organisasi === selectedOrg) || null;
 
   return (
     <div className="bg-white rounded-xl premium-shadow border border-[rgba(0,0,0,0.04)]">
-      <div className="border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
+      <div className="flex items-center justify-between gap-3 border-b border-[rgba(0,0,0,0.04)] px-6 py-4">
         <h3 className="font-semibold text-[#1A1A2E]">Organisasi — Pembina</h3>
+        <button
+          type="button"
+          onClick={() => setModalAnggota(true)}
+          disabled={!selectedOrgData}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-[#DC2626] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#B91C1C] disabled:opacity-50"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Kelola Anggota
+        </button>
       </div>
       <div className="p-4">
         <div className="flex gap-2 mb-4 flex-wrap">
@@ -95,6 +120,21 @@ export default function OrganisasiGuruClient({ organisasi, anggota }: Organisasi
           {selectedNama}: {filteredAnggota.length} anggota
         </div>
       </div>
+
+      {selectedOrgData && (
+        <ModalAnggotaOrganisasi
+          open={modalAnggota}
+          onClose={() => {
+            setModalAnggota(false);
+            router.refresh();
+          }}
+          organisasi={selectedOrgData}
+          siswa={siswa}
+          anggota={anggota}
+          tahun={tahun}
+          semester={semester}
+        />
+      )}
     </div>
   );
 }

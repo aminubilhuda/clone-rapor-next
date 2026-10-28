@@ -15,9 +15,10 @@ export default async function OrganisasiGuruPage() {
     `SELECT o.id_organisasi, o.nama_organisasi, o.kode
      FROM pembina_organisasi po
      JOIN organisasi o ON po.id_organisasi = o.id_organisasi
-     WHERE po.id_user = ? AND po.deleted_at IS NULL AND o.deleted_at IS NULL
+     WHERE po.id_user = ? AND po.tahun = ? AND po.semester = ?
+       AND po.deleted_at IS NULL AND o.deleted_at IS NULL
      GROUP BY o.id_organisasi, o.nama_organisasi, o.kode`,
-    [idUser]
+    [idUser, sekolah.tahun, sekolah.semester]
   );
 
   if (orgRows.length === 0) {
@@ -44,9 +45,22 @@ export default async function OrganisasiGuruPage() {
     [...orgIds, sekolah.tahun, sekolah.semester]
   );
 
+  const [siswaRows]: any = await pool.query(
+    `SELECT s.id_siswa, s.nisn, s.nama_siswa
+     FROM siswa s
+     WHERE s.deleted_at IS NULL AND s.aktif = 1
+     ORDER BY s.nama_siswa ASC`
+  );
+
   return (
     <div>
-      <OrganisasiGuruClient organisasi={orgRows} anggota={anggotaRows} />
+      <OrganisasiGuruClient
+        organisasi={orgRows}
+        anggota={anggotaRows}
+        siswa={siswaRows}
+        tahun={Number(sekolah.tahun)}
+        semester={Number(sekolah.semester)}
+      />
     </div>
   );
 }
