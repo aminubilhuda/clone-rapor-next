@@ -73,7 +73,7 @@ export default function DKNClient(props: Props) {
     td.forEach((d, idx) => {
       d.semRows.forEach((sem, si) => {
         rows.push([
-          si === 0 ? idx + 1 : '', si === 0 ? d.siswa.nisn : '', si === 0 ? d.siswa.nama_siswa : '',
+          si === 0 ? idx + 1 : '', si === 0 ? d.siswa.nisn : '', si === 0 ? d.siswa.nama_siswa.toUpperCase() : '',
           `Semester ${sem.seq}`, ...sem.vals, Number(sem.total.toFixed(2)), Number(sem.avg.toFixed(2)),
         ]);
       });
@@ -163,7 +163,7 @@ export default function DKNClient(props: Props) {
                   <tr key={`${d.siswa.id_siswa}_s${si}`} className={si === 0 && idx > 0 ? 'grp-sep' : ''}>
                     {si === 0 && <td className="dkn-td tc" rowSpan={rc}>{idx + 1}</td>}
                     {si === 0 && <td className="dkn-td tc" rowSpan={rc}>{d.siswa.nisn}</td>}
-                    {si === 0 && <td className="dkn-td td-name" rowSpan={rc}>{d.siswa.nama_siswa}</td>}
+                    {si === 0 && <td className="dkn-td td-name" rowSpan={rc}>{d.siswa.nama_siswa.toUpperCase()}</td>}
                     <td className="dkn-td tc">
                       {si === 0 ? (
                         <span className="v-wrap"><span className="v-text-sm">Semester</span>{sem.seq}</span>
