@@ -76,6 +76,8 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [invalidFields, setInvalidFields] = useState<Set<string>>(new Set());
+  const [dirty, setDirty] = useState(false);
+  const [pendingTab, setPendingTab] = useState<string | null>(null);
   const { showToast } = useToast();
 
   // Modal distribute per kolom: { open, idTujuan, label }
@@ -132,6 +134,7 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
         onChange={(e) => {
           const v = e.target.value;
           if (v === '' || /^\d{0,3}(\.\d{0,2})?$/.test(v)) {
+            setDirty(true);
             if (isInvalid) {
               setInvalidFields(prev => {
                 const next = new Set(prev);
@@ -148,6 +151,7 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
           if (e.target.value !== '' && (isNaN(num) || num < 0 || num > 100)) {
             setInvalidFields(prev => new Set(prev).add(name));
             e.target.value = '';
+            setDirty(true);
           } else if (isInvalid) {
             setInvalidFields(prev => {
               const next = new Set(prev);
@@ -240,6 +244,7 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
           throw new Error(err.error || 'Gagal menyimpan');
         }
       }
+      setDirty(false);
       showToast('Nilai berhasil disimpan', 'success');
       router.refresh();
     } catch (err: any) {
@@ -330,6 +335,21 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
     }
   };
 
+  /** Cegah pindah tab saat ada nilai yang belum disimpan */
+  const handleTabClick = (e: React.MouseEvent<HTMLAnchorElement>, key: string) => {
+    if (key === activeDetail || !dirty) return;
+    e.preventDefault();
+    setPendingTab(key);
+  };
+
+  const confirmTabSwitch = () => {
+    if (!pendingTab) return;
+    const href = `/guru/penilaian/${idMapelKelas}?detail=${pendingTab}`;
+    setDirty(false);
+    setPendingTab(null);
+    router.push(href, { scroll: false });
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-200">
       <div className={`bg-gradient-to-r ${theme.gradient} text-white px-6 py-4 rounded-t-xl font-semibold flex items-center gap-2.5`}>
@@ -345,6 +365,7 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
             key={key}
             href={`/guru/penilaian/${idMapelKelas}?detail=${key}`}
             scroll={false}
+            onClick={(e) => handleTabClick(e, key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
               activeDetail === key
                 ? info.activeBg
@@ -676,6 +697,39 @@ export default function PenilaianClient({ data, idMapelKelas }: { data: any; idM
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {clearSaving ? 'Menghapus...' : 'Ya, Hapus'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Konfirmasi pindah tab saat ada nilai belum disimpan */}
+      {pendingTab && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setPendingTab(null)}>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-800">Nilai belum disimpan</h3>
+            </div>
+            <div className="px-6 py-4">
+              <p className="text-sm text-gray-600">
+                Ada nilai yang sudah diketik tetapi belum disimpan. Pindah ke tab{' '}
+                <strong>{TAB_INFO[pendingTab]?.label ?? pendingTab}</strong> akan membuang perubahan tersebut.
+              </p>
+            </div>
+            <div className="px-6 py-3 border-t border-gray-200 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setPendingTab(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={confirmTabSwitch}
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors"
+              >
+                Ya, Pindah Tab
               </button>
             </div>
           </div>

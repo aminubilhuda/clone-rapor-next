@@ -130,7 +130,11 @@ export default async function PenilaianPage({ params, searchParams }: PageProps)
           ← Kembali
         </Link>
       </div>
-      <PenilaianClient data={data} idMapelKelas={id_mapel_kelas} />
+      <PenilaianClient
+        key={`${id_mapel_kelas}_${data.activeDetail}`}
+        data={data}
+        idMapelKelas={id_mapel_kelas}
+      />
     </div>
   );
 }
