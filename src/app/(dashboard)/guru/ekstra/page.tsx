@@ -29,7 +29,7 @@ async function getDetail(idEskul: number) {
 }
 
 async function getSiswa() {
-  const [rows]: any = await pool.query('SELECT id_siswa, nisn, nama_siswa FROM siswa WHERE deleted_at IS NULL ORDER BY nama_siswa ASC');
+  const [rows]: any = await pool.query('SELECT id_siswa, nisn, nama_siswa FROM siswa WHERE deleted_at IS NULL AND aktif = 1 ORDER BY nama_siswa ASC');
   return rows;
 }
 

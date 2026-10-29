@@ -120,21 +120,30 @@ export async function addSiswaEkstra(formData: FormData) {
   }
 
   try {
-    const inserted = await withTransaction(async (conn) => {
+    const result = await withTransaction(async (conn) => {
+      const [siswaRows]: any = await conn.query(
+        'SELECT id_siswa FROM siswa WHERE id_siswa = ? AND aktif = 1 AND deleted_at IS NULL FOR UPDATE',
+        [idSiswa]
+      );
+      if (siswaRows.length === 0) return { status: 'inactive' } as const;
+
       const [existing]: any = await conn.query(
         'SELECT id_siswa_eskul FROM siswa_eskul WHERE id_eskul = ? AND id_siswa = ? AND tahun = ? AND semester = ? FOR UPDATE',
         [idEskul, idSiswa, tahun, semester]
       );
-      if (existing.length > 0) return false;
+      if (existing.length > 0) return { status: 'duplicate' } as const;
 
       await conn.query(
         'INSERT INTO siswa_eskul (tahun, semester, id_eskul, id_siswa, predikat, keterangan) VALUES (?, ?, ?, ?, ?, ?)',
         [tahun, semester, idEskul, idSiswa, predikat, keterangan]
       );
-      return true;
+      return { status: 'inserted' } as const;
     });
 
-    if (!inserted) {
+    if (result.status === 'inactive') {
+      return { success: false, error: 'Siswa tidak aktif atau sudah lulus' } as const;
+    }
+    if (result.status === 'duplicate') {
       return { success: false, error: 'Siswa sudah terdaftar di ekstrakurikuler ini' } as const;
     }
 
