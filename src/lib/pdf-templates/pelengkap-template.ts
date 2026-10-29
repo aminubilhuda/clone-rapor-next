@@ -192,7 +192,6 @@ export function generatePelengkapRaporHTML(
           ${infoRow('19.', 'Pekerjaan Wali', siswa.pekerjaan_wali)}
         </table>
         <div class="identity-footer">
-          <div class="photo-box">Pas Foto<br />3 × 4</div>
           <div class="approval inline">
             <div>
               <p>${value(sekolah.kabupaten)}, ${formatTanggal(siswa.terima_tanggal)}</p>
@@ -342,8 +341,7 @@ export function generatePelengkapRaporHTML(
     .approval p { margin: 1mm 0; }
     .signature-space { height: 22mm; }
     .signature-space.small { height: 14mm; }
-    .identity-footer { display: flex; align-items: flex-start; justify-content: space-between; margin: 8mm 8mm 0 15mm; }
-    .photo-box { width: 27mm; height: 34mm; border: 1px solid #000; display: flex; align-items: center; justify-content: center; text-align: center; color: #555; }
+    .identity-footer { display: flex; align-items: flex-start; justify-content: flex-end; margin: 8mm 8mm 0 15mm; }
     .approval.inline { margin: 0; }
     .transfer-note { margin: 0 0 6mm; }
     .transfer-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 8.5pt; }

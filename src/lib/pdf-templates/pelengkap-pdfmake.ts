@@ -378,23 +378,6 @@ function buildStudentPage(
       ], true),
       {
         columns: [
-          {
-            width: mm(55),
-            stack: [{
-              table: {
-                widths: [mm(27)],
-                heights: [mm(34)],
-                body: [[{
-                  text: 'Pas Foto\n3 x 4',
-                  alignment: 'center',
-                  color: '#555555',
-                  margin: [0, mm(11), 0, 0],
-                }]],
-              },
-              layout: identityBoxLayout,
-            }],
-            margin: [mm(15), 0, 0, 0],
-          },
           { text: '', width: '*' },
           {
             width: mm(70),
