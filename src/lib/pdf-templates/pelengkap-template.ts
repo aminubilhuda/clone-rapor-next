@@ -343,7 +343,7 @@ export function generatePelengkapRaporHTML(
     .signature-space { height: 22mm; }
     .signature-space.small { height: 14mm; }
     .identity-footer { display: flex; align-items: flex-start; justify-content: space-between; margin: 8mm 8mm 0 15mm; }
-    .photo-box { width: 27mm; height: 36mm; border: 1px solid #000; display: flex; align-items: center; justify-content: center; text-align: center; color: #555; }
+    .photo-box { width: 27mm; height: 34mm; border: 1px solid #000; display: flex; align-items: center; justify-content: center; text-align: center; color: #555; }
     .approval.inline { margin: 0; }
     .transfer-note { margin: 0 0 6mm; }
     .transfer-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 8.5pt; }

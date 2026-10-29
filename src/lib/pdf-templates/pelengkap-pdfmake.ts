@@ -383,7 +383,7 @@ function buildStudentPage(
             stack: [{
               table: {
                 widths: [mm(27)],
-                heights: [mm(36)],
+                heights: [mm(34)],
                 body: [[{
                   text: 'Pas Foto\n3 x 4',
                   alignment: 'center',
