@@ -185,6 +185,112 @@ export async function deleteTujuanByKode(kode: string, idMapel: number) {
   }
 }
 
+export async function syncTujuanKelas(formData: FormData) {
+  const authResult = await requireGuru();
+  if (authResult.error || !authResult.user) {
+    return { success: false, error: authResult.error || 'Unauthorized' } as const;
+  }
+  const { user } = authResult;
+
+  const idMapel = Number(formData.get('id_mapel'));
+  const parsedKelasIds = parseJsonArray<number>(formData.get('kelas_ids') as string, 'kelas');
+  if (!parsedKelasIds.ok) return { success: false, error: parsedKelasIds.error } as const;
+  const kelasIds = [...new Set(parsedKelasIds.value)];
+
+  if (!Number.isInteger(idMapel) || idMapel <= 0) {
+    return { success: false, error: 'Mata pelajaran tidak valid' } as const;
+  }
+  if (kelasIds.length === 0) {
+    return { success: false, error: 'Pilih minimal satu kelas' } as const;
+  }
+
+  try {
+    const sekolah = await getSekolahWithFilter();
+
+    const [kelasRows]: any = await pool.query(`
+      SELECT DISTINCT k.id_kelas, k.id_tingkat, k.nama_kelas
+      FROM mapel_kelas mk
+      JOIN kelas k ON k.id_kelas = mk.id_kelas
+      WHERE mk.tahun = ? AND mk.semester = ? AND mk.id_mapel = ? AND mk.id_user = ?
+        AND mk.id_kelas IN (?)
+      ORDER BY k.nama_kelas ASC
+    `, [sekolah.tahun, sekolah.semester, idMapel, user.id_user, kelasIds]);
+
+    if (kelasRows.length !== kelasIds.length) {
+      return { success: false, error: 'Ada kelas yang tidak Anda ampu pada mapel ini' } as const;
+    }
+
+    const tingkatIds = [...new Set(kelasRows.map((k: any) => Number(k.id_tingkat)))];
+    const [sourceRows]: any = await pool.query(`
+      SELECT id_tingkat, urut, tujuan, kktp
+      FROM tujuan_pembelajaran
+      WHERE tahun = ? AND semester = ? AND id_mapel = ? AND id_user = ?
+        AND id_tingkat IN (?)
+      ORDER BY id_tingkat ASC, urut ASC, id_tujuan ASC
+    `, [sekolah.tahun, sekolah.semester, idMapel, user.id_user, tingkatIds]);
+
+    const sourceByTingkat = new Map<number, Map<string, { tujuan: string; kktp: number }>>();
+    for (const row of sourceRows) {
+      const tingkat = Number(row.id_tingkat);
+      if (!sourceByTingkat.has(tingkat)) sourceByTingkat.set(tingkat, new Map());
+      const byKode = sourceByTingkat.get(tingkat)!;
+      if (!byKode.has(row.urut)) {
+        byKode.set(row.urut, { tujuan: row.tujuan, kktp: Number(row.kktp) });
+      }
+    }
+
+    if (![...sourceByTingkat.values()].some((byKode) => byKode.size > 0)) {
+      return { success: false, error: 'Belum ada TP untuk disalin' } as const;
+    }
+
+    const conn = await pool.getConnection();
+    const addedKodes = new Set<string>();
+    let addedRows = 0;
+    try {
+      await conn.beginTransaction();
+
+      for (const kelas of kelasRows) {
+        const source = sourceByTingkat.get(Number(kelas.id_tingkat));
+        if (!source) continue;
+
+        for (const [kode, tp] of source) {
+          const [existing]: any = await conn.query(
+            `SELECT id_tujuan FROM tujuan_pembelajaran
+             WHERE tahun = ? AND semester = ? AND id_kelas = ? AND id_mapel = ? AND id_user = ? AND urut = ?
+             LIMIT 1 FOR UPDATE`,
+            [sekolah.tahun, sekolah.semester, kelas.id_kelas, idMapel, user.id_user, kode]
+          );
+          if (existing.length > 0) continue;
+
+          await conn.query(
+            `INSERT INTO tujuan_pembelajaran
+             (tahun, semester, id_tingkat, id_kelas, id_mapel, id_user, urut, tujuan, kktp, middle_formatif, middle_ph, formatif_as)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0)`,
+            [sekolah.tahun, sekolah.semester, kelas.id_tingkat, kelas.id_kelas, idMapel, user.id_user, kode, tp.tujuan, tp.kktp]
+          );
+          addedKodes.add(kode);
+          addedRows += 1;
+        }
+      }
+
+      await conn.commit();
+    } catch (e) {
+      await conn.rollback();
+      throw e;
+    } finally {
+      conn.release();
+    }
+
+    revalidatePath('/guru/tujuan-pembelajaran');
+    revalidatePath('/guru/kelas-ku');
+    revalidatePath('/guru/penilaian/[id_mapel_kelas]', 'page');
+    return { success: true, added: addedKodes.size, rows: addedRows } as const;
+  } catch (error) {
+    console.error('[tp-actions] Gagal menyinkronkan TP:', error);
+    return { success: false, error: 'Gagal menyinkronkan TP' } as const;
+  }
+}
+
 export async function getTpFromPreviousYear(idMapel: number) {
   const authResult = await requireGuru();
   if (authResult.error || !authResult.user) return { success: false, error: authResult.error || 'Unauthorized' } as const;

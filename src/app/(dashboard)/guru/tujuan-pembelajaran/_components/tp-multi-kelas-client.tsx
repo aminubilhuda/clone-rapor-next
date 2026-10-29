@@ -10,6 +10,7 @@ import {
   getKodeNext,
   getTpFromPreviousYear,
   copyTujuan,
+  syncTujuanKelas,
 } from '@/lib/actions/tp-actions';
 
 interface Option {
@@ -50,6 +51,9 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
   const [modalEdit, setModalEdit] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
   const [modalCopy, setModalCopy] = useState(false);
+  const [modalSync, setModalSync] = useState(false);
+  const [syncKelas, setSyncKelas] = useState<Record<number, boolean>>({});
+  const [syncLoading, setSyncLoading] = useState(false);
   const [selected, setSelected] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -92,6 +96,17 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
     const parts = kode.split('-');
     return parts[parts.length - 1];
   };
+
+  const syncKelasList = selectedData
+    ? selectedData.kelasList.map((k) => ({
+        ...k,
+        missing: selectedData.tp.filter(
+          (t: any) => !t.kelas?.some((x: any) => x.id_kelas === k.id_kelas)
+        ).length,
+      }))
+    : [];
+  const syncSelectedKelas = syncKelasList.filter((k) => syncKelas[k.id_kelas]);
+  const syncMissingTotal = syncSelectedKelas.reduce((total, k) => total + k.missing, 0);
 
   const openAdd = async () => {
     if (!selectedData) return;
@@ -138,6 +153,60 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
     }
     setLoadingCopy(false);
     setModalCopy(true);
+  };
+
+  const openSync = () => {
+    if (!selectedData) return;
+    if (selectedData.tp.length === 0) {
+      showToast('Belum ada TP untuk disalin', 'error');
+      return;
+    }
+    if (syncKelasList.every((k) => k.missing === 0)) {
+      showToast('Semua kelas sudah memiliki TP', 'success');
+      return;
+    }
+    setSyncKelas(
+      Object.fromEntries(
+        syncKelasList.filter((k) => k.missing > 0).map((k) => [k.id_kelas, true])
+      )
+    );
+    setError('');
+    setModalSync(true);
+  };
+
+  const handleSync = async () => {
+    if (!selectedData) return;
+    const selectedKelas = Object.entries(syncKelas)
+      .filter(([, value]) => value)
+      .map(([id]) => Number(id));
+    if (!selectedKelas.length) {
+      setError('Pilih minimal satu kelas');
+      return;
+    }
+
+    setSyncLoading(true);
+    setError('');
+    try {
+      const fd = new FormData();
+      fd.set('id_mapel', String(selectedData.mapel.id_mapel));
+      fd.set('kelas_ids', JSON.stringify(selectedKelas));
+      const result = await syncTujuanKelas(fd);
+      if (result.success) {
+        setModalSync(false);
+        if (result.added > 0) {
+          showToast(`${result.added} TP berhasil disalin ke ${selectedKelas.length} kelas`, 'success');
+        } else {
+          showToast('Tidak ada TP baru yang perlu disalin', 'success');
+        }
+        router.refresh();
+      } else {
+        setError(result.error || 'Gagal menyinkronkan TP');
+      }
+    } catch {
+      setError('Gagal menyinkronkan TP');
+    } finally {
+      setSyncLoading(false);
+    }
   };
 
   const handleAdd = async () => {
@@ -225,6 +294,10 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
         </div>
         {selectedData && (
           <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+            <button onClick={openSync} className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              Sinkronkan Kelas
+            </button>
             <button onClick={openCopy} className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
               Salin TP
@@ -521,6 +594,50 @@ export default function TPMultiKelasClient({ options, selectedMapel, selectedTin
                   <button onClick={handleCopy} disabled={loading || loadingCopy || copySource.length === 0}
                     className="px-4 py-2 text-sm text-white bg-green-600 hover:bg-green-700 rounded-lg transition disabled:opacity-50">
                     {loading ? 'Menyalin...' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* Modal Sinkronkan Kelas */}
+          {modalSync && selectedData && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={(e) => { if (e.target === e.currentTarget && !syncLoading) setModalSync(false); }}>
+              <div className="w-full max-w-lg overflow-hidden rounded-lg bg-white shadow-xl">
+                <div className="border-b px-4 py-4 sm:px-6">
+                  <h3 className="text-lg font-semibold">Sinkronkan TP ke Kelas</h3>
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    Semua TP yang sudah ada akan disalin ke kelas yang dipilih. Kode TP tetap sama.
+                  </p>
+                </div>
+                <div className="space-y-4 px-4 py-4 sm:px-6">
+                  {error && <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>}
+                  <div className="space-y-1.5 rounded-lg border border-gray-200 p-3">
+                    {syncKelasList.map((k) => (
+                      <label key={k.id_kelas} className={`flex items-center gap-2 text-sm ${k.missing === 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+                        <input
+                          type="checkbox"
+                          checked={!!syncKelas[k.id_kelas]}
+                          disabled={k.missing === 0}
+                          onChange={(e) => setSyncKelas((prev) => ({ ...prev, [k.id_kelas]: e.target.checked }))}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span>{k.nama_kelas}</span>
+                        <span className="ml-auto text-xs text-gray-500">
+                          {k.missing === 0 ? 'Sudah lengkap' : `${k.missing} TP belum ada`}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    {syncSelectedKelas.length} kelas dipilih · {syncMissingTotal} TP akan disalin
+                  </p>
+                </div>
+                <div className="flex justify-end gap-3 border-t px-4 py-4 sm:px-6">
+                  <button type="button" onClick={() => setModalSync(false)} disabled={syncLoading} className="rounded-lg px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-100 disabled:opacity-50">
+                    Batal
+                  </button>
+                  <button type="button" onClick={handleSync} disabled={syncLoading || syncSelectedKelas.length === 0} className="rounded-lg bg-green-600 px-4 py-2 text-sm text-white transition hover:bg-green-700 disabled:opacity-50">
+                    {syncLoading ? 'Menyinkronkan...' : 'Sinkronkan'}
                   </button>
                 </div>
               </div>
