@@ -337,17 +337,28 @@ export async function POST(req: NextRequest) {
 
       const allMapelIds = [...new Set<number>(mapelSiswaRows.map((r: any) => Number(r.id_mapel)))];
       let kktpRows: any[] = [];
-      if (allMapelIds.length > 0) {
+      if (allMapelIds.length > 0 && kelasIds.length > 0) {
         const mapelPlaceholders = allMapelIds.map(() => '?').join(',');
         const [rows]: any = await pool.query(`
-          SELECT DISTINCT id_mapel, kktp FROM tujuan_pembelajaran
-          WHERE tahun = ? AND semester = ? AND id_mapel IN (${mapelPlaceholders})
-        `, [useTahun, useSemester, ...allMapelIds]);
+          SELECT tp.id_kelas, tp.id_mapel, MIN(tp.kktp) AS kktp
+          FROM tujuan_pembelajaran tp
+          JOIN mapel_kelas mk
+            ON mk.id_kelas = tp.id_kelas
+           AND mk.id_mapel = tp.id_mapel
+           AND mk.tahun = tp.tahun
+           AND mk.semester = tp.semester
+           AND mk.id_user = tp.id_user
+          WHERE tp.tahun = ? AND tp.semester = ?
+            AND tp.id_kelas IN (${kelasPlaceholders})
+            AND tp.id_mapel IN (${mapelPlaceholders})
+            AND mk.deleted_at IS NULL
+          GROUP BY tp.id_kelas, tp.id_mapel
+        `, [useTahun, useSemester, ...kelasIds, ...allMapelIds]);
         kktpRows = rows;
       }
-      const kktpMap = new Map<number, number>();
+      const kktpMap = new Map<string, number>();
       for (const r of kktpRows) {
-        if (!kktpMap.has(r.id_mapel)) kktpMap.set(r.id_mapel, r.kktp);
+        kktpMap.set(`${r.id_kelas}-${r.id_mapel}`, Number(r.kktp));
       }
 
       const [presensiRows]: any = await pool.query(`
@@ -409,7 +420,7 @@ export async function POST(req: NextRequest) {
                 children: node.items.map((child) => ({
                   nama_mapel: child.nama_mapel,
                   nilai: nilaiTsMap.get(`${row.id_siswa}-${child.id_mapel}`) ?? null,
-                  kktp: kktpMap.get(child.id_mapel) || 70,
+                  kktp: kktpMap.get(`${skInfo.id_kelas}-${child.id_mapel}`) || 70,
                 })),
               };
             }
@@ -418,7 +429,7 @@ export async function POST(req: NextRequest) {
             return {
               nama_mapel: m.nama_mapel,
               nilai: nilaiTsMap.get(`${row.id_siswa}-${m.id_mapel}`) ?? null,
-              kktp: kktpMap.get(m.id_mapel) || 70,
+              kktp: kktpMap.get(`${skInfo.id_kelas}-${m.id_mapel}`) || 70,
             };
           });
 
