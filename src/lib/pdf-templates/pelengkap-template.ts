@@ -153,7 +153,7 @@ export function generatePelengkapRaporHTML(
         </table>
         <div class="approval">
           <div>
-            <p>${value(sekolah.kabupaten)}, ................................</p>
+            <p>${value(sekolah.kabupaten)}, ${formatTanggal(siswa.terima_tanggal)}</p>
             <p>Kepala Sekolah,</p>
             <div class="signature-space"></div>
             <strong>${value(sekolah.nama_kepsek)}</strong>

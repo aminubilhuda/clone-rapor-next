@@ -328,7 +328,7 @@ function buildSchoolPage(
       {
         columns: [
           { text: '', width: '*' },
-          { stack: [approvalBlock(sekolah)], width: mm(70) },
+          { stack: [approvalBlock(sekolah, formatTanggal(siswa.terima_tanggal))], width: mm(70) },
         ],
         margin: [0, mm(16), 0, 0],
       },
