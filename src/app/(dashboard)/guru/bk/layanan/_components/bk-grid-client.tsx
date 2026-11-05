@@ -76,6 +76,7 @@ export default function BKGridClient({ jenis, classes, idKelas, students, sessio
   const colors = COLORS[config.color] ?? COLORS.emerald;
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState<{ idLayanan: number; idSiswa: number } | null>(initialOpen ?? null);
+  const [isNewSession, setIsNewSession] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
   const [creating, setCreating] = useState<number | null>(null);
 
@@ -100,14 +101,17 @@ export default function BKGridClient({ jenis, classes, idKelas, students, sessio
     [students, search],
   );
 
-  const openSession = (session: BKSession) =>
+  const openSession = (session: BKSession) => {
+    setIsNewSession(false);
     setOpen({ idLayanan: Number(session.id_layanan), idSiswa: Number(session.id_siswa) });
+  };
 
   const createSession = async (student: BKStudent) => {
     setCreating(student.id_siswa);
     const result = await createBKSesi(jenis, idKelas, student.id_siswa);
     setCreating(null);
     if (result.success && result.idLayanan) {
+      setIsNewSession(true);
       setOpen({ idLayanan: result.idLayanan, idSiswa: student.id_siswa });
       router.refresh();
     } else {
@@ -317,7 +321,11 @@ export default function BKGridClient({ jenis, classes, idKelas, students, sessio
           idSiswa={open.idSiswa}
           studentName={openStudent.nama_siswa}
           jenis={jenis}
-          onClose={() => setOpen(null)}
+          isNew={isNewSession}
+          onClose={() => {
+            setOpen(null);
+            setIsNewSession(false);
+          }}
           onSaved={() => router.refresh()}
         />
       )}

@@ -22,6 +22,7 @@ interface Props {
   idSiswa: number;
   studentName: string;
   jenis: JenisLayananBK;
+  isNew?: boolean;
   onClose: () => void;
   onSaved: () => void;
 }
@@ -71,11 +72,20 @@ function fromRow(row: BKSession): FormState {
   };
 }
 
+function hasContent(form: FormState): boolean {
+  return (
+    form.bidang.length > 0 ||
+    Object.values(form.header).some((value) => value.trim() !== '') ||
+    Object.values(form.peserta).some((value) => value.trim() !== '')
+  );
+}
+
 export default function BKSessionDrawer({
   idLayanan,
   idSiswa,
   studentName,
   jenis,
+  isNew = false,
   onClose,
   onSaved,
 }: Props) {
@@ -84,6 +94,7 @@ export default function BKSessionDrawer({
   const [form, setForm] = useState<FormState>(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -121,6 +132,7 @@ export default function BKSessionDrawer({
     setSaving(false);
 
     if (result.success) {
+      setSaved(true);
       showToast('Catatan sesi tersimpan', 'success');
       onSaved();
       onClose();
@@ -144,8 +156,20 @@ export default function BKSessionDrawer({
     }
   };
 
+  const handleCancel = async () => {
+    if (isNew && !saved && !hasContent(form)) {
+      try {
+        await deleteBKSesi(idLayanan, idSiswa);
+        onSaved();
+      } catch {
+        // Abaikan: sesi kosong gagal dihapus, tetap tutup drawer.
+      }
+    }
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/40" onClick={handleCancel}>
       <div
         className="flex h-full w-full max-w-md flex-col bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}
@@ -159,7 +183,7 @@ export default function BKSessionDrawer({
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleCancel}
             className="rounded-lg p-1.5 text-[#9CA3AF] transition-colors hover:bg-[#F8F9FB] hover:text-[#1A1A2E]"
             aria-label="Tutup"
           >
@@ -227,7 +251,7 @@ export default function BKSessionDrawer({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleCancel}
               className="rounded-lg border border-[rgba(0,0,0,0.1)] px-3 py-2 text-xs font-medium text-[#6B7280] transition-colors hover:bg-[#F8F9FB]"
             >
               Batal
